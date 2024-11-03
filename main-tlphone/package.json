@@ -1,0 +1,46 @@
+{
+  "name": "main-tlphone",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.3.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@types/react-highlight-words": "^0.20.0",
+    "axios": "^1.7.3",
+    "core-js": "^3.38.0",
+    "dayjs": "^1.11.13",
+    "file-saver": "^2.0.5",
+    "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
+    "next": "15.0.2",
+    "next-auth": "^4.24.10",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-highlight-words": "^0.20.0",
+    "react-medium-image-zoom": "^5.2.10",
+    "react-multi-carousel": "^2.8.5",
+    "react-redux": "^9.1.2",
+    "react-slick": "^0.30.2",
+    "react-toastify": "^10.0.6",
+    "sharp": "^0.33.5",
+    "slugify": "^1.6.6",
+    "swiper": "^11.1.9"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "daisyui": "^4.12.14",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.2",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5"
+  }
+}
