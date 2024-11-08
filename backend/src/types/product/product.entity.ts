@@ -13,6 +13,9 @@ import {
     JoinTable
 } from "typeorm";
 import { OrderProductEntity } from "../order";
+import { ReviewEntity } from '../review';
+import { SchemaProductEntity } from '../schemaProduct';
+import { CarItemEntity } from '../cart';
 
 @Entity({ name: 'TagsDetail' })
 export class TagsEntity {
@@ -22,14 +25,14 @@ export class TagsEntity {
     @Column()
     type: string;
 
-    @Column()
-    value: string;
+    @Column({ nullable: true })
+    value?: string;
 
-    @ManyToMany(() => ProductDetailEntity, (productDetail) => productDetail.attributes)
-    productDetail: Relation<ProductDetailEntity[]>;
+    @ManyToMany(() => ProductDetailEntity, (productDetail) => productDetail.attributes,  { nullable: true })
+    productDetail?: Relation<ProductDetailEntity[]>;
 
-    @ManyToMany(() => ProductVariantEntity, (productDetail) => productDetail.attributes)
-    productVariant: Relation<ProductVariantEntity[]>;
+    @ManyToMany(() => ProductVariantEntity, (productDetail) => productDetail.attributes,  { nullable: true })
+    productVariant?: Relation<ProductVariantEntity[]>;
 }
 
 @Entity({ name: 'ImageDetail' })
@@ -63,6 +66,9 @@ export class ProductVariantEntity {
 
     @ManyToOne(() => ProductDetailEntity, (productDetail) => productDetail.variants)
     productDetail: Relation<ProductDetailEntity>;
+
+    @OneToMany(() => CarItemEntity, (it) => it.productVariant)
+    cartItem: Relation<CarItemEntity[]>;
 
     @ManyToMany(() => TagsEntity, (tag) => tag.productVariant, { nullable: true })
     @JoinTable()
@@ -115,12 +121,15 @@ export class ProductEntity {
     @Column({ type: 'float', nullable: true, default: 0 })
     rating?: number;
 
-    @OneToOne(() => ProductDetailEntity)
+    @OneToOne(() => ProductDetailEntity, { cascade: true })
     @JoinColumn()
     details: Relation<ProductDetailEntity>;
 
     @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product)
     orderProducts: Relation<OrderProductEntity[]>;
+
+    @OneToMany(() => ReviewEntity, (review) => review.product)
+    reviews:  Relation<ReviewEntity[]>;
 
     @CreateDateColumn()
     created_at: Date;

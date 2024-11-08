@@ -16,12 +16,20 @@ import {
   ProductVariantEntity,
   TagsEntity,
 } from './types/product';
-import { CustomerInfoEntity, DeliveryInfoEntity, OrderEntity, OrderProductEntity } from './types/order';
+import {
+  CustomerInfoEntity,
+  DeliveryInfoEntity,
+  OrderEntity,
+  OrderProductEntity,
+  PaymentInfoEntity,
+} from './types/order';
 import { BlogModule } from './blog/blog.module';
 import { BlogEntity } from './types/blog';
 import { MediaModule } from './media/media.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { ItemSchemaProductDetailEntity, SchemaProductDetailEntity, SchemaProductEntity } from './types/schemaProduct';
+import { SchemaProductModule } from './schema-product/schema-product.module';
+import { ReviewEntity } from './types/review';
 
 
 @Module({
@@ -65,10 +73,12 @@ import { ItemSchemaProductDetailEntity, SchemaProductDetailEntity, SchemaProduct
           OrderEntity, 
           CustomerInfoEntity,
           DeliveryInfoEntity,
+          PaymentInfoEntity,
           OrderProductEntity,
           SchemaProductEntity,
           SchemaProductDetailEntity,
           ItemSchemaProductDetailEntity,
+          ReviewEntity,
           TagsEntity,
           BlogEntity
         ],
@@ -81,6 +91,7 @@ import { ItemSchemaProductDetailEntity, SchemaProductDetailEntity, SchemaProduct
     BlogModule,
     MediaModule,
     AnalyticModule,
+    SchemaProductModule,
   ],
   controllers: [],
   providers: [],

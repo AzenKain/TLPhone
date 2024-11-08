@@ -24,6 +24,12 @@ input CreateProductDto {
   name: String!
 }
 
+input CreateSchemaProductDto {
+  category: String
+  detail: [SchemaProductDetailDto!]
+  name: String!
+}
+
 input CreateUserDto {
   address: String
   birthday: DateTime
@@ -43,6 +49,7 @@ type CustomerInfo {
   id: ID!
   lastName: String!
   phoneNumber: String!
+  userId: Float
 }
 
 input CustomerInfoInp {
@@ -65,9 +72,16 @@ input DeleteProductDto {
   productId: Float!
 }
 
+input DeleteSchemaProductDto {
+  schemaId: Float!
+}
+
 type DeliveryInfo {
   address: String!
   city: String
+  deliveryFee: Float!
+  deliveryType: String!
+  discount: Float!
   district: String
   id: ID!
 }
@@ -93,7 +107,13 @@ input ImageDetailInp {
 type ItemSchemaProductDetail {
   id: ID!
   isUseForSearch: Boolean!
-  name: String!
+  productSchema: [SchemaProductDetail!]
+  value: String!
+}
+
+input ItemSchemaProductDto {
+  isUseForSearch: Boolean!
+  value: String!
 }
 
 type Mutation {
@@ -119,16 +139,16 @@ type Order {
   deliveryInfo: DeliveryInfo!
   id: ID!
   isDisplay: Boolean!
-  isPaid: Boolean!
   notes: String
   orderProducts: [OrderProduct!]!
+  paymentInfo: PaymentInfo!
   status: String!
   totalAmount: Float!
   updated_at: DateTime!
 }
 
 type OrderProduct {
-  discount: Float
+  discount: Float!
   id: ID!
   order: Order!
   orderId: ID!
@@ -146,6 +166,16 @@ input OrderProductInp {
   quantity: Float!
 }
 
+type PaymentInfo {
+  bank: String
+  createdAt: DateTime!
+  id: ID!
+  isPaid: Boolean!
+  paymentType: String!
+  trackId: String
+  updateAt: DateTime!
+}
+
 type Product {
   buyCount: Int
   category: String
@@ -154,7 +184,8 @@ type Product {
   id: ID!
   isDisplay: Boolean!
   name: String!
-  orderProducts: [OrderProduct!]!
+  orderProducts: [OrderProduct!]
+  reviews: [Review!]
   updated_at: DateTime!
 }
 
@@ -178,7 +209,7 @@ input ProductDetailInp {
 }
 
 type ProductVariant {
-  attributes: [TagsDetail!]!
+  attributes: [TagsDetail!]
   displayPrice: Float!
   id: ID!
   originPrice: Float!
@@ -193,25 +224,57 @@ input ProductVariantInp {
 }
 
 type Query {
+  CreateSchemaProduct(UpdateSchemaProduct: CreateSchemaProductDto!): SchemaProduct!
+  DeleteSchemaProduct(DeleteSchemaProduct: DeleteSchemaProductDto!): ResponseType!
+  GetAllSchemaProduct: [SchemaProduct!]!
   GetBlogById(blogId: Float!): Blog!
   GetOrderById(orderId: Float!): Order!
   GetProductById(productId: Float!): Product!
   GetReportProduct(ReportProduct: SearchProductDto!): SearchProduct!
+  GetSchemaProductById(schemaProductId: Float!): SchemaProduct!
   GetTagsProduct(GetTagsProduct: TagsProductDto!): [TagsDetail!]!
   GetUserById(id: String!): UserType!
   SearchBlogWithOptions(SearchBlog: SearchBlogDto!): [Blog!]!
   SearchOrderWithOption(SearchOrder: SearchOrderDto!): SearchOrder!
   SearchProductWithOptions(SearchProduct: SearchProductDto!): SearchProduct!
   SearchUserWithOption(SearchUser: SearchUserDto!): SearchUser!
+  UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
 }
 
 type ResponseType {
   message: String!
 }
 
+type Review {
+  content: String!
+  created_at: DateTime!
+  id: ID!
+  isDisplay: Boolean!
+  product: Product!
+  star: Float!
+  updated_at: DateTime!
+  user: UserType!
+}
+
+type SchemaProduct {
+  category: String
+  created_at: DateTime!
+  detail: [SchemaProductDetail!]
+  id: ID!
+  isDisplay: Boolean!
+  name: String!
+  updated_at: DateTime!
+}
+
 type SchemaProductDetail {
   attributes: [ItemSchemaProductDetail!]
   id: ID!
+  schema: SchemaProduct
+  title: String!
+}
+
+input SchemaProductDetailDto {
+  attributes: [ItemSchemaProductDto!]
   title: String!
 }
 
@@ -275,8 +338,10 @@ input SearchUserDto {
 
 type TagsDetail {
   id: ID!
+  productDetail: [ProductDetail!]
+  productVariant: [ProductVariant!]
   type: String!
-  value: String!
+  value: String
 }
 
 input TagsDetailInp {
@@ -295,12 +360,30 @@ input UpdateBlogDto {
   typeBlog: String
 }
 
+input UpdateItemSchemaProductDto {
+  isUseForSearch: Boolean
+  value: String
+}
+
 input UpdateProductDto {
   buyCount: Int
   category: String
   details: ProductDetailInp
   name: String
   productId: Float!
+}
+
+input UpdateSchemaProductDetailDto {
+  attributes: [UpdateItemSchemaProductDto!]
+  title: String
+}
+
+input UpdateSchemaProductDto {
+  category: String
+  detail: [UpdateSchemaProductDetailDto!]
+  name: String
+  productId: ID
+  schemaId: Float!
 }
 
 input UpdateUserDto {
@@ -337,6 +420,7 @@ type UserType {
   id: ID!
   isDisplay: Boolean!
   refreshToken: String
+  reviews: [Review!]!
   role: [String!]!
   secretKey: String!
   updated_at: DateTime!

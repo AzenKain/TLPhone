@@ -7,10 +7,11 @@ import { ImageDetailEntity, ProductDetailEntity, ProductEntity, TagsEntity } fro
 import { OrderModule } from 'src/order/order.module';
 import { HttpModule } from '@nestjs/axios';
 import { ProductController } from './product.controller';
+import { ReviewEntity } from '../types/review';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, ProductEntity, ProductDetailEntity, ImageDetailEntity, TagsEntity]),
+    TypeOrmModule.forFeature([UserEntity, ProductEntity, ProductDetailEntity, ImageDetailEntity, TagsEntity, ReviewEntity]),
     OrderModule, HttpModule
   ],
   providers: [ProductResolver, ProductService],

@@ -184,7 +184,9 @@ export class OrderService {
             deliveryInfo,
             customerInfo,
             isDisplay: true,
-            isPaid: false,
+            paymentInfo: {
+                isPaid: false,
+            },
             totalAmount: 0,
             orderProducts: []
         });
@@ -237,7 +239,7 @@ export class OrderService {
         }
 
         if (dto.isPaid !== undefined) {
-            order.isPaid = dto.isPaid
+            order.paymentInfo.isPaid = dto.isPaid
         }
 
         await this.orderRepository.save(order);

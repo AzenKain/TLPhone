@@ -7,14 +7,17 @@ import {
     ManyToOne,
     OneToMany,
     JoinColumn,
-    Relation
-} from "typeorm";
+    Relation, OneToOne,
+} from 'typeorm';
 import { ProductEntity } from "../product";
 
 @Entity({ name: 'CustomerInfo' })
 export class CustomerInfoEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
+
+    @Column({ nullable: true })
+    userId: number;
 
     @Column({ nullable: false })
     email: string;
@@ -34,6 +37,15 @@ export class DeliveryInfoEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
+    @Column({ nullable: false })
+    deliveryType: string;
+
+    @Column({ nullable: false })
+    deliveryFee: number;
+
+    @Column({ nullable: false })
+    discount?: number;
+
     @Column({ nullable: true })
     city?: string;
 
@@ -44,6 +56,30 @@ export class DeliveryInfoEntity {
     address: string;
 }
 
+@Entity({ name: 'PaymentInfo' })
+export class PaymentInfoEntity {
+    @PrimaryGeneratedColumn({ type: 'bigint' })
+    id: number;
+
+    @Column({ nullable: false })
+    isPaid: boolean;
+
+    @Column({ nullable: false })
+    paymentType: string;
+
+    @Column({ nullable: true })
+    bank?: string;
+
+    @Column({ nullable: true })
+    trackId?: string;
+
+    @CreateDateColumn()
+    createdAt?: Date;
+
+    @UpdateDateColumn()
+    updateAt?: Date;
+}
+
 @Entity({ name: 'Order' })
 export class OrderEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -52,9 +88,6 @@ export class OrderEntity {
     @Column({ type: 'boolean' })
     isDisplay: boolean;
 
-    @Column({ type: 'boolean', default: false })
-    isPaid: boolean;
-    
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     totalAmount: number;
 
@@ -68,6 +101,10 @@ export class OrderEntity {
     @ManyToOne(() => CustomerInfoEntity)
     @JoinColumn({ name: 'customerInfoId' })
     customerInfo: CustomerInfoEntity;
+
+    @OneToOne(() => PaymentInfoEntity, { cascade: true })
+    @JoinColumn()
+    paymentInfo: PaymentInfoEntity;
 
     @Column()
     status: string;
@@ -103,7 +140,7 @@ export class OrderProductEntity {
     @Column({ nullable: false })
     quantity: number;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     discount?: number;
 
     @ManyToOne(() => OrderEntity, (order) => order.orderProducts)

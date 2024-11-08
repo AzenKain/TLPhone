@@ -1,5 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Relation } from 'typeorm';
+import { ReviewType } from '../review';
+import { ProductType } from '../product';
 
 @ObjectType('UserDetail')
 export class UserDetailType {
@@ -56,6 +58,9 @@ export class UserType {
 
   @Field({ nullable: true })
   refreshToken: string;
+
+  @Field(() => [ReviewType])
+  reviews: ReviewType[];
 
   @Field()
   created_at: Date;

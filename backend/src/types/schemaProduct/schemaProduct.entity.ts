@@ -8,8 +8,9 @@ import {
     OneToMany,
     ManyToOne,
     Relation,
-    ManyToMany, JoinTable,
+    ManyToMany, JoinTable, OneToOne,
 } from 'typeorm';
+import { ProductEntity } from '../product';
 
 @Entity({ name: 'ItemSchemaProductDetail' })
 export class ItemSchemaProductDetailEntity {
@@ -20,7 +21,7 @@ export class ItemSchemaProductDetailEntity {
     isUseForSearch: boolean;
 
     @Column()
-    name: string;
+    value: string;
 
     @ManyToMany(() => SchemaProductDetailEntity, (productDetail) => productDetail.attributes)
     productSchema: Relation<SchemaProductDetailEntity[]>;
@@ -39,7 +40,7 @@ export class SchemaProductDetailEntity {
     attributes: Relation<ItemSchemaProductDetailEntity[]>;
 
     @ManyToOne(() => SchemaProductEntity, (order) => order, { nullable: true })
-    schema: Relation<SchemaProductEntity>;
+    schema?: Relation<SchemaProductEntity>;
 }
 
 @Entity({ name: 'SchemaProduct' })

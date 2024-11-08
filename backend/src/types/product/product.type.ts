@@ -1,7 +1,8 @@
 import { Field, Float, ID, Int, ObjectType } from "@nestjs/graphql";
 import { OrderProductType } from "../order";
-import { Column } from 'typeorm';
+import { ReviewType } from '../review';
 
+// TagsDetailType
 @ObjectType('TagsDetail')
 export class TagsDetailType {
     @Field(() => ID)
@@ -10,18 +11,24 @@ export class TagsDetailType {
     @Field()
     type: string;
 
-    @Field()
+    @Field({ nullable: true })
     value?: string;
+
+    @Field(() => [ProductDetailType], { nullable: true })
+    productDetail?: ProductDetailType[];
+
+    @Field(() => [ProductVariantType], { nullable: true })
+    productVariant?: ProductVariantType[];
 }
 
-
+// ProductVariantType
 @ObjectType('ProductVariant')
 export class ProductVariantType {
     @Field(() => ID)
     id: number;
 
-    @Field(() => [TagsDetailType])
-    attributes: TagsDetailType[];
+    @Field(() => [TagsDetailType], { nullable: true })
+    attributes?: TagsDetailType[];
 
     @Field(() => Float)
     originPrice: number;
@@ -33,6 +40,7 @@ export class ProductVariantType {
     stockQuantity?: number;
 }
 
+// ProductDetailType
 @ObjectType('ProductDetail')
 export class ProductDetailType {
     @Field(() => ID)
@@ -57,6 +65,7 @@ export class ProductDetailType {
     tutorial?: string;
 }
 
+// ImageDetailType
 @ObjectType("ImageDetail")
 export class ImageDetailType {
     @Field(() => ID)
@@ -72,6 +81,7 @@ export class ImageDetailType {
     productDetail?: ProductDetailType;
 }
 
+// ProductType
 @ObjectType('Product')
 export class ProductType {
     @Field(() => ID)
@@ -92,8 +102,11 @@ export class ProductType {
     @Field(() => ProductDetailType)
     details: ProductDetailType;
 
-    @Field(() => [OrderProductType])
-    orderProducts: OrderProductType[];
+    @Field(() => [OrderProductType], { nullable: true })
+    orderProducts?: OrderProductType[];
+
+    @Field(() => [ReviewType], { nullable: true })
+    reviews?: ReviewType[];
 
     @Field()
     created_at: Date;

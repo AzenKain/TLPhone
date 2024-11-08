@@ -1,4 +1,16 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    Relation,
+    UpdateDateColumn,
+} from 'typeorm';
+import { ReviewEntity } from '../review';
+import { CartEntity } from '../cart';
 
 
 @Entity({ name: 'UserDetail' })
@@ -52,9 +64,16 @@ export class UserEntity {
     @OneToOne(() => UserDetailEntity, { cascade: true })
     @JoinColumn()
     details: UserDetailEntity;
-    
+
+    @OneToOne(() => CartEntity, { cascade: true })
+    @JoinColumn()
+    cart: CartEntity;
+
     @Column()
     hash: string;
+
+    @OneToMany(() => ReviewEntity, (review) => review.user)
+    reviews: Relation<ReviewEntity[]>;
 
     @Column({nullable: true})
     refreshToken: string;

@@ -1,4 +1,6 @@
-import { Field, Float, ID, Int, ObjectType } from "@nestjs/graphql";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { ProductType } from '../product';
+
 
 @ObjectType('ItemSchemaProductDetail')
 export class ItemSchemaProductDetailType {
@@ -9,21 +11,12 @@ export class ItemSchemaProductDetailType {
     isUseForSearch: boolean;
 
     @Field()
-    name: string;
+    value: string;
 
+    @Field(() => [SchemaProductDetailType], { nullable: true })
+    productSchema?: SchemaProductDetailType[];
 }
 
-@ObjectType('SchemaProductDetail')
-export class SchemaProductDetailType {
-    @Field(() => ID)
-    id: number;
-
-    @Field()
-    title: string;
-
-    @Field(() => [ItemSchemaProductDetailType], { nullable: true })
-    attributes: ItemSchemaProductDetailType[];
-}
 
 
 @ObjectType('SchemaProduct')
@@ -48,4 +41,18 @@ export class SchemaProductType {
 
     @Field()
     updated_at: Date;
+}
+@ObjectType('SchemaProductDetail')
+export class SchemaProductDetailType {
+    @Field(() => ID)
+    id: number;
+
+    @Field()
+    title: string;
+
+    @Field(() => [ItemSchemaProductDetailType], { nullable: true })
+    attributes: ItemSchemaProductDetailType[];
+
+    @Field(() => SchemaProductType, { nullable: true })
+    schema?: SchemaProductType;
 }
