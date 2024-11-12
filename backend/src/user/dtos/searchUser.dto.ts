@@ -14,11 +14,6 @@ export class SearchUserDto {
     @IsOptional()
     @IsString()
     @Field({ nullable: true })
-    username?: string;
-
-    @IsOptional()
-    @IsString()
-    @Field({ nullable: true })
     firstName?: string;
 
     @IsOptional()

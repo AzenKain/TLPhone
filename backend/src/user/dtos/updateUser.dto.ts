@@ -20,11 +20,6 @@ export class UpdateUserDto {
     email: string;
 
     @IsNotEmpty()
-    @IsString()
-    @Field()
-    username: string;
-
-    @IsNotEmpty()
     @IsNotEmpty()
     @Field()
     password: string;

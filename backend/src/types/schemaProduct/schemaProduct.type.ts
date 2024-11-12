@@ -1,6 +1,4 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { ProductType } from '../product';
-
 
 @ObjectType('ItemSchemaProductDetail')
 export class ItemSchemaProductDetailType {
@@ -16,8 +14,6 @@ export class ItemSchemaProductDetailType {
     @Field(() => [SchemaProductDetailType], { nullable: true })
     productSchema?: SchemaProductDetailType[];
 }
-
-
 
 @ObjectType('SchemaProduct')
 export class SchemaProductType {

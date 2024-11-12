@@ -1,6 +1,4 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDetailEntity, UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
@@ -10,15 +8,13 @@ import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import * as FormData from 'form-data';
-import { use } from 'passport';
 import { ResponseType } from 'src/types/response.type';
+import { CartService } from '../cart/cart.service';
 
 @Injectable()
 export class UserService {
     constructor(
-        private jwt: JwtService,
-        private config: ConfigService,
+        private cart: CartService,
         private readonly httpService: HttpService,
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         @InjectRepository(UserDetailEntity) private userDetailRepository: Repository<UserDetailEntity>,
@@ -66,10 +62,6 @@ export class UserService {
 
         if (dto.email) {
             query.andWhere('LOWER(user.email) LIKE :email', { email: `%${dto.email.toLowerCase()}%` });
-        }
-    
-        if (dto.username) {
-            query.andWhere('LOWER(user.username) LIKE :username', { username: `%${dto.username.toLowerCase()}%` });
         }
     
         if (dto.firstName) {
@@ -157,10 +149,6 @@ export class UserService {
         }
 
         user.email = dto.email || user.email;
-        user.username = dto.username || user.username;
-        user.details.firstName = dto.firstName || user.details.firstName;
-        user.details.lastName = dto.lastName || user.details.lastName;
-        user.details.phoneNumber = dto.phoneNumber || user.details.phoneNumber;
         user.details.birthday = dto.birthday || user.details.birthday;
         user.details.address = dto.address || user.details.address;
         user.details.gender = dto.gender || user.details.gender;
@@ -215,7 +203,12 @@ export class UserService {
     
     async CreateUserService(dto: CreateUserDto, userCurrent: UserEntity): Promise<UserEntity> {
         this.CheckRoleUser(userCurrent)
-
+        const genderType = ["MALE", "FEMALE", "OTHER"]
+        if (!genderType.includes(dto.gender)) {
+            throw new ForbiddenException(
+                'This gender does not exist',
+            );
+        }
         const checkMail = await this.userRepository.findOne({
             where: {
                 email: dto.email,
@@ -239,15 +232,16 @@ export class UserService {
         });
 
         const savedUserDetail = await this.userDetailRepository.save(userDetail);
-
+        const newCart = await this.cart.CreateCart()
         const UserCre = this.userRepository.create({
             secretKey: uuidv5(dto.email, uuidv5.URL),
             email: dto.email,
             hash: hash,
             refreshToken: uuidv4(),
             details: savedUserDetail,
-            role: [],
-            username: dto.username
+            role: ["STAFF"],
+            heart:[],
+            cart: newCart
         })
 
         return await this.userRepository.save(UserCre);

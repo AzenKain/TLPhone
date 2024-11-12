@@ -5,9 +5,10 @@ import { UserDetailEntity, UserEntity } from 'src/types/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtAccessStrategy, JwtGraphqlStrategy, JwtRefreshStrategy} from './strategy';
 import { PassportModule } from '@nestjs/passport';
+import { CartModule } from '../cart/cart.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserDetailEntity]), PassportModule ],
+  imports: [TypeOrmModule.forFeature([UserEntity, UserDetailEntity]), PassportModule, CartModule ],
   providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtGraphqlStrategy],
   controllers: [AuthController]
 })

@@ -10,6 +10,7 @@ import { UserDetailEntity, UserEntity } from './types/user';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import {
+  FaultyProductEntity,
   ImageDetailEntity,
   ProductDetailEntity,
   ProductEntity,
@@ -20,7 +21,7 @@ import {
   CustomerInfoEntity,
   DeliveryInfoEntity,
   OrderEntity,
-  OrderProductEntity,
+  OrderProductEntity, OrderStatusHistoryEntity,
   PaymentInfoEntity,
 } from './types/order';
 import { BlogModule } from './blog/blog.module';
@@ -30,6 +31,10 @@ import { AnalyticModule } from './analytic/analytic.module';
 import { ItemSchemaProductDetailEntity, SchemaProductDetailEntity, SchemaProductEntity } from './types/schemaProduct';
 import { SchemaProductModule } from './schema-product/schema-product.module';
 import { ReviewEntity } from './types/review';
+import { CampaignEntity } from './types/campaign';
+import { RefundEntity } from './types/refund';
+import { CartEntity, CartItemEntity } from './types/cart';
+import { CartModule } from './cart/cart.module';
 
 
 @Module({
@@ -69,6 +74,7 @@ import { ReviewEntity } from './types/review';
           ProductEntity, 
           ProductDetailEntity,
           ProductVariantEntity,
+          FaultyProductEntity,
           ImageDetailEntity,
           OrderEntity, 
           CustomerInfoEntity,
@@ -80,7 +86,12 @@ import { ReviewEntity } from './types/review';
           ItemSchemaProductDetailEntity,
           ReviewEntity,
           TagsEntity,
-          BlogEntity
+          BlogEntity,
+          CampaignEntity,
+          RefundEntity,
+          CartEntity,
+          CartItemEntity,
+          OrderStatusHistoryEntity
         ],
         synchronize: true,
       }),
@@ -92,6 +103,7 @@ import { ReviewEntity } from './types/review';
     MediaModule,
     AnalyticModule,
     SchemaProductModule,
+    CartModule,
   ],
   controllers: [],
   providers: [],
