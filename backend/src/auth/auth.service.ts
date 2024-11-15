@@ -116,8 +116,8 @@ export class AuthService {
         const userDetail = this.userDetailRepository.create({
             firstName: dto.firstName,
             lastName: dto.lastName,
+            phoneNumber: dto.phoneNumber,
         });
-    
 
         const savedUserDetail = await this.userDetailRepository.save(userDetail);
 

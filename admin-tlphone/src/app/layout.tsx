@@ -9,6 +9,7 @@ import Providers from "@/components/Providers/Providers";
 import StoreProvider from "./StoreProvider";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeModeScript } from "flowbite-react";
 
 export default function RootLayout({
   children,
@@ -26,6 +27,7 @@ export default function RootLayout({
       <head>
         <title>BLACK CAT ADMIN</title>
         <meta name='description' content='Description' />
+        <ThemeModeScript />
       </head>
       <body suppressHydrationWarning={true}>
         <Providers>

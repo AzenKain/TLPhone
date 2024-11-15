@@ -397,7 +397,12 @@ const SignUp: React.FC = (props: any) => {
                   <div className="relative">
                     <input
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        if (/^[0-9]*$/.test(newValue)) {
+                          setPhoneNumber(newValue);
+                        }
+                      }}
                       type="text"
                       placeholder="Enter your phone number"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

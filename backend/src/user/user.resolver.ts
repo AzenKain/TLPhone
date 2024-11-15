@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { SearchUserType, UserEntity, UserType } from 'src/types/user';
 import { HttpCode, UseGuards } from '@nestjs/common';
 import { CurrentUserGraphql } from 'src/decorators';
-import { CreateUserDto, SearchUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateUserDto } from './dtos';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { ResponseType } from 'src/types/response.type';
 
@@ -29,13 +29,6 @@ export class UserResolver {
     ): Promise<UserType[]> {
         return await this.userService.CreateUserByListService(dto, user);
     }
-    @Mutation(() => UserType)
-    async UpdateUser(
-        @CurrentUserGraphql() user: UserEntity,
-        @Args('UpdateUser') dto: UpdateUserDto,
-    ): Promise<UserType> {
-        return await this.userService.UpdateUserService(dto, user)
-    }
 
     @Query(() => SearchUserType)
     async SearchUserWithOption(
@@ -59,5 +52,13 @@ export class UserResolver {
         @Args('id') userId: string
     ) {
         return await this.userService.GetUserByIdService(userId, user);
+    }
+
+    @Mutation(() => UserType)
+    async UpdateProfileUser(
+      @CurrentUserGraphql() user: UserEntity,
+      @Args('UpdateProfile') dto: UpdateProfileDto
+    ) {
+        return await this.userService.UpdateProfileService(dto, user);
     }
 }

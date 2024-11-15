@@ -170,7 +170,7 @@ type Mutation {
   UpdateBlog(UpdateBlog: UpdateBlogDto!): Blog!
   UpdateOrder(UpdateOrder: updateOrderDto!): Order!
   UpdateProduct(UpdateProduct: UpdateProductDto!): Product!
-  UpdateUser(UpdateUser: UpdateUserDto!): UserType!
+  UpdateProfileUser(UpdateProfile: UpdateProfileDto!): UserType!
 }
 
 type Order {
@@ -438,6 +438,16 @@ input UpdateProductDto {
   productId: Float!
 }
 
+input UpdateProfileDto {
+  address: String
+  birthday: DateTime
+  firstName: String
+  gender: String
+  imgDisplay: String
+  lastName: String
+  phoneNumber: String
+}
+
 input UpdateSchemaProductDetailDto {
   attributes: [UpdateItemSchemaProductDto!]
   title: String
@@ -449,20 +459,6 @@ input UpdateSchemaProductDto {
   name: String
   productId: ID
   schemaId: Float!
-}
-
-input UpdateUserDto {
-  address: String
-  birthday: DateTime
-  email: String!
-  firstName: String!
-  gender: String
-  isDisplay: Boolean
-  lastName: String!
-  password: String!
-  phoneNumber: String
-  role: [String!]!
-  userId: String!
 }
 
 type UserDetail {

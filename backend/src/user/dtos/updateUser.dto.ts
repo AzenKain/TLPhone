@@ -19,10 +19,10 @@ export class UpdateUserDto {
     @Field()
     email: string;
 
-    @IsNotEmpty()
-    @IsNotEmpty()
+    @IsOptional()
+    @IsString()
     @Field()
-    password: string;
+    password?: string;
 
     @IsNotEmpty()
     @IsString()

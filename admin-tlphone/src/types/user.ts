@@ -3,7 +3,7 @@ import { CartType } from './cart';
 import { OrderStatusHistoryType } from './order';
 
 export type UserDetailType = {
-    id: number;
+    id: string;
     firstName?: string;
     lastName?: string;
     phoneNumber?: string;
@@ -14,7 +14,7 @@ export type UserDetailType = {
 };
 
 export type UserType = {
-    id: number;
+    id: string;
     email: string;
     secretKey: string;
     isDisplay: boolean;

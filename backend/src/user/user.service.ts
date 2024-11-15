@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDetailEntity, UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { CreateUserDto, SearchUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateUserDto } from './dtos';
 import * as argon from 'argon2';
 import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,7 +21,7 @@ export class UserService {
 
     ) { }
     private CheckRoleUser(user: UserEntity) {
-        if (!user.role.includes("ADMIN") && !user.role.includes("HUMMANRESOURCE")) {
+        if (!user.role.includes("ADMIN")) {
             throw new ForbiddenException('The user does not have permission');
         }
 
@@ -58,16 +58,16 @@ export class UserService {
         const query = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.details', 'details')
             .leftJoinAndSelect('user.actionLog', 'actionLog')
-         
+
 
         if (dto.email) {
             query.andWhere('LOWER(user.email) LIKE :email', { email: `%${dto.email.toLowerCase()}%` });
         }
-    
+
         if (dto.firstName) {
             query.andWhere('LOWER(details.firstName) LIKE :firstName', { firstName: `%${dto.firstName.toLowerCase()}%` });
         }
-    
+
         if (dto.lastName) {
             query.andWhere('LOWER(details.lastName) LIKE :lastName', { lastName: `%${dto.lastName.toLowerCase()}%` });
         }
@@ -79,7 +79,7 @@ export class UserService {
         if (dto.phoneNumber) {
             query.andWhere('details.phoneNumber LIKE :phoneNumber', { phoneNumber: `%${dto.phoneNumber}%` });
         }
-    
+
         if (dto.birthday) {
             query.andWhere('details.birthday = :birthday', { birthday: dto.birthday });
         }
@@ -87,11 +87,11 @@ export class UserService {
         if (dto.address) {
             query.andWhere('LOWER(details.address) LIKE :address', { address: `%${dto.address.toLowerCase()}%` });
         }
-    
+
         if (dto.gender) {
             query.andWhere('LOWER(details.gender) LIKE :gender', { gender: `%${dto.gender.toLowerCase()}%` });
         }
-    
+
         if (dto.sort) {
             switch (dto.sort) {
                 case 'created_at_asc':
@@ -104,12 +104,12 @@ export class UserService {
                     break;
             }
         }
-    
+
 
         if (dto.index !== undefined && dto.count !== undefined) {
             query.skip(dto.index).take(dto.count);
         }
-    
+
 
         const users = await query.getMany();
         const maxValue = await query.getCount();
@@ -117,72 +117,38 @@ export class UserService {
         for (const tmpUser of users) {
             delete tmpUser.hash;
             delete tmpUser.refreshToken;
-        } 
+        }
 
         return { maxValue, data: users };
     }
-    
-    async UpdateUserService(dto: UpdateUserDto, userCurrent: UserEntity): Promise<UserEntity> {
-        this.CheckRoleUser(userCurrent);
 
+    async UpdateProfileService(dto: UpdateProfileDto, userCurrent: UserEntity): Promise<UserEntity> {
         const user = await this.userRepository.findOne({
-            where: { secretKey: dto.userId },
-            relations: ['details'], 
+            where: { secretKey: userCurrent.secretKey },
+            relations: ['details', 'cart', 'cart.cartProducts']
         });
 
         if (!user) {
             throw new NotFoundException('User not found');
         }
 
-        if (dto.email && dto.email !== user.email) {
-            const checkMail = await this.userRepository.findOne({
-                where: { email: dto.email },
-            });
-
-            if (checkMail && checkMail.email !== user.email) {
-                throw new ForbiddenException('This email is already in use');
-            }
+        const genderType : string[] = ["MALE", "FEMALE", "OTHER"]
+        if (!genderType.includes(dto.gender)) {
+            throw new ForbiddenException(
+              'This gender does not exist',
+            );
         }
 
-        if (dto.password) {
-            user.hash = await argon.hash(dto.password);
-        }
-
-        user.email = dto.email || user.email;
-        user.details.birthday = dto.birthday || user.details.birthday;
-        user.details.address = dto.address || user.details.address;
-        user.details.gender = dto.gender || user.details.gender;
-        user.isDisplay = dto.isDisplay !== undefined ? dto.isDisplay : user.isDisplay;
-        user.role = dto.role || user.role;
-
-
-        if (dto.firstName || dto.lastName || dto.phoneNumber || dto.birthday || dto.address || dto.gender) {
-            if (user.details) {
-                user.details.firstName = dto.firstName || user.details.firstName;
-                user.details.lastName = dto.lastName || user.details.lastName;
-                user.details.phoneNumber = dto.phoneNumber || user.details.phoneNumber;
-                user.details.birthday = dto.birthday || user.details.birthday;
-                user.details.address = dto.address || user.details.address;
-                user.details.gender = dto.gender || user.details.gender;
-
-                await this.userDetailRepository.save(user.details);
-            } else {
-                const userDetail = this.userDetailRepository.create({
-                    firstName: dto.firstName || '',
-                    lastName: dto.lastName || '',
-                    phoneNumber: dto.phoneNumber || '',
-                    birthday: dto.birthday || null,
-                    address: dto.address || '',
-                    gender: dto.gender || '',
-                });
-
-                user.details = await this.userDetailRepository.save(userDetail);
-            }
-        }
-
+        user.details.firstName = dto.firstName ? dto.firstName : user.details.firstName;
+        user.details.lastName = dto.lastName ? dto.lastName : user.details.lastName;
+        user.details.phoneNumber = dto.phoneNumber ? dto.phoneNumber : user.details.phoneNumber;
+        user.details.birthday = dto.birthday ? dto.birthday : user.details.birthday;
+        user.details.address = dto.address ? dto.address : user.details.address;
+        user.details.gender = dto.gender ? dto.gender : user.details.gender;
+        user.details.imgDisplay = dto.imgDisplay ? dto.imgDisplay : user.details.imgDisplay;
         return await this.userRepository.save(user);
     }
-    
+
     async DeleteUserService(userId: string, userCurrent: UserEntity): Promise<ResponseType> {
         this.CheckRoleUser(userCurrent)
         const user = await this.userRepository.findOne({
@@ -200,10 +166,10 @@ export class UserService {
         await this.userRepository.save(user)
         return {message : "Soft delete user is successfully!"} as ResponseType
     }
-    
+
     async CreateUserService(dto: CreateUserDto, userCurrent: UserEntity): Promise<UserEntity> {
         this.CheckRoleUser(userCurrent)
-        const genderType = ["MALE", "FEMALE", "OTHER"]
+        const genderType : string[] = ["MALE", "FEMALE", "OTHER"]
         if (!genderType.includes(dto.gender)) {
             throw new ForbiddenException(
                 'This gender does not exist',
@@ -258,7 +224,7 @@ export class UserService {
                 secretKey: userId,
                 isDisplay: true
             },
-            relations: ['details']
+            relations: ['details', 'cart', 'cart.cartProducts']
         });
 
         if (!user) {

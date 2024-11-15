@@ -7,23 +7,36 @@ type InitialState = {
 }
 
 const initialState: InitialState = {
-    value: {
-        imgDisplay: "http://localhost:3434/media/file/user.png",
-        heart: []
-    }
-}
+  value: {
+    details: {
+      id: "-1",
+      imgDisplay: "/images/user/user-06.png",
+    },
+    heart: [],
+    id: "-1",
+    email: "",
+    secretKey: "",
+    isDisplay: false,
+    username: "",
+    role: [],
+    cart: {
+      id: "-1",
+      cartProducts: [],
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+};
 
 export const UserRedux = createSlice({
     name: 'UserRedux',
     initialState,
     reducers: {
-        UpdateUser: (state, action: PayloadAction<UserType>) => {
-            return {
-                value: {
-                    ...action.payload
-                }
-            }
-        },
+      UpdateUser: (state, action: PayloadAction<UserType>) => {
+        state.value = action.payload
+      },
         AddHeart: (state, action: PayloadAction<string>) => {
             if (!state.value.heart.includes(action.payload)) state.value.heart.push(action.payload);
         },
