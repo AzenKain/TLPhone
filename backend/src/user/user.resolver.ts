@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { SearchUserType, UserEntity, UserType } from 'src/types/user';
 import { HttpCode, UseGuards } from '@nestjs/common';
 import { CurrentUserGraphql } from 'src/decorators';
-import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto } from './dtos';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { ResponseType } from 'src/types/response.type';
 

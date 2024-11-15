@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDetailEntity, UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto } from './dtos';
 import * as argon from 'argon2';
 import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
@@ -57,7 +57,7 @@ export class UserService {
         this.CheckRoleUser(userCurrent)
         const query = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.details', 'details')
-            .leftJoinAndSelect('user.actionLog', 'actionLog')
+
 
 
         if (dto.email) {
