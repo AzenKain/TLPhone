@@ -13,6 +13,7 @@
     "@tailwindcss/line-clamp": "^0.4.4",
     "@types/react-highlight-words": "^0.20.0",
     "axios": "^1.7.3",
+    "bootstrap": "5.3.3",
     "core-js": "^3.38.0",
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
