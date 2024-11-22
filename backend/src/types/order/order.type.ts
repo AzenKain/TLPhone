@@ -1,6 +1,7 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { ProductType } from '../product';
-import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { RefundType } from '../refund';
+import { UserType } from '../user';
 
 @ObjectType('CustomerInfo')
 export class CustomerInfoType {
@@ -94,6 +95,8 @@ export class OrderType {
   @Field(() => CustomerInfoType)
   customerInfo: CustomerInfoType;
 
+  @Field(() => [OrderStatusHistoryType])
+  statusHistory: OrderStatusHistoryType[];
   @Field()
   status: string;
 
@@ -107,16 +110,46 @@ export class OrderType {
   updated_at: Date;
 }
 
+@ObjectType('VariantAttribute')
+export class VariantAttributeType {
+  @Field()
+  type: string;
+
+  @Field()
+  value: string;
+}
+
+@ObjectType('OrderStatusHistory')
+export class OrderStatusHistoryType {
+  @Field(() => ID)
+  id: number;
+
+  @Field()
+  previousStatus: string;
+
+  @Field()
+  newStatus: string;
+
+  @Field(() => UserType)
+  user: UserType;
+
+  @Field(() => OrderType)
+  order: OrderType;
+
+  @Field()
+  createdAt: Date;
+}
+
 @ObjectType('OrderProduct')
 export class OrderProductType {
   @Field(() => ID)
   id: number;
 
-  @Field(() => ID)
-  orderId: number;
+  @Field({ nullable: true })
+  imei?: string;
 
-  @Field(() => ID)
-  productId: number;
+  @Field({ nullable: true, defaultValue: false })
+  hasImei: boolean;
 
   @Field(() => Float)
   unitPrice: number;
@@ -133,6 +166,12 @@ export class OrderProductType {
   @Field(() => OrderType)
   order: OrderType;
 
+  @Field(() => [VariantAttributeType], { nullable: true })
+  variantAttributes?: VariantAttributeType[];
+
   @Field(() => ProductType)
   product: ProductType;
+
+  @Field(() => [RefundType])
+  refunds: RefundType[]
 }

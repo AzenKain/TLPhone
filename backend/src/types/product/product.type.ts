@@ -1,6 +1,7 @@
 import { Field, Float, ID, Int, ObjectType } from "@nestjs/graphql";
 import { OrderProductType } from "../order";
 import { ReviewType } from '../review';
+import { CampaignType } from '../campaign';
 
 // TagsDetailType
 @ObjectType('TagsDetail')
@@ -38,6 +39,12 @@ export class ProductVariantType {
 
     @Field(() => Int, { nullable: true, defaultValue: 0 })
     stockQuantity?: number;
+
+    @Field({nullable: true, defaultValue: false})
+    hasImei: boolean;
+
+    @Field(() => [String], { nullable: true })
+    imeiList?: string[];
 }
 
 // ProductDetailType
@@ -81,6 +88,31 @@ export class ImageDetailType {
     productDetail?: ProductDetailType;
 }
 
+// FaultyProductType
+@ObjectType('FaultyProduct')
+export class FaultyProductType {
+    @Field(() => ID)
+    id: number;
+
+    @Field(() => Int)
+    quantity: number;
+
+    @Field(() => [String], { nullable: true })
+    imei?: string[];
+
+    @Field(() => [String], { nullable: true })
+    reason?: string[];
+
+    @Field(() => [String], { nullable: true })
+    notes?: string[];
+
+    @Field()
+    created_at: Date;
+
+    @Field()
+    updated_at: Date;
+}
+
 // ProductType
 @ObjectType('Product')
 export class ProductType {
@@ -105,6 +137,9 @@ export class ProductType {
     @Field(() => [OrderProductType], { nullable: true })
     orderProducts?: OrderProductType[];
 
+    @Field(() => [CampaignType], { nullable: true })
+    campaigns?: CampaignType[];
+
     @Field(() => [ReviewType], { nullable: true })
     reviews?: ReviewType[];
 
@@ -113,4 +148,7 @@ export class ProductType {
 
     @Field()
     updated_at: Date;
+
+    @Field(() => FaultyProductType, { nullable: true })
+    faultyProduct?: FaultyProductType;
 }

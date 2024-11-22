@@ -9,11 +9,13 @@ import * as argon from 'argon2';
 import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtPayload } from './interfaces';
+import { CartService } from '../cart/cart.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private jwt: JwtService,
+        private cart: CartService,
         private config: ConfigService,
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         @InjectRepository(UserDetailEntity) private userDetailRepository: Repository<UserDetailEntity>,
@@ -91,6 +93,12 @@ export class AuthService {
         return token;
     }
     async SignupService(dto: SignUpDto) {
+        const genderType = ["MALE", "FEMALE", "OTHER"]
+        if (!genderType.includes(dto.gender)) {
+            throw new ForbiddenException(
+                'This gender does not exist',
+            );
+        }
         const checkMail = await this.userRepository.findOne({
             where: {
                 email: dto.email,
@@ -108,21 +116,22 @@ export class AuthService {
         const userDetail = this.userDetailRepository.create({
             firstName: dto.firstName,
             lastName: dto.lastName,
+            phoneNumber: dto.phoneNumber,
         });
-    
 
         const savedUserDetail = await this.userDetailRepository.save(userDetail);
 
+        const newCart = await this.cart.CreateCart()
         const UserCre = this.userRepository.create({
             secretKey: uuidv5(dto.email, uuidv5.URL),
             email: dto.email,
             hash: hash,
             refreshToken: uuidv4(),
             details: savedUserDetail,
-            role: [],
-            username: dto.username
+            role: ["USER"],
+            heart:[],
+            cart: newCart
         })
-
         const newUser = await this.userRepository.save(UserCre);
         const token = await this.signToken(newUser.secretKey, newUser.email)
         await this.updateRefreshToken(newUser.secretKey, token.refresh_token)

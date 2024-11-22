@@ -196,14 +196,11 @@ export class OrderService {
         for (const product of dto.orderProducts) {
             const productData= await this.getProductDetail(product.productId, product.productVariantId, product.quantity);
             const orderProduct = this.orderProductRepository.create({
-                productId: productData.product.id,
-                orderId: savedOrder.id, 
                 quantity: product.quantity,
                 discount: product.discount ? product.discount : 0,
                 unitPrice: productData.product?.details?.variants[productData.variantIndex].displayPrice,
                 originPrice: productData.product?.details?.variants[productData.variantIndex].originPrice,
                 product: productData.product
-
             });
     
             totalAmount += orderProduct.unitPrice * product.quantity;

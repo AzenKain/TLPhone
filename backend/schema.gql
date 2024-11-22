@@ -12,6 +12,37 @@ type Blog {
   updated_at: DateTime!
 }
 
+type Campaign {
+  bannerUrl: String
+  created_at: DateTime!
+  discountAmount: Float
+  discountPercent: Float!
+  endTime: DateTime!
+  hasBanner: Boolean!
+  id: ID!
+  maxDiscountAmount: Float!
+  minDiscountAmount: Float!
+  name: String!
+  products: [Product!]!
+  startTime: DateTime!
+  updated_at: DateTime!
+}
+
+type Cart {
+  cartProducts: [CartItem!]!
+  created_at: DateTime!
+  id: ID!
+  updated_at: DateTime!
+}
+
+type CartItem {
+  cart: Cart!
+  id: ID!
+  product: Product!
+  productVariant: ProductVariant!
+  quantity: Float!
+}
+
 input CreateBlogDto {
   content: String
   title: String!
@@ -40,7 +71,6 @@ input CreateUserDto {
   password: String!
   phoneNumber: String
   role: [String!]!
-  username: String!
 }
 
 type CustomerInfo {
@@ -92,6 +122,16 @@ input DeliveryInfoInp {
   district: String
 }
 
+type FaultyProduct {
+  created_at: DateTime!
+  id: ID!
+  imei: [String!]
+  notes: [String!]
+  quantity: Int!
+  reason: [String!]
+  updated_at: DateTime!
+}
+
 type ImageDetail {
   id: ID!
   link: [String!]
@@ -130,7 +170,7 @@ type Mutation {
   UpdateBlog(UpdateBlog: UpdateBlogDto!): Blog!
   UpdateOrder(UpdateOrder: updateOrderDto!): Order!
   UpdateProduct(UpdateProduct: UpdateProductDto!): Product!
-  UpdateUser(UpdateUser: UpdateUserDto!): UserType!
+  UpdateProfileUser(UpdateProfile: UpdateProfileDto!): UserType!
 }
 
 type Order {
@@ -143,20 +183,23 @@ type Order {
   orderProducts: [OrderProduct!]!
   paymentInfo: PaymentInfo!
   status: String!
+  statusHistory: [OrderStatusHistory!]!
   totalAmount: Float!
   updated_at: DateTime!
 }
 
 type OrderProduct {
   discount: Float!
+  hasImei: Boolean
   id: ID!
+  imei: String
   order: Order!
-  orderId: ID!
   originPrice: Float
   product: Product!
-  productId: ID!
   quantity: Float!
+  refunds: [Refund!]!
   unitPrice: Float!
+  variantAttributes: [VariantAttribute!]
 }
 
 input OrderProductInp {
@@ -164,6 +207,15 @@ input OrderProductInp {
   productId: ID!
   productVariantId: ID!
   quantity: Float!
+}
+
+type OrderStatusHistory {
+  createdAt: DateTime!
+  id: ID!
+  newStatus: String!
+  order: Order!
+  previousStatus: String!
+  user: UserType!
 }
 
 type PaymentInfo {
@@ -178,9 +230,11 @@ type PaymentInfo {
 
 type Product {
   buyCount: Int
+  campaigns: [Campaign!]
   category: String
   created_at: DateTime!
   details: ProductDetail!
+  faultyProduct: FaultyProduct
   id: ID!
   isDisplay: Boolean!
   name: String!
@@ -211,7 +265,9 @@ input ProductDetailInp {
 type ProductVariant {
   attributes: [TagsDetail!]
   displayPrice: Float!
+  hasImei: Boolean
   id: ID!
+  imeiList: [String!]
   originPrice: Float!
   stockQuantity: Int
 }
@@ -239,6 +295,16 @@ type Query {
   SearchProductWithOptions(SearchProduct: SearchProductDto!): SearchProduct!
   SearchUserWithOption(SearchUser: SearchUserDto!): SearchUser!
   UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
+}
+
+type Refund {
+  created_at: DateTime!
+  id: ID!
+  isDisplay: Boolean!
+  orderProduct: OrderProduct!
+  reason: String!
+  updated_at: DateTime!
+  user: UserType!
 }
 
 type ResponseType {
@@ -333,7 +399,6 @@ input SearchUserDto {
   phoneNumber: String
   role: [String!]
   sort: String
-  username: String
 }
 
 type TagsDetail {
@@ -373,6 +438,16 @@ input UpdateProductDto {
   productId: Float!
 }
 
+input UpdateProfileDto {
+  address: String
+  birthday: DateTime
+  firstName: String
+  gender: String
+  imgDisplay: String
+  lastName: String
+  phoneNumber: String
+}
+
 input UpdateSchemaProductDetailDto {
   attributes: [UpdateItemSchemaProductDto!]
   title: String
@@ -384,21 +459,6 @@ input UpdateSchemaProductDto {
   name: String
   productId: ID
   schemaId: Float!
-}
-
-input UpdateUserDto {
-  address: String
-  birthday: DateTime
-  email: String!
-  firstName: String!
-  gender: String
-  isDisplay: Boolean
-  lastName: String!
-  password: String!
-  phoneNumber: String
-  role: [String!]!
-  userId: String!
-  username: String!
 }
 
 type UserDetail {
@@ -413,18 +473,25 @@ type UserDetail {
 }
 
 type UserType {
+  cart: Cart!
   created_at: DateTime!
   details: UserDetail
   email: String!
-  hash: String!
+  hash: String
+  heart: [String!]!
   id: ID!
   isDisplay: Boolean!
   refreshToken: String
-  reviews: [Review!]!
+  reviews: [Review!]
   role: [String!]!
   secretKey: String!
+  statusHistory: [OrderStatusHistory!]
   updated_at: DateTime!
-  username: String!
+}
+
+type VariantAttribute {
+  type: String!
+  value: String!
 }
 
 input createOrderDto {
