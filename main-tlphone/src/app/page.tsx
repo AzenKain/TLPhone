@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
+import Products from "@/components/product";
 export default function Home() {
 
 
@@ -167,6 +168,11 @@ export default function Home() {
 
         </div>
       </div >
+
+
+
+
+      <Products></Products>
     </div>
 
   );

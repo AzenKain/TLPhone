@@ -3,10 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import "@/css/styles.css";
+import "@/app/cart/page"
 export default function Header() {
-    const handleClick = () => {
-        window.location.href = '/cart/page.tsx';
-    };
     return (
         <div className="navbar bg-base-100 header">
             <div className='flex-1'>
@@ -101,7 +99,7 @@ export default function Header() {
                             <span className="text-lg font-bold">8 Items</span>
                             <span className="text-info">Subtotal: $999</span>
                             <div className="card-actions">
-                                <button onClick={handleClick} className="btn btn-block btn-cart text-white">View cart</button>
+                                <Link href={"/cart"} className="btn btn-block btn-cart text-white">View cart</Link>
                             </div>
                         </div>
                     </div>

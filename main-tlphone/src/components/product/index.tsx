@@ -5,7 +5,7 @@ import Link from "next/link";
 import "@/css/styles.css";
 export default function Products() {
     return(
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-3 md:gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-3 md:gap-3 mt-5">
           <div className="">
             <div className="rounded-md container shadow" style={{ height: "max-content", width: "240px", background: "white" }}>
               <div className="pt-2">
