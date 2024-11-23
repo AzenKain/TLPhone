@@ -1,0 +1,76 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: #bf0000;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+}
+.body{
+    padding-top: 65px;
+}
+
+.bg {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.bg2 {
+    background-color: rgba(252, 19, 19, 0.1);
+    color: red;
+    font-size: 13px;
+}
+.bg3 {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+.gach-ngang {
+    text-decoration: line-through;
+    color: #888;
+}
+.btn-cart{
+    background-color: #d86e6e;
+}
+.color{
+  color: #bf0000;
+}
+
+/*   
+  /* Sidebar ban đầu ẩn */
+  .sidebar {
+    width: 0;
+    background-color: #e0a1a1;
+    color: #fff;
+    transition: width 0.3s ease; /* Hiệu ứng khi sidebar xuất hiện */
+    overflow: hidden;
+  }
+  
+  /* Khi hover vào vùng container, sidebar sẽ mở ra */
+  .sidebar-container:hover .sidebar {
+    width: 250px; /* Mở rộng chiều rộng khi hover */
+  }
+  
+  /* Vùng nội dung chính */
+  .content {
+    flex-grow: 1;
+    background-color: #f4f4f4;
+  }
+  
+  /* Style cho các mục trong sidebar */
+  .sidebar ul {
+    list-style: none;
+    padding: 20px;
+  }
+  
+  .sidebar ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #444;
+  }
+  
+  .sidebar ul li:hover {
+    background-color: #d86e6e;
+  } 
+
+
+ 
+  

@@ -13,15 +13,9 @@ import { ProductEntity, ProductVariantEntity } from '../product';
 
 
 @Entity({ name: 'CartItem' })
-export class CarItemEntity {
+export class CartItemEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
-
-  @Column({ type: 'bigint' })
-  orderId: number;
-
-  @Column({ type: 'bigint' })
-  productId: number;
 
   @Column({ type: 'bigint' })
   quantity: number;
@@ -44,8 +38,8 @@ export class CartEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @OneToMany(() => CarItemEntity, (it) => it.cart)
-  cartProducts: Relation<CarItemEntity[]>;
+  @OneToMany(() => CartItemEntity, (it) => it.cart)
+  cartProducts: Relation<CartItemEntity[]>;
 
   @CreateDateColumn()
   created_at: Date;

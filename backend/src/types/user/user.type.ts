@@ -1,7 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Relation } from 'typeorm';
 import { ReviewType } from '../review';
-import { ProductType } from '../product';
+import { CartType } from '../cart';
+import { OrderStatusHistoryType } from '../order';
 
 @ObjectType('UserDetail')
 export class UserDetailType {
@@ -44,22 +44,28 @@ export class UserType {
   @Field()
   isDisplay: boolean;
 
-  @Field()
-  username: string;
-
   @Field(() => [String])
   role: string[];
+
+  @Field(() => [String])
+  heart: string[];
 
   @Field(() => UserDetailType, { nullable: true })
   details: UserDetailType;
 
-  @Field()
+  @Field(() => [OrderStatusHistoryType],{ nullable: true, defaultValue: [] })
+  statusHistory?: OrderStatusHistoryType[]
+
+  @Field(() => CartType)
+  cart: CartType
+
+  @Field({ nullable: true })
   hash: string;
 
   @Field({ nullable: true })
   refreshToken: string;
 
-  @Field(() => [ReviewType])
+  @Field(() => [ReviewType],{ nullable: true, defaultValue: [] })
   reviews: ReviewType[];
 
   @Field()

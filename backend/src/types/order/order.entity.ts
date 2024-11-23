@@ -9,7 +9,9 @@ import {
     JoinColumn,
     Relation, OneToOne,
 } from 'typeorm';
-import { ProductEntity } from "../product";
+import { ProductEntity, TagsEntity } from '../product';
+import { RefundEntity } from '../refund';
+import { UserEntity } from '../user';
 
 @Entity({ name: 'CustomerInfo' })
 export class CustomerInfoEntity {
@@ -82,54 +84,61 @@ export class PaymentInfoEntity {
 
 @Entity({ name: 'Order' })
 export class OrderEntity {
-    @PrimaryGeneratedColumn({ type: 'bigint' })
-    id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
 
-    @Column({ type: 'boolean' })
-    isDisplay: boolean;
+  @Column({ type: 'boolean' })
+  isDisplay: boolean;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    totalAmount: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  totalAmount: number;
 
-    @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order)
-    orderProducts: Relation<OrderProductEntity[]>;
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order)
+  orderProducts: Relation<OrderProductEntity[]>;
 
-    @ManyToOne(() => DeliveryInfoEntity)
-    @JoinColumn({ name: 'deliveryInfoId' })
-    deliveryInfo: DeliveryInfoEntity;
+  @ManyToOne(() => DeliveryInfoEntity)
+  @JoinColumn({ name: 'deliveryInfoId' })
+  deliveryInfo: DeliveryInfoEntity;
 
-    @ManyToOne(() => CustomerInfoEntity)
-    @JoinColumn({ name: 'customerInfoId' })
-    customerInfo: CustomerInfoEntity;
+  @ManyToOne(() => CustomerInfoEntity)
+  @JoinColumn({ name: 'customerInfoId' })
+  customerInfo: CustomerInfoEntity;
 
-    @OneToOne(() => PaymentInfoEntity, { cascade: true })
-    @JoinColumn()
-    paymentInfo: PaymentInfoEntity;
+  @OneToMany(() => OrderStatusHistoryEntity, (history) => history.order)
+  statusHistory: Relation<OrderStatusHistoryEntity[]>;
 
-    @Column()
-    status: string;
+  @OneToOne(() => PaymentInfoEntity, { cascade: true })
+  @JoinColumn()
+  paymentInfo: PaymentInfoEntity;
 
-    @Column({ nullable: true })
-    notes?: string;
+  @Column()
+  status: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @Column({ nullable: true })
+  notes?: string;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
+interface VariantAttribute {
+    type: string;
+    value: string;
+}
 
 @Entity({ name: 'OrderProduct' })
 export class OrderProductEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
-    @Column({ type: 'bigint' })
-    orderId: number;
+    @Column({ nullable: true })
+    imei?: string;
 
-    @Column({ type: 'bigint' })
-    productId: number;
+    @Column({ type: 'boolean', default: false })
+    hasImei: boolean;
 
     @Column({ nullable: false })
     unitPrice: number;
@@ -143,6 +152,9 @@ export class OrderProductEntity {
     @Column({ nullable: false })
     discount?: number;
 
+    @Column({ type: 'json', nullable: true })
+    variantAttributes: VariantAttribute[];
+
     @ManyToOne(() => OrderEntity, (order) => order.orderProducts)
     @JoinColumn({ name: 'orderId' })
     order: Relation<OrderEntity>;
@@ -150,4 +162,30 @@ export class OrderProductEntity {
     @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
     @JoinColumn({ name: 'productId' })
     product: Relation<ProductEntity>;
+
+    @OneToMany(() => RefundEntity, (refund) => refund.orderProduct)
+    refunds: Relation<RefundEntity[]>;
+}
+
+@Entity({ name: 'OrderStatusHistory' })
+export class OrderStatusHistoryEntity {
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
+
+  @Column({ nullable: false })
+  previousStatus: string;
+
+  @Column({ nullable: false })
+  newStatus: string;
+
+  @ManyToOne(() => UserEntity, { nullable: false })
+  @JoinColumn({ name: 'userId' })
+  user: Relation<UserEntity>;
+
+  @ManyToOne(() => OrderEntity, (order) => order.statusHistory)
+  @JoinColumn({ name: 'orderId' })
+  order: Relation<OrderEntity>;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

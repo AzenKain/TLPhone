@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { ReviewEntity } from '../review';
 import { CartEntity } from '../cart';
+import { OrderStatusHistoryEntity } from '../order';
 
 
 @Entity({ name: 'UserDetail' })
@@ -55,15 +56,15 @@ export class UserEntity {
     @Column({ type: 'boolean', default: true })
     isDisplay: boolean;
 
-    @Column()
-    username: string;
-
     @Column({ type: 'simple-array', nullable: false})
     role: string[];
 
+    @Column({ type: 'simple-array', nullable: false})
+    heart: string[];
+
     @OneToOne(() => UserDetailEntity, { cascade: true })
     @JoinColumn()
-    details: UserDetailEntity;
+    details: Relation<UserDetailEntity>;
 
     @OneToOne(() => CartEntity, { cascade: true })
     @JoinColumn()
@@ -71,6 +72,9 @@ export class UserEntity {
 
     @Column()
     hash: string;
+
+    @OneToMany(() => OrderStatusHistoryEntity, (history) => history.user)
+    statusHistory: OrderStatusHistoryEntity[];
 
     @OneToMany(() => ReviewEntity, (review) => review.user)
     reviews: Relation<ReviewEntity[]>;

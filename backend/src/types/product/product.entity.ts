@@ -14,8 +14,8 @@ import {
 } from "typeorm";
 import { OrderProductEntity } from "../order";
 import { ReviewEntity } from '../review';
-import { SchemaProductEntity } from '../schemaProduct';
-import { CarItemEntity } from '../cart';
+import { CartItemEntity } from '../cart';
+import { CampaignEntity } from '../campaign';
 
 @Entity({ name: 'TagsDetail' })
 export class TagsEntity {
@@ -55,6 +55,12 @@ export class ProductVariantEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
+    @Column({ type: 'boolean', default: false })
+    hasImei: boolean;
+
+    @Column({ type: 'simple-array', nullable: true })
+    imeiList?: string[];
+
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     originPrice: number;
 
@@ -67,8 +73,8 @@ export class ProductVariantEntity {
     @ManyToOne(() => ProductDetailEntity, (productDetail) => productDetail.variants)
     productDetail: Relation<ProductDetailEntity>;
 
-    @OneToMany(() => CarItemEntity, (it) => it.productVariant)
-    cartItem: Relation<CarItemEntity[]>;
+    @OneToMany(() => CartItemEntity, (it) => it.productVariant)
+    cartItem: Relation<CartItemEntity[]>;
 
     @ManyToMany(() => TagsEntity, (tag) => tag.productVariant, { nullable: true })
     @JoinTable()
@@ -101,6 +107,33 @@ export class ProductDetailEntity {
     variants: Relation<ProductVariantEntity[]>;
 }
 
+@Entity({ name: 'FaultyProduct' })
+export class FaultyProductEntity {
+    @PrimaryGeneratedColumn({ type: 'bigint' })
+    id: number;
+
+    @Column({ type: 'bigint', default: 0 })
+    quantity: number;
+
+    @Column({ type: 'simple-array', nullable: true })
+    imei?: string[];
+
+    @Column({ type: 'boolean', default: false })
+    hasImei: boolean;
+
+    @Column({ type: 'simple-array', nullable: true })
+    reason?: string[];
+
+    @Column({ type: 'simple-array', nullable: true })
+    notes?: string[];
+
+    @CreateDateColumn()
+    created_at: Date;
+
+    @UpdateDateColumn()
+    updated_at: Date;
+}
+
 @Entity({ name: 'Product' })
 export class ProductEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -125,11 +158,18 @@ export class ProductEntity {
     @JoinColumn()
     details: Relation<ProductDetailEntity>;
 
+    @OneToOne(() => FaultyProductEntity, { cascade: true })
+    @JoinColumn()
+    faultyProduct: Relation<FaultyProductEntity>;
+
     @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product)
     orderProducts: Relation<OrderProductEntity[]>;
 
     @OneToMany(() => ReviewEntity, (review) => review.product)
     reviews:  Relation<ReviewEntity[]>;
+
+    @ManyToMany(() => CampaignEntity, (campaign) => campaign.products)
+    campaigns: Relation<CampaignEntity[]>;
 
     @CreateDateColumn()
     created_at: Date;

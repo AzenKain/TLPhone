@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
 import { UserController } from './user.controller';
 import { ReviewEntity } from '../types/review';
+import { CartModule } from '../cart/cart.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserDetailEntity, ReviewEntity]), HttpModule],
+  imports: [TypeOrmModule.forFeature([UserEntity, UserDetailEntity, ReviewEntity]), HttpModule, CartModule],
   providers: [UserService, UserResolver,],
   controllers: [UserController]
 })

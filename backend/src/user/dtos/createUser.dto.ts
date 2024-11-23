@@ -9,11 +9,6 @@ export class CreateUserDto {
     @Field()
     email: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @Field()
-    username: string;
-
     @IsString()
     @IsNotEmpty()
     @Field()
