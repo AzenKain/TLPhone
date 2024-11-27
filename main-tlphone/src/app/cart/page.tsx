@@ -18,40 +18,42 @@ export default function Cart() {
     }
     return (
         <div className='grid grid-cols-7 gap-5'>
-            <div className='col-span-5 bg-white p-2 py-10 rounded-lg' style={{height: 'max-content' }}>
-                <div className='grid grid-cols-7'>
-                    <div className='col-span-2'>
-                        <Image src={"/img/ip15.webp"} alt='//' height={200} width={200}></Image>
-                    </div>
-                    <div className='col-span-5'>
-                        <div className='grid grid-cols-7'>
-                            <div className='col-span-5' style={{ width: 'max-content', height: 'max-content' }}>
-                                <h1 className='text-xl'>IPhone 16 Pro Max Chính Hãng (VN/A)</h1>
-                                <div className='mt-10 grid gap-2'>
-                                    <p><span className='text-slate-500'>Ram: </span>16GB</p>
-                                    <p><span className='text-slate-500'>Rom: </span>256GB</p>
-                                    <p><span className='text-slate-500'>Màu sắc: </span>Titan</p>
-                                </div>
-
-                            </div>
-                            <div className='col-span-2'>
-                                <div className='ms-10'>
-                                    <div className="flex items-center space-x-3 border rounded-md ms-1" style={{ width: "max-content" }}>
-                                        <button
-                                            onClick={handleDecrease}
-                                            className="bg-gray-300 px-3 rounded-s-md hover:bg-slate-200 border-e">
-                                            -
-                                        </button>
-                                        <span className="text-md">{quantity}</span>
-                                        <button
-                                            onClick={handleIncrease}
-                                            className="bg-gray-300 px-3 rounded-e-md hover:bg-slate-200 border-s">
-                                            +
-                                        </button>
+            <div className='col-span-5' style={{ height: 'max-content' }}>
+                <div className=' bg-white p-2 py-10 rounded-lg'>
+                    <div className='grid grid-cols-7'>
+                        <div className='col-span-2'>
+                            <Image src={"/img/ip15.webp"} alt='//' height={200} width={200}></Image>
+                        </div>
+                        <div className='col-span-5'>
+                            <div className='grid grid-cols-7'>
+                                <div className='col-span-5' style={{ width: 'max-content', height: 'max-content' }}>
+                                    <h1 className='text-xl'>IPhone 16 Pro Max Chính Hãng (VN/A)</h1>
+                                    <div className='mt-10 grid gap-2'>
+                                        <p><span className='text-slate-500'>Ram: </span>16GB</p>
+                                        <p><span className='text-slate-500'>Rom: </span>256GB</p>
+                                        <p><span className='text-slate-500'>Màu sắc: </span>Titan</p>
                                     </div>
-                                    <div className="mt-10">
-                                        <p className="gach-ngang ">34.990.000 đ</p>
-                                        <p className="mt-2">34.290.000 đ</p>
+
+                                </div>
+                                <div className='col-span-2'>
+                                    <div className='ms-10'>
+                                        <div className="flex items-center space-x-3 border rounded-md ms-1" style={{ width: "max-content" }}>
+                                            <button
+                                                onClick={handleDecrease}
+                                                className="bg-gray-300 px-3 rounded-s-md hover:bg-slate-200 border-e">
+                                                -
+                                            </button>
+                                            <span className="text-md">{quantity}</span>
+                                            <button
+                                                onClick={handleIncrease}
+                                                className="bg-gray-300 px-3 rounded-e-md hover:bg-slate-200 border-s">
+                                                +
+                                            </button>
+                                        </div>
+                                        <div className="mt-10">
+                                            <p className="gach-ngang ">34.990.000 đ</p>
+                                            <p className="mt-2">34.290.000 đ</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
