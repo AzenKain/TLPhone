@@ -6,6 +6,8 @@ import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
 import Products from "@/components/product";
 import BasicCard from "@/components/Card/BasicCard";
+import BasicSlider from "@/components/Siler/BasicSlider";
+import { Slider } from "@/types/slider";
 import { Card } from "@/types";
 
 export default function Home() {
@@ -13,7 +15,22 @@ export default function Home() {
   const ListPopular: Card[] = [{ id: 1, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
   { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },]
   const [clickMenu, setClickMenu] = useState<boolean>(false);
-
+  const ListSlider: Slider[][] = [
+    [
+      { id: 1, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg' },
+      { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 3, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 4, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 5, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ],
+    [
+      { id: 6, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 7, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 8, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 9, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 10, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ]
+  ]
   //slideshow
   const images = [
     'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75',
@@ -173,154 +190,57 @@ export default function Home() {
         </div>
       </div >
       {/* Slider */}
-      <div className="my-6">
-        <div className="bg-red-900 p-4">
+      <div className="my-6 flex justify-center">
+        <div className="bg-red-900 p-6 rounded-lg max-w-7xl shadow-lg">
           {/* Header */}
-          <div className="flex justify-between items-center gap-4 text-white text-sm">
+          <div className="flex items-center gap-4 text-white text-sm -mt-4">
             <button className="bg-red-700 px-4 py-2 rounded-md">
               DEAL SỐC HÔM NAY
             </button>
             <button className="bg-red-700 px-4 py-2 rounded-md">
               ONLY ONLINE GIẢM ĐẾN 40%
             </button>
-            <button className="bg-red-700 px-4 py-2 rounded-md">
-              SINH NHẬT CỬA HÀNG GIẢM ĐẾN 50%
-            </button>
           </div>
-          {/* Products */}
-          <div className="carousel w-full">
 
-            <div id="slide1" className="carousel-item relative w-full">
-              <div className="grid grid-cols-4 gap-4">
-                {ListPopular.map((item, index) => {
-                  return (
-                    <BasicCard key={index} item={item} />
-                  )
-
-                })
-                }
+          {/* Carousel */}
+          <div className="carousel w-full mt-4">
+            {ListSlider.map((item, index) => (
+              <div id={`slide${index}`} className="carousel-item relative w-full">
+                <div className="grid grid-cols-5 gap-2 cursor-pointer">
+                  {item.map((it, id) => (
+                    <BasicSlider key={id} item={it} />
+                  ))}
+                </div>
+                <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
+                  <a href={`#slide${index - 1}`} className="btn btn-circle bg-white text-black border-none">❮</a>
+                  <a href={`#slide${index + 1}`} className="btn btn-circle bg-white text-black border-none">❯</a>
+                </div>
               </div>
-              <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-                <a href="#slide4" className="btn btn-circle">❮</a>
-                <a href="#slide2" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-            <div id="slide2" className="carousel-item relative w-full">
-              <div className="grid grid-cols-4 gap-4">
-                {ListPopular.map((item, index) => {
-                  return (
-                    <BasicCard key={index} item={item} />
-                  )
-
-                })
-                }
-              </div>
-              <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-                <a href="#slide1" className="btn btn-circle">❮</a>
-                <a href="#slide3" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-            <div id="slide3" className="carousel-item relative w-full">
-              <div className="grid grid-cols-4 gap-4">
-                {ListPopular.map((item, index) => {
-                  return (
-                    <BasicCard key={index} item={item} />
-                  )
-
-                })
-                }
-              </div>
-              <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-                <a href="#slide2" className="btn btn-circle">❮</a>
-                <a href="#slide4" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-            <div id="slide4" className="carousel-item relative w-full">
-              <div className="grid grid-cols-4 gap-4">
-                {ListPopular.map((item, index) => {
-                  return (
-                    <BasicCard key={index} item={item} />
-                  )
-
-                })
-                }
-              </div>
-              <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-                <a href="#slide3" className="btn btn-circle">❮</a>
-                <a href="#slide1" className="btn btn-circle">❯</a>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
 
-      </div>
-      {/*itempopular*/}
-      <div className="carousel w-full">
-
-        <div id="slide1" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
-
-            })
-            }
-          </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide4" className="btn btn-circle">❮</a>
-            <a href="#slide2" className="btn btn-circle">❯</a>
-          </div>
-        </div>
-        <div id="slide2" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
-
-            })
-            }
-          </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide1" className="btn btn-circle">❮</a>
-            <a href="#slide3" className="btn btn-circle">❯</a>
-          </div>
-        </div>
-        <div id="slide3" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
-
-            })
-            }
-          </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide2" className="btn btn-circle">❮</a>
-            <a href="#slide4" className="btn btn-circle">❯</a>
-          </div>
-        </div>
-        <div id="slide4" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
-
-            })
-            }
-          </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide3" className="btn btn-circle">❮</a>
-            <a href="#slide1" className="btn btn-circle">❯</a>
-          </div>
         </div>
       </div>
 
 
 
+      {/* <div className="carousel w-full mt-2">
+        {ListSlider.map((item, index) => (
+          <div id="slide2" key={index} className="carousel-item relative w-full">
+            <div className="grid grid-cols-5 gap-4">
+              {item.map((it, id) => (
+                <BasicSlider key={id} item={it} />
+              ))}
+
+            </div>
+            <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
+              <a href="#slide1" className="btn btn-circle bg-white text-black border-none">❮</a>
+              <a href="#slide3" className="btn btn-circle bg-white text-black border-none">❯</a>
+            </div>
+          </div>
+        ))}
+
+      </div> */}
       {/* <Products></Products> */}
     </div>
 
