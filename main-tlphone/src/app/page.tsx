@@ -66,7 +66,7 @@ export default function Home() {
   return (
 
     //  menu
-    <div onMouseLeave={() => setClickMenu(false)}>
+    <div onMouseLeave={() => setClickMenu(false)} className="mx-24">
       <div className=" grid grid-cols-6 gap-4">
         <div className="col-span-1">
           <div className="hidden lg:block">
@@ -195,80 +195,88 @@ export default function Home() {
 
         </div>
       </div >
+      {/* Slider */}
+      <div className="my-6 flex justify-center">
+        <div className="bg-red-900 p-6 rounded-lg max-w-7xl shadow-lg">
+          {/* Header */}
+          <div className="flex items-center gap-4 text-white text-sm -mt-4">
+            <button className="bg-red-700 px-4 py-2 rounded-md">
+              DEAL SỐC HÔM NAY
+            </button>
+            <button className="bg-red-700 px-4 py-2 rounded-md">
+              ONLY ONLINE GIẢM ĐẾN 40%
+            </button>
+          </div>
+
+          {/* Carousel */}
+          <div className="carousel w-full mt-4">
+            {ListSlider.map((item, index) => (
+              <div id={`slide${index}`} className="carousel-item relative w-full">
+                <div className="grid grid-cols-5 gap-2 cursor-pointer">
+                  {item.map((it, id) => (
+                    <BasicSlider key={id} item={it} />
+                  ))}
+                </div>
+                <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
+                  <a href={`#slide${index - 1}`} className="btn btn-circle bg-white text-black border-none">❮</a>
+                  <a href={`#slide${index + 1}`} className="btn btn-circle bg-white text-black border-none">❯</a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </div>
       {/*itempopular*/}
-      <div className="carousel w-full">
+      <div className=" w-full gap-8">
 
-        <div id="slide1" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
+        {/* Slide 1 */}
+        <div className=" relative w-full h-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
+          </div>
 
-            })
-            }
-          </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide4" className="btn btn-circle">❮</a>
-            <a href="#slide2" className="btn btn-circle">❯</a>
-          </div>
         </div>
-        <div id="slide2" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
 
-            })
-            }
+        {/* Slide 2 */}
+        <div className=" relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
+          <div className="grid grid-cols-5 gap-4 items-center ">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
           </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide1" className="btn btn-circle">❮</a>
-            <a href="#slide3" className="btn btn-circle">❯</a>
-          </div>
+
         </div>
-        <div id="slide3" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
 
-            })
-            }
+        {/* Slide 3 */}
+        <div className="relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
           </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide2" className="btn btn-circle">❮</a>
-            <a href="#slide4" className="btn btn-circle">❯</a>
-          </div>
+
         </div>
-        <div id="slide4" className="carousel-item relative w-full">
-          <div className="grid grid-cols-4 gap-4">
-            {ListPopular.map((item, index) => {
-              return (
-                <BasicCard key={index} item={item} />
-              )
 
-            })
-            }
+        {/* Slide 4 */}
+        <div className="relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
           </div>
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide3" className="btn btn-circle">❮</a>
-            <a href="#slide1" className="btn btn-circle">❯</a>
-          </div>
+
         </div>
 
       </div>
 
-
-
-      {/* <Products></Products> */}
     </div>
-
-
-
-
 
   );
 };
