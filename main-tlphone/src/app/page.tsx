@@ -6,6 +6,8 @@ import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
 import Products from "@/components/product";
 import BasicCard from "@/components/Card/BasicCard";
+import BasicSlider from "@/components/Siler/BasicSlider";
+import { Slider } from "@/types/slider";
 import { Card } from "@/types";
 
 export default function Home() {
@@ -19,7 +21,22 @@ export default function Home() {
   { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
   { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },]
   const [clickMenu, setClickMenu] = useState<boolean>(false);
-
+  const ListSlider: Slider[][] = [
+    [
+      { id: 1, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg' },
+      { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 3, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 4, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 5, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ],
+    [
+      { id: 6, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 7, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 8, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 9, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 10, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ]
+  ]
   //slideshow
   const images = [
     'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75',
@@ -178,60 +195,75 @@ export default function Home() {
 
         </div>
       </div >
-
-
       {/*itempopular*/}
-      <div className=" w-full gap-8">
+      <div className="carousel w-full">
 
-        {/* Slide 1 */}
-        <div id="slide1" className=" relative w-full h-full block shadow p-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
+        <div id="slide1" className="carousel-item relative w-full">
+          <div className="grid grid-cols-4 gap-4">
+            {ListPopular.map((item, index) => {
+              return (
+                <BasicCard key={index} item={item} />
+              )
+
+            })
+            }
           </div>
-          
+          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+            <a href="#slide4" className="btn btn-circle">❮</a>
+            <a href="#slide2" className="btn btn-circle">❯</a>
+          </div>
         </div>
+        <div id="slide2" className="carousel-item relative w-full">
+          <div className="grid grid-cols-4 gap-4">
+            {ListPopular.map((item, index) => {
+              return (
+                <BasicCard key={index} item={item} />
+              )
 
-        {/* Slide 2 */}
-        <div id="slide2" className=" relative w-full block shadow p-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
-          <div className="grid grid-cols-5 gap-4 items-center ">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
+            })
+            }
           </div>
-          
+          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+            <a href="#slide1" className="btn btn-circle">❮</a>
+            <a href="#slide3" className="btn btn-circle">❯</a>
+          </div>
         </div>
+        <div id="slide3" className="carousel-item relative w-full">
+          <div className="grid grid-cols-4 gap-4">
+            {ListPopular.map((item, index) => {
+              return (
+                <BasicCard key={index} item={item} />
+              )
 
-        {/* Slide 3 */}
-        <div id="slide3" className="carousel-item relative w-full block shadow p-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
+            })
+            }
           </div>
-         
+          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+            <a href="#slide2" className="btn btn-circle">❮</a>
+            <a href="#slide4" className="btn btn-circle">❯</a>
+          </div>
         </div>
+        <div id="slide4" className="carousel-item relative w-full">
+          <div className="grid grid-cols-4 gap-4">
+            {ListPopular.map((item, index) => {
+              return (
+                <BasicCard key={index} item={item} />
+              )
 
-        {/* Slide 4 */}
-        <div id="slide4" className="carousel-item relative w-full block shadow p-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
+            })
+            }
           </div>
-          
+          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+            <a href="#slide3" className="btn btn-circle">❮</a>
+            <a href="#slide1" className="btn btn-circle">❯</a>
+          </div>
         </div>
 
       </div>
 
 
 
-
+      {/* <Products></Products> */}
     </div>
 
 
