@@ -5,11 +5,38 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
 import Products from "@/components/product";
+import BasicCard from "@/components/Card/BasicCard";
+import BasicSlider from "@/components/Siler/BasicSlider";
+import { Slider } from "@/types/slider";
+import { Card } from "@/types";
+
 export default function Home() {
 
-
+  const ListPopular: Card[] = [{ id: 1, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+  { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 28990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },]
   const [clickMenu, setClickMenu] = useState<boolean>(false);
-
+  const ListSlider: Slider[][] = [
+    [
+      { id: 1, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg' },
+      { id: 2, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 3, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 4, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 5, name: 'iPhone 14 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ],
+    [
+      { id: 6, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 7, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 8, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 9, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+      { id: 10, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
+    ]
+  ]
   //slideshow
   const images = [
     'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75',
@@ -35,11 +62,11 @@ export default function Home() {
   const items = ['IPhone 16 Pro Max', 'IPhone 15 Pro Max', 'Samsung Galaxy S24 FE', 'Samsung Galaxy Z Flip6', 'Samsung Galaxy A06', 'Xiaomi 14T Pro', 'Redmi 14C', 'OPPO Reno12 F', 'OPPO A18'];
   const image = ['/img/ip16.webp', '/img/ip15.webp', '/img/ssa16.webp', '/img/xiao14t.webp', '/img/tecno.webp']
   const items2 = ['IPhone 16 Pro Max 256GB Chính Hãng', 'IPhone 15 Pro Max 512GB Chính Hãng', 'Samsung Galaxy A16 128GB Chính Hãng', 'Xiaomi 14T 5G 512GB Chính Hãng', 'TECNO Pova 6Neo 128GB Chính Hãng'];
-  const price =['33.890.000 ', '23.990.000', '6.090.000', '12.590.000', '4.090.000']
+  const price = ['33.890.000 ', '23.990.000', '6.090.000', '12.590.000', '4.090.000']
   return (
 
     //  menu
-    <div onMouseLeave={() => setClickMenu(false)}>
+    <div onMouseLeave={() => setClickMenu(false)} className="mx-24">
       <div className=" grid grid-cols-6 gap-4">
         <div className="col-span-1">
           <div className="hidden lg:block">
@@ -114,7 +141,7 @@ export default function Home() {
                       <h1 className="font-bold text-xl">Sản phẩm giá gốc</h1>
                       <div className="flex flex-wrap gap-2 mt-4">
                         {image.map((img, index) => (
-                          <div key={index} style={{ alignItems: "center"}} className="flex gap-3">
+                          <div key={index} style={{ alignItems: "center" }} className="flex gap-3">
                             <Image src={img} alt={`Image ${index + 1}`} width={60} height={60} />
                             <div>
                               <Link href="#" className="hover:text-red text-sm">{items2[index]}</Link>
@@ -167,7 +194,12 @@ export default function Home() {
           }
 
         </div>
-    </div>
+      </div >
+
+
+
+
+      <Products></Products>
     </div>
 
   );
