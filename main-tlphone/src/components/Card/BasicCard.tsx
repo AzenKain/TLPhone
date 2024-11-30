@@ -4,7 +4,7 @@ const BasicCard: React.FC<{ item: Card }> = ({ item }) => {
     
     return (
        
-            <a href='http://localhost:3000/cart' className="rounded-md container shadow shadow-cyan-500/50 w-full h-full">
+            <a href='http://localhost:3000/cart' className="rounded-md bg-white container shadow w-full h-full">
               <div className="pt-2">
                 <p className="ms-2 mb-2 rounded-full p-1 " style={{ fontSize: "10px", width: "max-content" }}>Trả góp 0%</p>
                 <img className=" rounded-md object-cover" src={item.imgdisplay} alt="" width={230} height={250}/>
@@ -22,7 +22,7 @@ const BasicCard: React.FC<{ item: Card }> = ({ item }) => {
         
 
     )
-    
+
 }
 
 export default BasicCard 

@@ -17,7 +17,7 @@ export default function Cart() {
         return null;
     }
     return (
-        <div className='grid grid-cols-7 gap-5'>
+        <div className='grid grid-cols-7 gap-5 mx-32 my-8'>
             <div className='col-span-5' style={{ height: 'max-content' }}>
                 <div className=' bg-white p-2 py-10 rounded-lg'>
                     <div className='grid grid-cols-7'>
@@ -40,13 +40,13 @@ export default function Cart() {
                                         <div className="flex items-center space-x-3 border rounded-md ms-1" style={{ width: "max-content" }}>
                                             <button
                                                 onClick={handleDecrease}
-                                                className="bg-gray-300 px-3 rounded-s-md hover:bg-slate-200 border-e">
+                                                className="bg-stone-100 px-3 rounded-s-md hover:bg-slate-200 border-e">
                                                 -
                                             </button>
                                             <span className="text-md">{quantity}</span>
                                             <button
                                                 onClick={handleIncrease}
-                                                className="bg-gray-300 px-3 rounded-e-md hover:bg-slate-200 border-s">
+                                                className="bg-stone-100 px-3 rounded-e-md hover:bg-slate-200 border-s">
                                                 +
                                             </button>
                                         </div>
@@ -71,8 +71,7 @@ export default function Cart() {
                         <select className="select select-info w-full max-w-xs">
                             <option disabled selected>Select method</option>
                             <option>Standard shipping - 25.000đ</option>
-                            <option>Standard shipping - 25.000đ</option>
-                            <option>Standard shipping - 25.000đ</option>
+                            <option>Hoả văn tốc - 75.000đ</option>
                         </select>
                     </div>
                     <div className='mt-3 divide-y divide-slate-300'>
@@ -94,7 +93,7 @@ export default function Cart() {
                         </div>
                     </div>
                     <div className='justify-center flex'>
-                        <button type="submit" className="btn bg-rose-600 text-white px-29 mt-5 text-nowrap">Check out</button>
+                        <button type="submit" className="btn bg-rose-600 text-white px-32 mt-5 text-nowrap">Check out</button>
                     </div>
                 </div>
             </div>

@@ -66,16 +66,16 @@ export default function Home() {
   return (
 
     //  menu
-    <div onMouseLeave={() => setClickMenu(false)} className="mx-24">
+    <div onMouseLeave={() => setClickMenu(false)} className="mx-24 my-8">
       <div className=" grid grid-cols-6 gap-4">
         <div className="col-span-1">
           <div className="hidden lg:block">
-            <div className="shadow-2 rounded-lg bg-white" style={{ height: "414px", width: "200px" }}>
-              <div className=' p-2 rounded-lg'>
+            <div className="shadow-2 rounded-lg" style={{ width: "205px" }}>
+              <div className='bg-white p-2 rounded-lg'>
                 <div className="px-2 py-2">
-                  <h1 className="mt-7 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
+                  <h1 className="mt-9 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
                   <div onMouseEnter={() => setClickMenu(true)} >
-                    <div className="mt-9 flex gap-2">
+                    <div className="mt-10 flex gap-3"> 
                       <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
                       <h1 className="text-lg hover:text-red">Điện thoại</h1>
                     </div>
@@ -92,7 +92,7 @@ export default function Home() {
                       <h1 className="text-lg mt-1 hover:text-red">Công nghệ</h1>
                     </Link>
                   </div>
-                  <div className="mt-7 text-xl">
+                  <div className="mt-7 text-xl pb-8">
                     <Link href={""} className="mt-10 flex gap-2 ms-1">
                       <Image src="/img/lienhe.png" alt="" width={25} height={25} />
                       <h1 className="text-lg mt-1 ms-1 hover:text-red">Liên hệ</h1>
@@ -195,11 +195,87 @@ export default function Home() {
 
         </div>
       </div >
+      {/* Slider */}
+      <div className="my-6 flex justify-center">
+        <div className="bg-red-900 p-6 rounded-lg max-w-7xl shadow-lg">
+          {/* Header */}
+          <div className="flex items-center gap-4 text-white text-sm -mt-4">
+            <button className="bg-red-700 px-4 py-2 rounded-md">
+              DEAL SỐC HÔM NAY
+            </button>
+            <button className="bg-red-700 px-4 py-2 rounded-md">
+              ONLY ONLINE GIẢM ĐẾN 40%
+            </button>
+          </div>
 
+          {/* Carousel */}
+          <div className="carousel w-full mt-4">
+            {ListSlider.map((item, index) => (
+              <div id={`slide${index}`} className="carousel-item relative w-full">
+                <div className="grid grid-cols-5 gap-2 cursor-pointer">
+                  {item.map((it, id) => (
+                    <BasicSlider key={id} item={it} />
+                  ))}
+                </div>
+                <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
+                  <a href={`#slide${index - 1}`} className="btn btn-circle bg-white text-black border-none">❮</a>
+                  <a href={`#slide${index + 1}`} className="btn btn-circle bg-white text-black border-none">❯</a>
+                </div>
+              </div>
+            ))}
+          </div>
 
+        </div>
+      </div>
+      {/*itempopular*/}
+      <div className=" w-full gap-8">
 
+        {/* Slide 1 */}
+        <div className=" relative w-full h-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
+          </div>
 
-      <Products></Products>
+        </div>
+
+        {/* Slide 2 */}
+        <div className=" relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
+          <div className="grid grid-cols-5 gap-4 items-center ">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
+          </div>
+
+        </div>
+
+        {/* Slide 3 */}
+        <div className="relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
+          </div>
+
+        </div>
+
+        {/* Slide 4 */}
+        <div className="relative w-full block shadow p-4 mt-4">
+          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
+          <div className="grid grid-cols-5 gap-4 items-center">
+            {ListPopular.slice(0, 5).map((item, index) => (
+              <BasicCard key={index} item={item} />
+            ))}
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
   );
