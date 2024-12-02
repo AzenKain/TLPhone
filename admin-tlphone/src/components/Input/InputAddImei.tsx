@@ -4,30 +4,17 @@ import { TagsDetailType } from "@/types";
 import useChatScroll from "@/hooks/useScrollChat";
 
 interface MultiselectProps {
-  itemsSelect: TagsDetailType[];
-  itemsList: TagsDetailType[];
-  typeTag: string;
-  onAdd: (item: TagsDetailType) => void;
-  onRemove: (item: TagsDetailType) => void;
+  itemsSelect: string[];
+  onChange: (item: string[]) => void;
 }
 
-const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, typeTag, onAdd, onRemove }) => {
-  const [newTag, setNewTag] = useState<string>('');
-  const [tagsList, setTagsList] = useState<TagsDetailType[]>(itemsList);
-
-  const ref = useChatScroll(tagsList);
+const InputAddImei: React.FC<MultiselectProps> = ({ itemsSelect, onChange }) => {
+  const [newTag, setNewTag] = useState<string>(itemsSelect.join(', '));
 
   const handleAddNewTag = () => {
-    if (newTag && !itemsSelect.some((item) => item.value === newTag)) {
-      const newItem: TagsDetailType = {
-        id: `${Date.now()}`,
-        type: typeTag,
-        value: newTag,
-      };
-      onAdd(newItem);
-      setTagsList([...tagsList, newItem])
-      setNewTag('');
-    }
+    const cleanedTag = newTag.replace(/\s+/g, ' ').trim(); // Remove extra spaces
+    onChange([...cleanedTag.split(","), ...itemsSelect]);
+    setNewTag("");
   };
 
   return (
@@ -36,20 +23,20 @@ const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, type
         <div className="w-full">
           <div className="relative flex flex-col items-center">
             <div className="w-full">
-              <div className="border-gray-200 my-2 flex rounded border bg-white p-1">
+              <div className="my-2 flex ounded-sm border border-stroke bg-white dark:bg-boxdark dark:border-strokedark shadow-default p-1">
                 <div className="flex flex-auto flex-wrap">
-                  {itemsSelect.map((tag) => (
+                  {itemsSelect.map((tag, idx) => (
                     <div
-                      key={tag.id}
+                      key={idx}
                       className="m-1 flex items-center justify-center rounded-full border border-teal-300 bg-teal-100 px-2 py-1 font-medium text-teal-700"
                     >
                       <div className="mr-2 max-w-full flex-initial text-xs font-normal leading-none">
-                        {tag.value}
+                        {tag}
                       </div>
 
                       <div className="flex flex-auto flex-row-reverse">
                         <div
-                          onClick={() => onRemove(tag)}
+                          onClick={() => onChange(itemsSelect.filter(it => it != tag))}
                           className="cursor-pointer"
                         >
                           <svg
@@ -73,7 +60,7 @@ const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, type
                   ))}
                   <div className="flex-1">
                     <input
-                      placeholder={`Add or select a ${typeTag.toLowerCase()}...`}
+                      placeholder={`Add or select a imei...`}
                       disabled={true}
                       className="text-gray-800 h-full w-full appearance-none bg-transparent p-1 px-2 outline-none"
                     />
@@ -87,13 +74,7 @@ const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, type
                     tabIndex={0}
                     className="menu dropdown-content z-[20] w-[50vh] md:w-[75vh] lg:w-[100vh] overflow-y-visible rounded-box bg-base-100 p-2 shadow"
                   >
-                    <div ref={ref} className="max-h-[30vh] overflow-y-auto">
-                      {tagsList.map((item) => (
-                        <li key={item.id}>
-                          <a onClick={() => onAdd(item)}>{item.value}</a>{" "}
-                        </li>
-                      ))}
-                    </div>
+
                       <li className="pt-2">
                       <textarea
                         placeholder="Add new tag..."
@@ -121,4 +102,4 @@ const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, type
   );
 };
 
-export default InputAddArea;
+export default InputAddImei;

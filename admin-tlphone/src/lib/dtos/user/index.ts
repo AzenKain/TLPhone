@@ -1,2 +1,5 @@
 export * from './createUser'
 export * from './updateUser'
+export * from './searchUser'
+export * from './searchUser'
+export * from './updateRole'

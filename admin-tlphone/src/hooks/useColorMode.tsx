@@ -10,9 +10,11 @@ const useColorMode = () => {
 
     if (colorMode === "dark")  {
       bodyClass.add(className)
+      document.querySelector('html')?.setAttribute('data-theme', "aqua");
     }
     else {
       bodyClass.remove(className);
+      document.querySelector('html')?.setAttribute('data-theme', "winter");
     }
   }, [colorMode]);
 

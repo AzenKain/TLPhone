@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 import { TagsDetailInp } from "./createProduct.dto";
 
 
@@ -10,6 +10,11 @@ export class SearchProductDto {
     @Field({ nullable: true })
     name?: string;
 
+    @IsOptional()
+    @IsString()
+    @Field({ nullable: true })
+    category?: string;
+
     @IsOptional() 
     @Field(() => [Number], { nullable: true })
     rangeMoney?: number[]
@@ -17,6 +22,14 @@ export class SearchProductDto {
     @IsOptional() 
     @Field(()=>[TagsDetailInp], { nullable: true })
     brand?: TagsDetailInp[];
+
+    @IsOptional()
+    @Field(()=>[TagsDetailInp], { nullable: true })
+    color?: TagsDetailInp[];
+
+    @IsOptional()
+    @Field(()=>[TagsDetailInp], { nullable: true })
+    attributes?: TagsDetailInp[];
 
     @IsOptional() 
     @IsNumber()

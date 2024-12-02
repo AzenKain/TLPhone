@@ -1,6 +1,5 @@
 'use client'
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
-import { getTopProductApi } from "@/lib/api";
 import { ProductType } from "@/types/product";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -12,15 +11,15 @@ const SalesBox = () => {
     const [dataHotSale, setDataHotSale] = useState<ProductType[]>([])
     const [dataNewArrival, setDataNewArrival] = useState<ProductType[]>([])
 
-    useEffect(() => {
-        const fetchData = async () => {
-          const responseData1: ProductType[] = await getTopProductApi("hot-sales", 10)
-          setDataHotSale(responseData1);
-          const responseData2: ProductType[] = await getTopProductApi("new-arrivals", 10)
-          setDataNewArrival(responseData2)
-        }
-        fetchData();
-      }, [])
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       const responseData1: ProductType[] = await getTopProductApi("hot-sales", 10)
+    //       setDataHotSale(responseData1);
+    //       const responseData2: ProductType[] = await getTopProductApi("new-arrivals", 10)
+    //       setDataNewArrival(responseData2)
+    //     }
+    //     fetchData();
+    //   }, [])
 
 
     return (

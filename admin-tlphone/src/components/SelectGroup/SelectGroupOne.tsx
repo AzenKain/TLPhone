@@ -1,4 +1,4 @@
-"use client";
+"use customer";
 import React, { useState } from "react";
 
 export type SelectGroup = {

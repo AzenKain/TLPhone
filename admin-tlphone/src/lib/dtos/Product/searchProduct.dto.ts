@@ -1,5 +1,8 @@
+import { TagsDetailInp } from "@/lib/dtos/Product/createProduct.dto";
+
 export type SearchProductDto = {
   name?: string;
+  category?: string;
   rangeMoney?: number[];
   brand?: TagsDetailInp[];
   color?: TagsDetailInp[];
@@ -10,7 +13,3 @@ export type SearchProductDto = {
   hotSales?: string;
 };
 
-export type TagsDetailInp = {
-  type?: string;
-  value?: string;
-};

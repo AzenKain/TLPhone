@@ -1,29 +1,31 @@
 "use client";
 import React, { useState } from 'react';
-import { ItemSchemaProductDetailType } from "@/types";
+import { TagsDetailType } from "@/types";
+import useChatScroll from "@/hooks/useScrollChat";
 
 interface MultiselectProps {
-  items: ItemSchemaProductDetailType[];
-  onAdd: (item: ItemSchemaProductDetailType) => void;
-  onRemove: (item: ItemSchemaProductDetailType) => void;
-  onToggleUseForSearch: (itemId: string) => void;
+  itemsSelect: TagsDetailType[];
+  itemsList: TagsDetailType[];
+  typeTag: string;
+  onAdd: (item: TagsDetailType) => void;
+  onRemove: (item: TagsDetailType) => void;
 }
 
-const InputAdd: React.FC<MultiselectProps> = ({ items, onAdd, onRemove, onToggleUseForSearch }) => {
+const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, typeTag, onAdd, onRemove }) => {
   const [newTag, setNewTag] = useState<string>('');
+  const [tagsList, setTagsList] = useState<TagsDetailType[]>(itemsList);
 
-  const handleNewTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTag(e.target.value);
-  };
+  const ref = useChatScroll(tagsList);
 
   const handleAddNewTag = () => {
-    if (newTag && !items.some((item) => item.value === newTag)) {
-      const newItem: ItemSchemaProductDetailType = {
+    if (newTag && !itemsSelect.some((item) => item.value === newTag)) {
+      const newItem: TagsDetailType = {
         id: `${Date.now()}`,
-        isUseForSearch: false,
+        type: typeTag,
         value: newTag,
       };
-      onAdd(newItem); // Use the passed down onAdd function
+      onAdd(newItem);
+      setTagsList([...tagsList, newItem])
       setNewTag('');
     }
   };
@@ -34,24 +36,22 @@ const InputAdd: React.FC<MultiselectProps> = ({ items, onAdd, onRemove, onToggle
         <div className="w-full">
           <div className="relative flex flex-col items-center">
             <div className="w-full">
-              <div className="border-gray-200 my-2 flex rounded border bg-white p-1">
+              <div className="my-2 flex ounded-sm border border-stroke bg-white dark:bg-boxdark dark:border-strokedark shadow-default p-1">
                 <div className="flex flex-auto flex-wrap">
-                  {items.map((tag) => (
+                  {itemsSelect.map((tag) => (
                     <div
                       key={tag.id}
                       className="m-1 flex items-center justify-center rounded-full border border-teal-300 bg-teal-100 px-2 py-1 font-medium text-teal-700"
                     >
-                      <div className="max-w-full flex-initial text-xs font-normal leading-none mr-2">
+                      <div className="mr-2 max-w-full flex-initial text-xs font-normal leading-none">
                         {tag.value}
                       </div>
-                      <input
-                        type="checkbox"
-                        checked={tag.isUseForSearch}
-                        onChange={() => onToggleUseForSearch(tag.id)} // Use the passed down onToggleUseForSearch function
-                        className="checkbox"
-                      />
+
                       <div className="flex flex-auto flex-row-reverse">
-                        <div onClick={() => onRemove(tag)} className="cursor-pointer">
+                        <div
+                          onClick={() => onRemove(tag)}
+                          className="cursor-pointer"
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="100%"
@@ -73,7 +73,8 @@ const InputAdd: React.FC<MultiselectProps> = ({ items, onAdd, onRemove, onToggle
                   ))}
                   <div className="flex-1">
                     <input
-                      placeholder="Add or select a tag..."
+                      placeholder={`Add or select a ${typeTag.toLowerCase()}...`}
+                      disabled={true}
                       className="text-gray-800 h-full w-full appearance-none bg-transparent p-1 px-2 outline-none"
                     />
                   </div>
@@ -84,30 +85,31 @@ const InputAdd: React.FC<MultiselectProps> = ({ items, onAdd, onRemove, onToggle
                   </div>
                   <ul
                     tabIndex={0}
-                    className="menu dropdown-content z-[1] w-52 overflow-y-visible rounded-box bg-base-100 p-2 shadow"
+                    className="menu dropdown-content z-[20] w-[50vh] md:w-[75vh] lg:w-[100vh] overflow-y-visible rounded-box bg-base-100 p-2 shadow"
                   >
-                    {items.map((item) => (
-                      <li key={item.id}>
-                        <a onClick={() => onAdd(item)}>{item.value}</a> {/* Use the passed down onAdd function */}
-                      </li>
-                    ))}
-                    <li className="pt-2">
-                      <input
-                        type="text"
+                    <div ref={ref} className="max-h-[30vh] overflow-y-auto">
+                      {tagsList.map((item) => (
+                        <li key={item.id}>
+                          <a onClick={() => onAdd(item)}>{item.value}</a>{" "}
+                        </li>
+                      ))}
+                    </div>
+                      <li className="pt-2">
+                      <textarea
                         placeholder="Add new tag..."
                         value={newTag}
-                        onChange={handleNewTagChange}
-                        className="input input-bordered w-full"
-                      />
-                    </li>
-                    <li>
-                      <button
-                        onClick={handleAddNewTag}
-                        className="btn btn-primary btn-sm mt-2 w-full"
-                      >
-                        Add Tag
-                      </button>
-                    </li>
+                        onChange={e => setNewTag(e.target.value)}
+                        className="textarea textarea-bordered textarea-lg w-full"
+                      ></textarea>
+                      </li>
+                      <li>
+                        <button
+                          onClick={handleAddNewTag}
+                          className="btn btn-primary btn-sm mt-2 w-full"
+                        >
+                          Add
+                        </button>
+                      </li>
                   </ul>
                 </div>
               </div>
@@ -119,4 +121,4 @@ const InputAdd: React.FC<MultiselectProps> = ({ items, onAdd, onRemove, onToggle
   );
 };
 
-export default InputAdd;
+export default InputAddArea;

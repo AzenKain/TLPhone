@@ -33,8 +33,8 @@ export class SchemaProductService {
 
   async GetSchemaProductByIdService(id: number): Promise<SchemaProductType> {
     const schemaProduct = await this.schemaProductRepository.findOne({
-      where: { id },
-      relations: ["details", "details.attributes"],
+      where: { id, isDisplay: true },
+      relations: ['detail', 'detail.attributes'],
     });
     if (!schemaProduct) {
       throw new NotFoundException(`Schema product with ID ${id} not found.`);
@@ -44,46 +44,59 @@ export class SchemaProductService {
 
   async GetAllSchemaProductService(): Promise<SchemaProductType[]> {
     return await this.schemaProductRepository.find({
-      relations: ["details", "details.attributes"],
+      where: {isDisplay: true},
+      relations: ['detail', 'detail.attributes']
     });
   }
 
   async CreateSchemaProductService(dto: CreateSchemaProductDto, user: UserEntity): Promise<SchemaProductEntity> {
     this.CheckRoleUser(user);
+
     const schemaDetails: SchemaProductDetailEntity[] = [];
 
     for (const detailDto of dto.detail) {
       const itemAttributes: ItemSchemaProductDetailEntity[] = [];
+
       for (const attributeDto of detailDto.attributes || []) {
-        const itemAttribute = this.itemSchemaProductDetailRepository.create({
+        let itemAttribute = this.itemSchemaProductDetailRepository.create({
           isUseForSearch: attributeDto.isUseForSearch,
           value: attributeDto.value,
         });
+
+        itemAttribute = await this.itemSchemaProductDetailRepository.save(itemAttribute);
         itemAttributes.push(itemAttribute);
       }
-      const schemaDetail = this.schemaProductDetailRepository.create({
+
+      let schemaDetail = this.schemaProductDetailRepository.create({
         title: detailDto.title,
         attributes: itemAttributes,
       });
+
+      schemaDetail = await this.schemaProductDetailRepository.save(schemaDetail);
       schemaDetails.push(schemaDetail);
     }
+
     const schemaProduct = this.schemaProductRepository.create({
       name: dto.name,
       category: dto.category,
       isDisplay: true,
       detail: schemaDetails,
     });
+
     return await this.schemaProductRepository.save(schemaProduct);
   }
 
+
   async UpdateSchemaProductService(dto: UpdateSchemaProductDto, user: UserEntity): Promise<SchemaProductEntity> {
     this.CheckRoleUser(user);
+
     const schemaProduct = await this.schemaProductRepository.findOne({
       where: { id: dto.schemaId },
-      relations: ['detail', 'detail.attributes']
+      relations: ['detail', 'detail.attributes'],
     });
+
     if (!schemaProduct) {
-      throw new NotFoundException(`Schema Product ID not found!.`);
+      throw new NotFoundException(`Schema Product ID not found!`);
     }
 
     schemaProduct.name = dto.name;
@@ -92,35 +105,35 @@ export class SchemaProductService {
     const schemaDetails: SchemaProductDetailEntity[] = [];
 
     for (const detailDto of dto.detail) {
-      const existingDetail = schemaProduct.detail.find(detail => detail.title === detailDto.title);
+      let schemaDetail = schemaProduct.detail.find(detail => detail.title === detailDto.title);
 
-      let schemaDetail: SchemaProductDetailEntity;
-      if (existingDetail) {
-        schemaDetail = existingDetail;
-      } else {
+      if (!schemaDetail) {
         schemaDetail = this.schemaProductDetailRepository.create({
           title: detailDto.title,
+          attributes: []
         });
       }
 
-      const itemAttributes: ItemSchemaProductDetailEntity[] = [];
-      for (const attributeDto of detailDto.attributes || []) {
-        const existingAttribute = schemaDetail.attributes.find(attr => attr.value === attributeDto.value);
-        let itemAttribute: ItemSchemaProductDetailEntity;
+      const itemAttributes: ItemSchemaProductDetailEntity[] = []
+      for (const attributeDto of detailDto.attributes) {
+        let itemAttribute = schemaDetail.attributes.find(attr => attr.value === attributeDto.value);
 
-        if (existingAttribute) {
-          itemAttribute = existingAttribute;
+        if (itemAttribute) {
           itemAttribute.isUseForSearch = attributeDto.isUseForSearch;
+          itemAttribute = await this.itemSchemaProductDetailRepository.save(itemAttribute);
         } else {
           itemAttribute = this.itemSchemaProductDetailRepository.create({
             isUseForSearch: attributeDto.isUseForSearch,
             value: attributeDto.value,
           });
+          itemAttribute = await this.itemSchemaProductDetailRepository.save(itemAttribute);
         }
+
         itemAttributes.push(itemAttribute);
       }
 
       schemaDetail.attributes = itemAttributes;
+      schemaDetail = await this.schemaProductDetailRepository.save(schemaDetail);
       schemaDetails.push(schemaDetail);
     }
 
@@ -128,6 +141,8 @@ export class SchemaProductService {
 
     return await this.schemaProductRepository.save(schemaProduct);
   }
+
+
   async DeleteSchemaProductService(dto: DeleteSchemaProductDto, user: UserEntity): Promise<ResponseType> {
     this.CheckRoleUser(user);
     const schemaProduct = await this.schemaProductRepository.findOne({

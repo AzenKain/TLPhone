@@ -3,7 +3,7 @@ import { ReviewType } from './review';
 import { CampaignType } from './campaign';
 
 export type TagsDetailType = {
-  id: number;
+  id: string;
   type: string;
   value?: string;
   productDetail?: ProductDetailType[];
@@ -11,7 +11,7 @@ export type TagsDetailType = {
 };
 
 export type ProductVariantType = {
-  id: number;
+  id: string;
   attributes?: TagsDetailType[];
   originPrice: number;
   displayPrice: number;
@@ -21,8 +21,9 @@ export type ProductVariantType = {
 };
 
 export type ProductDetailType = {
-  id: number;
+  id: string;
   imgDisplay?: ImageDetailType[];
+  color?: ColorDetailType[];
   variants?: ProductVariantType[];
   brand?: TagsDetailType;
   attributes?: TagsDetailType[];
@@ -31,14 +32,21 @@ export type ProductDetailType = {
 };
 
 export type ImageDetailType = {
-  id: number;
+  id: string;
   url: string;
   link?: string[];
   productDetail?: ProductDetailType;
 };
 
+export type ColorDetailType = {
+  id: string;
+  colorName: string;
+  colorHex?: string;
+  productDetail?: ProductDetailType;
+};
+
 export type FaultyProductType = {
-  id: number;
+  id: string;
   quantity: number;
   imei?: string[];
   reason?: string[];
@@ -48,7 +56,7 @@ export type FaultyProductType = {
 };
 
 export type ProductType = {
-  id: number;
+  id: string;
   name: string;
   isDisplay: boolean;
   category?: string;
@@ -60,4 +68,9 @@ export type ProductType = {
   created_at: Date;
   updated_at: Date;
   faultyProduct?: FaultyProductType;
+};
+
+export type SearchProductType = {
+  maxValue: number;
+  data: ProductType[];
 };

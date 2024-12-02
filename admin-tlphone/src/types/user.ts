@@ -18,7 +18,6 @@ export type UserType = {
     email: string;
     secretKey: string;
     isDisplay: boolean;
-    username: string;
     role: string[];
     heart: string[];
     details?: UserDetailType;

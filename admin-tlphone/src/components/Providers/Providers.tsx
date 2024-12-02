@@ -1,4 +1,4 @@
-"use client";
+"use customer";
 
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
