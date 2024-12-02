@@ -77,25 +77,25 @@ export default function Home() {
                   <div onMouseEnter={() => setClickMenu(true)} >
                     <div className="mt-10 flex gap-3"> 
                       <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
-                      <h1 className="text-lg hover:text-red">Điện thoại</h1>
+                      <h1 className="text-lg hover:text-red-500">Điện thoại</h1>
                     </div>
                   </div>
                   <div className="mt-7 text-xl">
                     <Link href={"https://didongviet.vn/dchannel/khuyen-mai/"} className="mt-10 flex gap-2">
                       <Image src="/img/voucher.avif" alt="" width={30} height={35} />
-                      <h1 className="text-lg mt-1 hover:text-red">Khuyến mãi</h1>
+                      <h1 className="text-lg mt-1 hover:text-red-500">Khuyến mãi</h1>
                     </Link>
                   </div>
                   <div className="mt-7 text-xl">
                     <Link href={"https://didongviet.vn/dchannel/"} className="mt-10 flex gap-2">
                       <Image src="/img/newspaper.avif" alt="" width={30} height={35} />
-                      <h1 className="text-lg mt-1 hover:text-red">Công nghệ</h1>
+                      <h1 className="text-lg mt-1 hover:text-red-500">Công nghệ</h1>
                     </Link>
                   </div>
                   <div className="mt-7 text-xl pb-8">
                     <Link href={""} className="mt-10 flex gap-2 ms-1">
                       <Image src="/img/lienhe.png" alt="" width={25} height={25} />
-                      <h1 className="text-lg mt-1 ms-1 hover:text-red">Liên hệ</h1>
+                      <h1 className="text-lg mt-1 ms-1 hover:text-red-500">Liên hệ</h1>
                     </Link>
                   </div>
                 </div>
@@ -111,17 +111,17 @@ export default function Home() {
                   <div className="col-span-2 border-e">
                     <div className="p-3">
                       <h1 className="font-bold text-xl">Thương hiệu</h1>
-                      <div className="mt-3 flex gap-17">
+                      <div className="mt-3 flex gap-16">
                         <ul className="grid gap-3 text-md">
-                          <li className="hover:text-red"><Link href={""}>IPhone</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Samsung</Link></li>
-                          <li className="hover:text-red"><Link href={""}>OPPO</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Xiaomi</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>IPhone</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>Samsung</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>OPPO</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>Xiaomi</Link></li>
                         </ul>
                         <ul className="grid  text-md">
-                          <li className="hover:text-red"><Link href={""}>Vertu</Link></li>
-                          <li className="hover:text-red"><Link href={""}>realmi</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Haweii</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>Vertu</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>realmi</Link></li>
+                          <li className="hover:text-red-500"><Link href={""}>Haweii</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -131,7 +131,7 @@ export default function Home() {
                       <h1 className="font-bold text-xl">Dòng sản phẩm HOT</h1>
                       <ul className="mt-3 grid gap-3 text-md">
                         {items.map((item, index) => (
-                          <li className="hover:text-red"><Link href={""} key={index}>{item}</Link></li>
+                          <li className="hover:text-red-500"><Link href={""} key={index}>{item}</Link></li>
                         ))}
                       </ul>
                     </div>
@@ -144,7 +144,7 @@ export default function Home() {
                           <div key={index} style={{ alignItems: "center" }} className="flex gap-3">
                             <Image src={img} alt={`Image ${index + 1}`} width={60} height={60} />
                             <div>
-                              <Link href="#" className="hover:text-red text-sm">{items2[index]}</Link>
+                              <Link href="#" className="hover:text-red-500 text-sm">{items2[index]}</Link>
                               <p className="text-rose-700 text-sm">{price[index]}</p>
                             </div>
                           </div>
