@@ -63,10 +63,10 @@ export default function Header() {
             </div>
             <div className='hidden md:block'>
                 <div className='row gap-10 flex flex-row'>
-                    <div className="flex flex-row gap-1 ">
+                    {/* <div className="flex flex-row gap-1 ">
                         <Image src="/img/find.png" alt="" width={30} height={30} />
                         <Link href={""} className="text-white" style={{ fontSize: 12 }}>Tra cứu<br /> đơn hàng</Link>
-                    </div>
+                    </div> */}
                     <div className="me-10 gap-1 flex flex-row justify-between">
                         <Image src="/img/phone.png" alt="" width={30} height={30} />
                         <Link href={""} className="text-white" style={{ fontSize: 12 }}>Đặt hàng<br /> 886-9999</Link>
@@ -113,7 +113,7 @@ export default function Header() {
                 </div>
                 <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 p-2 shadow">
                     <li>
-                        <Link href={""} className="justify-between">Profile</Link>
+                        <Link href={"/order"} className="justify-between">Profile</Link>
                     </li>
                     <li>
                         <Link href={""}>Favorites</Link>

@@ -31,7 +31,7 @@ export default async function RootLayout({
                 <Providers>
                     <StoreProvider>
                         <Header />
-                        <div className="body mx-30 my-8">
+                        <div className="body">
                             {children}
                         </div>
                         <Footer />
