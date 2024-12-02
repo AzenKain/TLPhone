@@ -9,6 +9,7 @@ import BasicCard from "@/components/Card/BasicCard";
 import BasicSlider from "@/components/Siler/BasicSlider";
 import { Slider } from "@/types/slider";
 import { Card } from "@/types";
+import ProductPage from "./product/[productId]/page";
 
 export default function Home() {
 
@@ -66,217 +67,218 @@ export default function Home() {
   return (
 
     //  menu
-    <div onMouseLeave={() => setClickMenu(false)} className="mx-24">
-      <div className=" grid grid-cols-6 gap-4">
-        <div className="col-span-1">
-          <div className="hidden lg:block">
-            <div className="shadow-2 rounded-lg" style={{ height: "max-content", width: "187px" }}>
-              <div className='bg-white p-2 rounded-lg'>
-                <div className="px-2 py-2">
-                  <h1 className="mt-7 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
-                  <div onMouseEnter={() => setClickMenu(true)} >
-                    <div className="mt-9 flex gap-2">
-                      <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
-                      <h1 className="text-lg hover:text-red">Điện thoại</h1>
-                    </div>
-                  </div>
-                  <div className="mt-7 text-xl">
-                    <Link href={"https://didongviet.vn/dchannel/khuyen-mai/"} className="mt-10 flex gap-2">
-                      <Image src="/img/voucher.avif" alt="" width={30} height={35} />
-                      <h1 className="text-lg mt-1 hover:text-red">Khuyến mãi</h1>
-                    </Link>
-                  </div>
-                  <div className="mt-7 text-xl">
-                    <Link href={"https://didongviet.vn/dchannel/"} className="mt-10 flex gap-2">
-                      <Image src="/img/newspaper.avif" alt="" width={30} height={35} />
-                      <h1 className="text-lg mt-1 hover:text-red">Công nghệ</h1>
-                    </Link>
-                  </div>
-                  <div className="mt-7 text-xl">
-                    <Link href={""} className="mt-10 flex gap-2 ms-1">
-                      <Image src="/img/lienhe.png" alt="" width={25} height={25} />
-                      <h1 className="text-lg mt-1 ms-1 hover:text-red">Liên hệ</h1>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-5">
-          {clickMenu ?
-            (
-              <div className="w-full h-full rounded-sm" style={{ height: "388px", width: "1000px" }}>
-                <div className="grid grid-cols-7 gap-4" style={{ height: "388px" }}>
-                  <div className="col-span-2 border-e">
-                    <div className="p-3">
-                      <h1 className="font-bold text-xl">Thương hiệu</h1>
-                      <div className="mt-3 flex gap-17">
-                        <ul className="grid gap-3 text-md">
-                          <li className="hover:text-red"><Link href={""}>IPhone</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Samsung</Link></li>
-                          <li className="hover:text-red"><Link href={""}>OPPO</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Xiaomi</Link></li>
-                        </ul>
-                        <ul className="grid  text-md">
-                          <li className="hover:text-red"><Link href={""}>Vertu</Link></li>
-                          <li className="hover:text-red"><Link href={""}>realmi</Link></li>
-                          <li className="hover:text-red"><Link href={""}>Haweii</Link></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2 border-e">
-                    <div className="p-3">
-                      <h1 className="font-bold text-xl">Dòng sản phẩm HOT</h1>
-                      <ul className="mt-3 grid gap-3 text-md">
-                        {items.map((item, index) => (
-                          <li className="hover:text-red"><Link href={""} key={index}>{item}</Link></li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="col-span-3">
-                    <div className="p-3">
-                      <h1 className="font-bold text-xl">Sản phẩm giá gốc</h1>
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {image.map((img, index) => (
-                          <div key={index} style={{ alignItems: "center" }} className="flex gap-3">
-                            <Image src={img} alt={`Image ${index + 1}`} width={60} height={60} />
-                            <div>
-                              <Link href="#" className="hover:text-red text-sm">{items2[index]}</Link>
-                              <p className="text-rose-700 text-sm">{price[index]}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) :
-            (
-              <div className="grid grid-cols-5 gap-4 bg3">
-                <div className="col-span-4 rounded-lg" style={{ height: "max-content" }}>
-                  <div className="relative">
-                    <img
-                      src={images[currentIndex]}
-                      alt={`Slide ${currentIndex + 1}`}
-                      className="w-full h-auto rounded-lg" />
-                    <button
-                      onClick={prevImage}
-                      className="absolute top-1/2 left-0 transform -translate-y-1/2 bg text-white p-2 rounded-e-md">
-                      &#10094;
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute top-1/2 right-0 transform -translate-y-1/2 bg text-white p-2 rounded-s-md">
-                      &#10095;
-                    </button>
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                      {images.map((_, index) => (
-                        <span
-                          key={index}
-                          className={`h-2 w-2 rounded-full cursor-pointer transition-colors duration-300 ease-in-out ${index === currentIndex ? 'bg-blue-500' : 'bg-gray-400'}`}
-                          onClick={() => setCurrentIndex(index)}
-                        ></span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-1 rounded-lg bg3 " style={{ height: "max-content" }}>
-                  <Link href={""}><img className="rounded-md mb-4" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731460581097_14_5.png&w=1080&q=75" alt="" /></Link>
-                  <Link href={""}><img className="rounded-md mb-4" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F14%2F1%2F1731553493834_samsung_10.png&w=1080&q=75" alt="" /></Link>
-                  <Link href={""}><img className="rounded-md" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F8%2F27%2F1%2F1727409819906_giaa_baan_raaa_haan_398_x_252.jpg&w=1080&q=75" alt="" /></Link>
-                </div>
-              </div>
-            )
-          }
+    // <div onMouseLeave={() => setClickMenu(false)} className="mx-24">
+    //   <div className=" grid grid-cols-6 gap-4">
+    //     <div className="col-span-1">
+    //       <div className="hidden lg:block">
+    //         <div className="shadow-2 rounded-lg" style={{ height: "max-content", width: "187px" }}>
+    //           <div className='bg-white p-2 rounded-lg'>
+    //             <div className="px-2 py-2">
+    //               <h1 className="mt-7 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
+    //               <div onMouseEnter={() => setClickMenu(true)} >
+    //                 <div className="mt-9 flex gap-2">
+    //                   <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
+    //                   <h1 className="text-lg hover:text-red">Điện thoại</h1>
+    //                 </div>
+    //               </div>
+    //               <div className="mt-7 text-xl">
+    //                 <Link href={"https://didongviet.vn/dchannel/khuyen-mai/"} className="mt-10 flex gap-2">
+    //                   <Image src="/img/voucher.avif" alt="" width={30} height={35} />
+    //                   <h1 className="text-lg mt-1 hover:text-red">Khuyến mãi</h1>
+    //                 </Link>
+    //               </div>
+    //               <div className="mt-7 text-xl">
+    //                 <Link href={"https://didongviet.vn/dchannel/"} className="mt-10 flex gap-2">
+    //                   <Image src="/img/newspaper.avif" alt="" width={30} height={35} />
+    //                   <h1 className="text-lg mt-1 hover:text-red">Công nghệ</h1>
+    //                 </Link>
+    //               </div>
+    //               <div className="mt-7 text-xl">
+    //                 <Link href={""} className="mt-10 flex gap-2 ms-1">
+    //                   <Image src="/img/lienhe.png" alt="" width={25} height={25} />
+    //                   <h1 className="text-lg mt-1 ms-1 hover:text-red">Liên hệ</h1>
+    //                 </Link>
+    //               </div>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <div className="col-span-5">
+    //       {clickMenu ?
+    //         (
+    //           <div className="w-full h-full rounded-sm" style={{ height: "388px", width: "1000px" }}>
+    //             <div className="grid grid-cols-7 gap-4" style={{ height: "388px" }}>
+    //               <div className="col-span-2 border-e">
+    //                 <div className="p-3">
+    //                   <h1 className="font-bold text-xl">Thương hiệu</h1>
+    //                   <div className="mt-3 flex gap-17">
+    //                     <ul className="grid gap-3 text-md">
+    //                       <li className="hover:text-red"><Link href={""}>IPhone</Link></li>
+    //                       <li className="hover:text-red"><Link href={""}>Samsung</Link></li>
+    //                       <li className="hover:text-red"><Link href={""}>OPPO</Link></li>
+    //                       <li className="hover:text-red"><Link href={""}>Xiaomi</Link></li>
+    //                     </ul>
+    //                     <ul className="grid  text-md">
+    //                       <li className="hover:text-red"><Link href={""}>Vertu</Link></li>
+    //                       <li className="hover:text-red"><Link href={""}>realmi</Link></li>
+    //                       <li className="hover:text-red"><Link href={""}>Haweii</Link></li>
+    //                     </ul>
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //               <div className="col-span-2 border-e">
+    //                 <div className="p-3">
+    //                   <h1 className="font-bold text-xl">Dòng sản phẩm HOT</h1>
+    //                   <ul className="mt-3 grid gap-3 text-md">
+    //                     {items.map((item, index) => (
+    //                       <li className="hover:text-red"><Link href={""} key={index}>{item}</Link></li>
+    //                     ))}
+    //                   </ul>
+    //                 </div>
+    //               </div>
+    //               <div className="col-span-3">
+    //                 <div className="p-3">
+    //                   <h1 className="font-bold text-xl">Sản phẩm giá gốc</h1>
+    //                   <div className="flex flex-wrap gap-2 mt-4">
+    //                     {image.map((img, index) => (
+    //                       <div key={index} style={{ alignItems: "center" }} className="flex gap-3">
+    //                         <Image src={img} alt={`Image ${index + 1}`} width={60} height={60} />
+    //                         <div>
+    //                           <Link href="#" className="hover:text-red text-sm">{items2[index]}</Link>
+    //                           <p className="text-rose-700 text-sm">{price[index]}</p>
+    //                         </div>
+    //                       </div>
+    //                     ))}
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           </div>
+    //         ) :
+    //         (
+    //           <div className="grid grid-cols-5 gap-4 bg3">
+    //             <div className="col-span-4 rounded-lg" style={{ height: "max-content" }}>
+    //               <div className="relative">
+    //                 <img
+    //                   src={images[currentIndex]}
+    //                   alt={`Slide ${currentIndex + 1}`}
+    //                   className="w-full h-auto rounded-lg" />
+    //                 <button
+    //                   onClick={prevImage}
+    //                   className="absolute top-1/2 left-0 transform -translate-y-1/2 bg text-white p-2 rounded-e-md">
+    //                   &#10094;
+    //                 </button>
+    //                 <button
+    //                   onClick={nextImage}
+    //                   className="absolute top-1/2 right-0 transform -translate-y-1/2 bg text-white p-2 rounded-s-md">
+    //                   &#10095;
+    //                 </button>
+    //                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+    //                   {images.map((_, index) => (
+    //                     <span
+    //                       key={index}
+    //                       className={`h-2 w-2 rounded-full cursor-pointer transition-colors duration-300 ease-in-out ${index === currentIndex ? 'bg-blue-500' : 'bg-gray-400'}`}
+    //                       onClick={() => setCurrentIndex(index)}
+    //                     ></span>
+    //                   ))}
+    //                 </div>
+    //               </div>
+    //             </div>
+    //             <div className="col-span-1 rounded-lg bg3 " style={{ height: "max-content" }}>
+    //               <Link href={""}><img className="rounded-md mb-4" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731460581097_14_5.png&w=1080&q=75" alt="" /></Link>
+    //               <Link href={""}><img className="rounded-md mb-4" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F14%2F1%2F1731553493834_samsung_10.png&w=1080&q=75" alt="" /></Link>
+    //               <Link href={""}><img className="rounded-md" src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F8%2F27%2F1%2F1727409819906_giaa_baan_raaa_haan_398_x_252.jpg&w=1080&q=75" alt="" /></Link>
+    //             </div>
+    //           </div>
+    //         )
+    //       }
 
-        </div>
-      </div >
-      {/* Slider */}
-      <div className="my-6 flex justify-center">
-        <div className="bg-red-900 p-6 rounded-lg max-w-7xl shadow-lg">
-          {/* Header */}
-          <div className="flex items-center gap-4 text-white text-sm -mt-4">
-            <button className="bg-red-700 px-4 py-2 rounded-md">
-              DEAL SỐC HÔM NAY
-            </button>
-            <button className="bg-red-700 px-4 py-2 rounded-md">
-              ONLY ONLINE GIẢM ĐẾN 40%
-            </button>
-          </div>
+    //     </div>
+    //   </div >
+    //   {/* Slider */}
+    //   <div className="my-6 flex justify-center">
+    //     <div className="bg-red-900 p-6 rounded-lg max-w-7xl shadow-lg">
+    //       {/* Header */}
+    //       <div className="flex items-center gap-4 text-white text-sm -mt-4">
+    //         <button className="bg-red-700 px-4 py-2 rounded-md">
+    //           DEAL SỐC HÔM NAY
+    //         </button>
+    //         <button className="bg-red-700 px-4 py-2 rounded-md">
+    //           ONLY ONLINE GIẢM ĐẾN 40%
+    //         </button>
+    //       </div>
 
-          {/* Carousel */}
-          <div className="carousel w-full mt-4">
-            {ListSlider.map((item, index) => (
-              <div id={`slide${index}`} className="carousel-item relative w-full">
-                <div className="grid grid-cols-5 gap-2 cursor-pointer">
-                  {item.map((it, id) => (
-                    <BasicSlider key={id} item={it} />
-                  ))}
-                </div>
-                <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
-                  <a href={`#slide${index - 1}`} className="btn btn-circle bg-white text-black border-none">❮</a>
-                  <a href={`#slide${index + 1}`} className="btn btn-circle bg-white text-black border-none">❯</a>
-                </div>
-              </div>
-            ))}
-          </div>
+    //       {/* Carousel */}
+    //       <div className="carousel w-full mt-4">
+    //         {ListSlider.map((item, index) => (
+    //           <div id={`slide${index}`} className="carousel-item relative w-full">
+    //             <div className="grid grid-cols-5 gap-2 cursor-pointer">
+    //               {item.map((it, id) => (
+    //                 <BasicSlider key={id} item={it} />
+    //               ))}
+    //             </div>
+    //             <div className="absolute left-0 right-0 top-1/2 flex -translate-y-1/2 transform justify-between px-4">
+    //               <a href={`#slide${index - 1}`} className="btn btn-circle bg-white text-black border-none">❮</a>
+    //               <a href={`#slide${index + 1}`} className="btn btn-circle bg-white text-black border-none">❯</a>
+    //             </div>
+    //           </div>
+    //         ))}
+    //       </div>
 
-        </div>
-      </div>
-      {/*itempopular*/}
-      <div className=" w-full gap-8">
+    //     </div>
+    //   </div>
+    //   {/*itempopular*/}
+    //   <div className=" w-full gap-8">
 
-        {/* Slide 1 */}
-        <div className=" relative w-full h-full block shadow p-4 mt-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
-          </div>
+    //     {/* Slide 1 */}
+    //     <div className=" relative w-full h-full block shadow p-4 mt-4">
+    //       <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
+    //       <div className="grid grid-cols-5 gap-4 items-center">
+    //         {ListPopular.slice(0, 5).map((item, index) => (
+    //           <BasicCard key={index} item={item} />
+    //         ))}
+    //       </div>
 
-        </div>
+    //     </div>
 
-        {/* Slide 2 */}
-        <div className=" relative w-full block shadow p-4 mt-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
-          <div className="grid grid-cols-5 gap-4 items-center ">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
-          </div>
+    //     {/* Slide 2 */}
+    //     <div className=" relative w-full block shadow p-4 mt-4">
+    //       <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
+    //       <div className="grid grid-cols-5 gap-4 items-center ">
+    //         {ListPopular.slice(0, 5).map((item, index) => (
+    //           <BasicCard key={index} item={item} />
+    //         ))}
+    //       </div>
 
-        </div>
+    //     </div>
 
-        {/* Slide 3 */}
-        <div className="relative w-full block shadow p-4 mt-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
-          </div>
+    //     {/* Slide 3 */}
+    //     <div className="relative w-full block shadow p-4 mt-4">
+    //       <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
+    //       <div className="grid grid-cols-5 gap-4 items-center">
+    //         {ListPopular.slice(0, 5).map((item, index) => (
+    //           <BasicCard key={index} item={item} />
+    //         ))}
+    //       </div>
 
-        </div>
+    //     </div>
 
-        {/* Slide 4 */}
-        <div className="relative w-full block shadow p-4 mt-4">
-          <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
-          <div className="grid grid-cols-5 gap-4 items-center">
-            {ListPopular.slice(0, 5).map((item, index) => (
-              <BasicCard key={index} item={item} />
-            ))}
-          </div>
+    //     {/* Slide 4 */}
+    //     <div className="relative w-full block shadow p-4 mt-4">
+    //       <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
+    //       <div className="grid grid-cols-5 gap-4 items-center">
+    //         {ListPopular.slice(0, 5).map((item, index) => (
+    //           <BasicCard key={index} item={item} />
+    //         ))}
+    //       </div>
 
-        </div>
+    //     </div>
 
-      </div>
+    //   </div>
 
-    </div>
-
+    // </div>
+    <>
+      <ProductPage /></>
   );
 };
