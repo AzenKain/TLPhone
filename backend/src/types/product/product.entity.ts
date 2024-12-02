@@ -50,6 +50,21 @@ export class ImageDetailEntity {
     productDetail: Relation<ProductDetailEntity>;
 }
 
+@Entity({ name: 'ColorDetail' })
+export class ColorDetailEntity {
+    @PrimaryGeneratedColumn({ type: 'bigint' })
+    id: number;
+
+    @Column()
+    colorName: string;
+
+    @Column({nullable : true})
+    colorHex: string;
+
+    @ManyToOne(() => ProductDetailEntity, (pd) => pd.color, { nullable: true })
+    productDetail: Relation<ProductDetailEntity>;
+}
+
 @Entity({ name: 'ProductVariant' })
 export class ProductVariantEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -88,6 +103,9 @@ export class ProductDetailEntity {
 
     @OneToMany(() => ImageDetailEntity, (img) => img.productDetail)
     imgDisplay: Relation<ImageDetailEntity[]>;
+
+    @OneToMany(() => ColorDetailEntity, (img) => img.productDetail)
+    color: Relation<ColorDetailEntity[]>;
 
     @ManyToMany(() => TagsEntity, (tag) => tag.productDetail)
     @JoinTable()

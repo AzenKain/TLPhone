@@ -1,22 +1,22 @@
 export type ItemSchemaProductDetailType = {
-  id: number;
+  id: string;
   isUseForSearch: boolean;
   value: string;
   productSchema?: SchemaProductDetailType[];
 };
 
 export type SchemaProductType = {
-  id: number;
+  id: string;
   name: string;
   isDisplay: boolean;
-  category?: string;
+  category?: string | null;
   detail: SchemaProductDetailType[];
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date | null;
+  updated_at?: Date | null;
 };
 
 export type SchemaProductDetailType = {
-  id: number;
+  id: string;
   title: string;
   attributes: ItemSchemaProductDetailType[];
   schema?: SchemaProductType;

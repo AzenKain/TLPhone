@@ -1,7 +1,14 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateProductDto, DeleteProductDto, SearchProductDto, TagsProductDto, UpdateProductDto } from './dtos';
-import { ProductType, SearchProductType, TagsDetailType,  } from 'src/types/product';
+import {
+    ColorDetailInp,
+    CreateProductDto,
+    DeleteProductDto,
+    SearchProductDto,
+    TagsProductDto,
+    UpdateProductDto,
+} from './dtos';
+import { ColorDetailType, ProductType, SearchProductType, TagsDetailType } from 'src/types/product';
 import { ResponseType } from 'src/types/response.type';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { ProductService } from './product.service';
@@ -19,6 +26,13 @@ export class ProductResolver {
         @Args('GetTagsProduct') tags: TagsProductDto
     ): Promise<TagsDetailType[]> { 
         return await this.productService.GetTagsProductService(tags)
+    }
+
+    @Query(() => [ColorDetailType])
+    async GetColorProduct(
+      @Args('GetColorProduct') colors: ColorDetailInp
+    ): Promise<ColorDetailType[]> {
+        return await this.productService.GetColorsProductService(colors)
     }
 
     @Query(() => SearchProductType)
@@ -39,18 +53,17 @@ export class ProductResolver {
     async GetProductById(
         @Args('productId') productId: number 
     ): Promise<ProductType> { 
-        const product = await this.productService.GetProductByIdService(productId);
-        return product;
+        return await this.productService.GetProductByIdService(productId);
+
     }
-    
+
     @UseGuards(JwtGuardGraphql)
     @Mutation(() => ProductType)
     async CreateProduct(
         @CurrentUserGraphql() user: UserEntity,
         @Args('CreateProduct') dto: CreateProductDto
     ): Promise<ProductType> {
-        const product = await this.productService.CreateProductService(dto, user);
-        return product; 
+        return await this.productService.CreateProductService(dto, user);
     }
 
     @UseGuards(JwtGuardGraphql)
@@ -59,8 +72,8 @@ export class ProductResolver {
         @CurrentUserGraphql() user: UserEntity,
         @Args({ name: 'CreateProduct', type: () => [CreateProductDto] }) dto: CreateProductDto[]
     ): Promise<ProductType[]> {
-        const product = await this.productService.CreateProductByListService(dto, user);
-        return product; 
+        return await this.productService.CreateProductByListService(dto, user);
+
     }
 
     @UseGuards(JwtGuardGraphql)
@@ -81,3 +94,5 @@ export class ProductResolver {
         return await this.productService.UpdateProductService(dto, user);
     }
 }
+
+

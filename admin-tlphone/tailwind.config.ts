@@ -332,6 +332,9 @@ const config: Config = {
       },
     },
   },
+  daisyui: {
+    themes: ["winter", "aqua"],
+  },
   plugins: [require("daisyui"), flowbite.plugin()],
 };
 export default config;

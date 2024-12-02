@@ -4,6 +4,7 @@ import OrderRedux from './features/order/order.redux'
 import UserRedux from './features/user/user.redux'
 import ListUser from './features/listUser/listUser.redux'
 import ListRoom from './features/roomchat/roomchat.redux'
+import CategoryRedux from "@/app/redux/features/category/category.redux";
 
 export const makeStore = () => {
   return configureStore({
@@ -12,7 +13,8 @@ export const makeStore = () => {
       UserRedux,
       OrderRedux,
       ListUser,
-      ListRoom
+      ListRoom,
+      CategoryRedux,
     }
   })
 }

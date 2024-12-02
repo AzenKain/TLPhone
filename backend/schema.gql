@@ -43,6 +43,18 @@ type CartItem {
   quantity: Float!
 }
 
+type ColorDetail {
+  colorHex: String
+  colorName: String!
+  id: ID!
+  productDetail: ProductDetail
+}
+
+input ColorDetailInp {
+  colorHex: String
+  colorName: String
+}
+
 input CreateBlogDto {
   content: String
   title: String!
@@ -57,7 +69,7 @@ input CreateProductDto {
 
 input CreateSchemaProductDto {
   category: String
-  detail: [SchemaProductDetailDto!]
+  detail: [SchemaProductDetailDto!] = []
   name: String!
 }
 
@@ -162,15 +174,19 @@ type Mutation {
   CreateOrder(CreateOrder: createOrderDto!): Order!
   CreateProduct(CreateProduct: CreateProductDto!): Product!
   CreateProductByList(CreateProduct: [CreateProductDto!]!): [Product!]!
+  CreateSchemaProduct(CreateSchemaProduct: CreateSchemaProductDto!): SchemaProduct!
   CreateUser(CreateUser: CreateUserDto!): UserType!
   CreateUserByList(CreateUser: [CreateUserDto!]!): [UserType!]!
   DeleteBlog(DeleteBlog: DeleteBlogDto!): ResponseType!
   DeleteProduct(DeleteProduct: DeleteProductDto!): ResponseType!
+  DeleteSchemaProduct(DeleteSchemaProduct: DeleteSchemaProductDto!): ResponseType!
   DeleteUser(id: String!): ResponseType!
   UpdateBlog(UpdateBlog: UpdateBlogDto!): Blog!
   UpdateOrder(UpdateOrder: updateOrderDto!): Order!
   UpdateProduct(UpdateProduct: UpdateProductDto!): Product!
   UpdateProfileUser(UpdateProfile: UpdateProfileDto!): UserType!
+  UpdateRoleUser(UpdateRole: UpdateRoleDto!): UserType!
+  UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
 }
 
 type Order {
@@ -246,6 +262,7 @@ type Product {
 type ProductDetail {
   attributes: [TagsDetail!]
   brand: TagsDetail
+  color: [ColorDetail!]
   description: String
   id: ID!
   imgDisplay: [ImageDetail!]
@@ -256,10 +273,11 @@ type ProductDetail {
 input ProductDetailInp {
   attributes: [TagsDetailInp!]
   brand: TagsDetailInp
+  color: [ColorDetailInp!]
   description: String
   imgDisplay: [ImageDetailInp!]
   tutorial: String
-  variants: [ProductVariantInp!]!
+  variants: [ProductVariantInp!]
 }
 
 type ProductVariant {
@@ -275,15 +293,16 @@ type ProductVariant {
 input ProductVariantInp {
   attributes: [TagsDetailInp!]
   displayPrice: Float!
+  hasImei: Boolean
+  imeiList: [String!]
   originPrice: Float!
   stockQuantity: Int
 }
 
 type Query {
-  CreateSchemaProduct(UpdateSchemaProduct: CreateSchemaProductDto!): SchemaProduct!
-  DeleteSchemaProduct(DeleteSchemaProduct: DeleteSchemaProductDto!): ResponseType!
   GetAllSchemaProduct: [SchemaProduct!]!
   GetBlogById(blogId: Float!): Blog!
+  GetColorProduct(GetColorProduct: ColorDetailInp!): [ColorDetail!]!
   GetOrderById(orderId: Float!): Order!
   GetProductById(productId: Float!): Product!
   GetReportProduct(ReportProduct: SearchProductDto!): SearchProduct!
@@ -294,7 +313,6 @@ type Query {
   SearchOrderWithOption(SearchOrder: SearchOrderDto!): SearchOrder!
   SearchProductWithOptions(SearchProduct: SearchProductDto!): SearchProduct!
   SearchUserWithOption(SearchUser: SearchUserDto!): SearchUser!
-  UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
 }
 
 type Refund {
@@ -340,7 +358,7 @@ type SchemaProductDetail {
 }
 
 input SchemaProductDetailDto {
-  attributes: [ItemSchemaProductDto!]
+  attributes: [ItemSchemaProductDto!] = []
   title: String!
 }
 
@@ -373,7 +391,10 @@ type SearchProduct {
 }
 
 input SearchProductDto {
+  attributes: [TagsDetailInp!]
   brand: [TagsDetailInp!]
+  category: String
+  color: [TagsDetailInp!]
   count: Float
   hotSales: String
   index: Float
@@ -448,6 +469,11 @@ input UpdateProfileDto {
   phoneNumber: String
 }
 
+input UpdateRoleDto {
+  role: [String!]!
+  userId: String!
+}
+
 input UpdateSchemaProductDetailDto {
   attributes: [UpdateItemSchemaProductDto!]
   title: String
@@ -455,9 +481,8 @@ input UpdateSchemaProductDetailDto {
 
 input UpdateSchemaProductDto {
   category: String
-  detail: [UpdateSchemaProductDetailDto!]
+  detail: [UpdateSchemaProductDetailDto!] = []
   name: String
-  productId: ID
   schemaId: Float!
 }
 

@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuardGraphql } from '../auth/guard';
 import { SchemaProductService } from './schema-product.service';
@@ -9,7 +9,7 @@ import { ResponseType } from '../types/response.type';
 import { CreateSchemaProductDto, DeleteSchemaProductDto, UpdateSchemaProductDto } from './dtos';
 
 @UseGuards(JwtGuardGraphql)
-@Resolver()
+@Resolver(() => SchemaProductType)
 export class SchemaProductResolver {
   constructor(
     private schemaProductService: SchemaProductService,
@@ -27,15 +27,15 @@ export class SchemaProductResolver {
     return await this.schemaProductService.GetAllSchemaProductService();
   }
 
-  @Query(() => SchemaProductType)
+  @Mutation(() => SchemaProductType)
   async CreateSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,
-    @Args('UpdateSchemaProduct') dto: CreateSchemaProductDto
+    @Args('CreateSchemaProduct') dto: CreateSchemaProductDto
   ): Promise<SchemaProductType> {
     return await this.schemaProductService.CreateSchemaProductService(dto, user);
   }
 
-  @Query(() => SchemaProductType)
+  @Mutation(() => SchemaProductType)
   async UpdateSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,
     @Args('UpdateSchemaProduct') dto: UpdateSchemaProductDto
@@ -43,7 +43,7 @@ export class SchemaProductResolver {
     return await this.schemaProductService.UpdateSchemaProductService(dto, user);
   }
 
-  @Query(() => ResponseType)
+  @Mutation(() => ResponseType)
   async DeleteSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,
     @Args('DeleteSchemaProduct') dto: DeleteSchemaProductDto

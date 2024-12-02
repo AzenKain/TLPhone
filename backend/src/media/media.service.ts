@@ -45,12 +45,12 @@ export class MediaService {
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-
-    const filePath = path.join(uploadDir, file.originalname);
+    const newName = `${Date.now()}`+file.originalname
+    const filePath = path.join(uploadDir, newName);
 
     fs.writeFileSync(filePath, file.buffer);
 
-    const fileUrl = `/uploads/${currentYear}/${currentMonth}/${file.originalname}`;
+    const fileUrl = `/uploads/${currentYear}/${currentMonth}/${newName}`;
 
     return { url: fileUrl };
   }

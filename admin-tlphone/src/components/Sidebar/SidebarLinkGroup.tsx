@@ -1,4 +1,4 @@
-"use client";
+"use customer";
 import { ReactNode, useState } from "react";
 
 interface SidebarLinkGroupProps {

@@ -1,26 +1,40 @@
 import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImageDetailEntity, ProductDetailEntity, ProductEntity, TagsEntity} from 'src/types/product';
+import {
+    ColorDetailEntity, FaultyProductEntity,
+    ImageDetailEntity,
+    ProductDetailEntity,
+    ProductEntity, ProductVariantEntity,
+    TagsEntity,
+} from 'src/types/product';
 import { UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { CreateProductDto, DeleteProductDto,ProductDetailInp, SearchProductDto, TagsProductDto, UpdateProductDto } from './dtos';
+import {
+    ColorDetailInp,
+    CreateProductDto,
+    DeleteProductDto,
+    ProductDetailInp,
+    SearchProductDto,
+    TagsProductDto,
+    UpdateProductDto,
+} from './dtos';
 import { OrderService } from 'src/order/order.service';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import * as FormData from 'form-data';
 
 
 @Injectable()
 export class ProductService {
     constructor(
-        private config: ConfigService,
         private orderService: OrderService,
         private readonly httpService: HttpService,
         @InjectRepository(ProductEntity) private productRepository: Repository<ProductEntity>,
         @InjectRepository(ProductDetailEntity) private productDetailRepository: Repository<ProductDetailEntity>,
         @InjectRepository(ImageDetailEntity) private imageDetailRepository: Repository<ImageDetailEntity>,
         @InjectRepository(TagsEntity) private tagsRepository: Repository<TagsEntity>,
+        @InjectRepository(ColorDetailEntity) private colorRepository: Repository<ColorDetailEntity>,
+        @InjectRepository(ProductVariantEntity) private productVariantRepository: Repository<ProductVariantEntity>,
+        @InjectRepository(FaultyProductEntity) private FaultyProductRepository: Repository<FaultyProductEntity>,
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
 
     ) { }
@@ -52,9 +66,13 @@ export class ProductService {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
 
         queryBuilder
-            .leftJoinAndSelect('product.details', 'details')
-            .leftJoinAndSelect('details.imgDisplay', 'imgDisplay')
-            .leftJoinAndSelect('details.brand', 'brand')
+          .leftJoinAndSelect('product.details', 'details')
+          .leftJoinAndSelect('details.imgDisplay', 'imgDisplay')
+          .leftJoinAndSelect('details.brand', 'brand')
+          .leftJoinAndSelect('details.color', 'color')
+          .leftJoinAndSelect('details.variants', 'variants')
+          .leftJoinAndSelect('details.attributes', 'attributes')
+          .leftJoinAndSelect('variants.attributes', 'variantAttributes')
 
 
         queryBuilder.andWhere('product.isDisplay = :isDisplay', { isDisplay: true });
@@ -62,31 +80,46 @@ export class ProductService {
         if (dto.name) {
             queryBuilder.andWhere('product.name LIKE :name', { name: `%${dto.name}%` });
         }
-
+        if (dto.category) {
+            queryBuilder.andWhere('product.category LIKE :category', { category: `%${dto.category}%` });
+        }
         if (dto.rangeMoney && dto.rangeMoney.length === 2) {
             const [min, max] = dto.rangeMoney;
-            queryBuilder.andWhere('product.displayCost BETWEEN :min AND :max', { min, max });
+            queryBuilder.andWhere('variants.displayPrice BETWEEN :min AND :max', { min, max });
         }
 
         if (dto.brand && dto.brand.length > 0) {
             queryBuilder.andWhere('brand.value IN (:...brands)', { brands: dto.brand.map(tag => tag.value.toLowerCase()) });
         }
 
+        if (dto.attributes && dto.attributes.length > 0) {
+            queryBuilder.andWhere('attributes.value IN (:...attributes)', { attributes: dto.attributes.map(attr => attr.value.toLowerCase()) });
+        }
+
+        if (dto.color && dto.color.length > 0) {
+            queryBuilder.andWhere('color.colorName IN (:...colors)', { colors: dto.color.map(attr => attr.value.toLowerCase()) });
+        }
 
         // Sorting
         if (dto.sort) {
             switch (dto.sort) {
                 case 'price_asc':
-                    queryBuilder.orderBy('product.displayCost', 'ASC');
+                    queryBuilder.orderBy('variants.displayPrice', 'ASC');
                     break;
                 case 'price_desc':
-                    queryBuilder.orderBy('product.displayCost', 'DESC');
+                    queryBuilder.orderBy('variants.displayPrice', 'DESC');
                     break;
                 case 'created_at_asc':
                     queryBuilder.orderBy('product.created_at', 'ASC');
                     break;
                 case 'created_at_desc':
                     queryBuilder.orderBy('product.created_at', 'DESC');
+                    break;
+                case 'updated_at_asc':
+                    queryBuilder.orderBy('product.updated_at', 'ASC');
+                    break;
+                case 'updated_at_desc':
+                    queryBuilder.orderBy('product.updated_at', 'DESC');
                     break;
                 default:
                     break;
@@ -138,6 +171,14 @@ export class ProductService {
         return await queryBuilder.getMany();
     }
 
+    async GetColorsProductService(dto: ColorDetailInp) {
+        const queryBuilder = this.colorRepository.createQueryBuilder('colorDetail');
+        if (dto.colorName) {
+            queryBuilder.andWhere('colorDetail.name = :colorName', { colorName: dto.colorName });
+        }
+
+        return await queryBuilder.getMany();
+    }
 
 
     async GetProductByIdService(productId: number) {
@@ -147,6 +188,10 @@ export class ProductService {
                 'details',
                 'details.imgDisplay',
                 'details.brand',
+                'details.color',
+                'details.attributes',
+                'details.variants',
+                'details.variants.attributes'
             ],
         });
 
@@ -187,7 +232,9 @@ export class ProductService {
         if (existingProduct) {
             throw new ForbiddenException('Product already exists with the same name and category.');
         }
-        let savedImgDetails = []
+        let savedImgDetails : ImageDetailEntity[] = []
+        let savedColorDetails : ColorDetailEntity[] = []
+        const savedVariantDetails : ProductVariantEntity[] = []
 
         if (dto.details.imgDisplay) {
             const imgDetails = dto.details.imgDisplay.map((img) =>
@@ -195,11 +242,37 @@ export class ProductService {
             );
             savedImgDetails = await this.imageDetailRepository.save(imgDetails);
         }
+        if (dto.details.color) {
+            const colorDetails = dto.details.color.map((it) =>
+              this.colorRepository.create({ colorName: it.colorName, colorHex: it.colorHex })
+            );
+            savedColorDetails = await this.colorRepository.save(colorDetails);
+        }
+        
+        if (dto.details.variants) {
+            for (const variant of dto.details.variants) {
+                let attributesVariants : TagsEntity[] = [];
+                attributesVariants = await Promise.all(
+                    variant.attributes.map(async (it) =>
+                    await this.findOrCreateTag(it.value, it.type)
+                  )
+                );
 
+                const newVariant = this.productVariantRepository.create({
+                    displayPrice: variant.displayPrice || 0,
+                    originPrice: variant.originPrice || 0,
+                    stockQuantity: variant.stockQuantity || 0,
+                    hasImei: variant.hasImei || false,
+                    imeiList: variant.imeiList || [],
+                    attributes: attributesVariants
+                })
 
+                savedVariantDetails.push(await this.productVariantRepository.save(newVariant))
+            }
+        }
         const brandTag = dto.details.brand?.value ? await this.findOrCreateTag(dto.details.brand.value, 'brand') : null;
 
-        let attributesTag = [];
+        let attributesTag : TagsEntity[] = [];
 
         if (dto.details.attributes) {
             attributesTag = await Promise.all(
@@ -212,7 +285,9 @@ export class ProductService {
             attributes: attributesTag,
             brand: brandTag,
             description: dto.details.description || '',
+            variants: savedVariantDetails,
             imgDisplay: savedImgDetails,
+            color: savedColorDetails,
             tutorial: dto.details.tutorial || '',
         });
 
@@ -255,7 +330,28 @@ export class ProductService {
         if (dtoDetails.tutorial) {
             details.tutorial = dtoDetails.tutorial;
         }
+        if (dtoDetails.attributes) {
+            details.attributes = [];
+            const attrDetails = [];
+            for (const attr of dtoDetails.attributes) {
 
+                const existingImageDetails = await this.tagsRepository.findOne({
+                    where: { type: attr.type, value: attr.value  }
+                });
+
+                if (!existingImageDetails) {
+                    const newAttrs = this.tagsRepository.create({
+                        type: attr.type,
+                        value: attr?.value,
+                    });
+                    attrDetails.push(await this.tagsRepository.save(newAttrs));
+                }
+                else {
+                    attrDetails.push(existingImageDetails)
+                }
+            }
+            details.attributes = attrDetails;
+        }
         if (dtoDetails.imgDisplay) {
             details.imgDisplay = [];
             const imgDetails = [];
@@ -278,7 +374,68 @@ export class ProductService {
             }
             details.imgDisplay = imgDetails;
         }
-        
+        if (dtoDetails.color) {
+            details.variants = [];
+            const colorDetails = [];
+            for (const it of dtoDetails.color) {
+
+                const existingColorDetails = await this.colorRepository.findOne({
+                    where: { colorName: it.colorName}
+                });
+
+                if (!existingColorDetails) {
+                    const newImageDetail = this.colorRepository.create({
+                        colorName: it.colorName,
+                        colorHex: it.colorHex || "",
+                    });
+                    colorDetails.push(await this.colorRepository.save(newImageDetail));
+                }
+                else {
+                    colorDetails.push(existingColorDetails)
+                }
+            }
+            details.color = colorDetails;
+        }
+        if (dtoDetails.variants) {
+            const variantDetails = [];
+            for (const variant of dtoDetails.variants) {
+                const existingVariant = details.variants.find(v => {
+                    if (v.attributes.length === variant.attributes.length) {
+                        let count = 0;
+                        v.attributes.forEach((att, index) => {
+                            if (att.value?.toLowerCase() === variant.attributes[index]?.value?.toLowerCase() &&
+                              att.type === variant.attributes[index]?.type) {
+                                count++;
+                            }
+                        });
+                        return count === v.attributes.length;
+                    }
+                    return false;
+                });
+
+                if (!existingVariant) {
+                    let attributesVariants: TagsEntity[] = [];
+                    attributesVariants = await Promise.all(
+                      variant.attributes.map(async (it) => await this.findOrCreateTag(it.value, it.type))
+                    );
+
+                    const newVariant = this.productVariantRepository.create({
+                        displayPrice: variant.displayPrice || 0,
+                        originPrice: variant.originPrice || 0,
+                        stockQuantity: variant.stockQuantity || 0,
+                        hasImei: variant.hasImei || true,
+                        imeiList: variant.imeiList || [],
+                        attributes: attributesVariants
+                    });
+                    const savedVariant = await this.productVariantRepository.save(newVariant);
+                    variantDetails.push(savedVariant);
+                } else {
+                    variantDetails.push(existingVariant);
+                }
+            }
+            details.variants = variantDetails;
+        }
+
         return await this.productDetailRepository.save(details);
     }
 
@@ -292,6 +449,10 @@ export class ProductService {
                 'details',
                 'details.imgDisplay',
                 'details.brand',
+                'details.color',
+                'details.attributes',
+                'details.variants',
+                'details.variants.attributes'
             ],
         });
 

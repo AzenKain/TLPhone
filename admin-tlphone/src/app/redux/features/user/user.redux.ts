@@ -17,7 +17,6 @@ const initialState: InitialState = {
     email: "",
     secretKey: "",
     isDisplay: false,
-    username: "",
     role: [],
     cart: {
       id: "-1",
@@ -37,12 +36,12 @@ export const UserRedux = createSlice({
       UpdateUser: (state, action: PayloadAction<UserType>) => {
         state.value = action.payload
       },
-        AddHeart: (state, action: PayloadAction<string>) => {
-            if (!state.value.heart.includes(action.payload)) state.value.heart.push(action.payload);
-        },
-        RemoveHeart: (state, action: PayloadAction<string>) => {
-            state.value.heart = state.value.heart.filter(it => it !== action.payload)
-        }
+      AddHeart: (state, action: PayloadAction<string>) => {
+          if (!state.value.heart.includes(action.payload)) state.value.heart.push(action.payload);
+      },
+      RemoveHeart: (state, action: PayloadAction<string>) => {
+          state.value.heart = state.value.heart.filter(it => it !== action.payload)
+      }
     }
 })
 
