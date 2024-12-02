@@ -1,14 +1,14 @@
 
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import ClientBox from "@/components/Client/ClientBox";
+import CustomerBox from "@/components/Client/CustomerBox";
 
-const ClientPage = () => {
+const CustomerPage = () => {
   return (
     <DefaultLayout>
-      <ClientBox />
+      <CustomerBox />
     </DefaultLayout>
   );
 };
 
-export default ClientPage;
+export default CustomerPage;

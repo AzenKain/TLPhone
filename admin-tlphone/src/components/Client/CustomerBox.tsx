@@ -4,13 +4,12 @@ import { UserType } from "@/types/user";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 import { useSession } from "next-auth/react";
-import { getAllUserApi, makeRequestApi, updateRoleUserApi } from "@/lib/api";
+import { makeRequestApi } from "@/lib/api";
 import { AddListUser, SearchUser, UpdateListUser } from "@/app/redux/features/listUser/listUser.redux";
 import { toast } from "react-toastify";
-import { updateRoleDto } from "@/lib/dtos/user";
 
 
-const ClientBox = () => {
+const CustomerBox = () => {
   const [itemsShow, setItemsShow] = useState<UserType | null>(null)
   const { data: session } = useSession()
   const userList = useAppSelector((state) => state.ListUser.value)
@@ -22,41 +21,41 @@ const ClientBox = () => {
     dispatch(SearchUser({value: searchValue, filter: searchFilter}))
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseData: UserType[] = await makeRequestApi(getAllUserApi, null, session?.refresh_token, session?.access_token);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const responseData: UserType[] = await makeRequestApi(getAllUserApi, null, session?.refresh_token, session?.access_token);
+  //
+  //       dispatch(AddListUser(responseData))
+  //
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //
+  //   if (session?.userId && session?.refresh_token && session?.access_token) {
+  //     fetchData();
+  //   }
+  // }, [dispatch, session])
 
-        dispatch(AddListUser(responseData))
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    if (session?.userId && session?.refresh_token && session?.access_token) {
-      fetchData();
-    }
-  }, [dispatch, session])
-
-  const handleSubmit = async (role: string[], userId: string) => {
-    let dto: updateRoleDto = {
-      userId: userId,
-      role: role
-    }
-    const responseData: UserType = await makeRequestApi(updateRoleUserApi, dto, session?.refresh_token, session?.access_token);
-    if (responseData) {
-      dispatch(UpdateListUser(responseData))
-      toast.success("Update role successfully")
-      const modal = document.getElementById("my_modal_edit") as HTMLDialogElement | null;
-      if (modal) {
-        modal.close();
-      }
-    }
-    else {
-      toast.error("Update role failed")
-    }
-  }
+  // const handleSubmit = async (role: string[], userId: string) => {
+  //   let dto: updateRoleDto = {
+  //     userId: userId,
+  //     role: role
+  //   }
+  //   const responseData: UserType = await makeRequestApi(updateRoleUserApi, dto, session?.refresh_token, session?.access_token);
+  //   if (responseData) {
+  //     dispatch(UpdateListUser(responseData))
+  //     toast.success("Update role successfully")
+  //     const modal = document.getElementById("my_modal_edit") as HTMLDialogElement | null;
+  //     if (modal) {
+  //       modal.close();
+  //     }
+  //   }
+  //   else {
+  //     toast.error("Update role failed")
+  //   }
+  // }
 
   const handleShow = (items: UserType, model: string) => {
     const modal = document.getElementById(model) as HTMLDialogElement | null;
@@ -138,7 +137,7 @@ const ClientBox = () => {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div className="h-12.5 w-15 rounded-md">
                 <Image
-                  src={user.imgDisplay ?? ""}
+                  src={user?.details?.imgDisplay ?? ""}
                   width={60}
                   height={50}
                   alt="Product"
@@ -151,19 +150,19 @@ const ClientBox = () => {
           </div>
           <div className="col-span-1 hidden items-center sm:flex">
             <p className="text-sm text-black dark:text-white">
-              {new Date(user.birthday ?? "").toDateString()}
+              {new Date(user?.details?.birthday ?? "").toDateString()}
             </p>
           </div>
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black dark:text-white">
-              {user.gender}
+              {user?.details?.gender}
             </p>
           </div>
           <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">{user.address}</p>
+            <p className="text-sm text-black dark:text-white">{user?.details?.address}</p>
           </div>
           <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">{user.phoneNumber}</p>
+            <p className="text-sm text-meta-3">{user?.details?.phoneNumber}</p>
           </div>
           <div className="col-span-2 flex items-center gap-1">
 
@@ -187,21 +186,21 @@ const ClientBox = () => {
         <div className="modal-box">
           <h3 className="font-bold text-lg">{itemsShow?.username}</h3>
           <Image
-            src={itemsShow?.imgDisplay ?? ""}
+            src={itemsShow?.details?.imgDisplay ?? ""}
             width={100}
             height={100}
             alt="user"
           />
           <p className="py-1">Email: {itemsShow?.email}</p>
           <div className="flex">
-            <p className="py-1">First name: {itemsShow?.firstName}</p>
+            <p className="py-1">First name: {itemsShow?.details?.firstName}</p>
             <div className="mx-2">|</div>
-            <p className="py-1">Last name: {itemsShow?.lastName}</p>
+            <p className="py-1">Last name: {itemsShow?.details?.lastName}</p>
           </div>
-          <p className="py-1">Gender: {itemsShow?.gender}</p>
-          <p className="pb-1">Birthday: {new Date(itemsShow?.birthday ?? "").toDateString()}</p>
-          <p className="pb-1">Phone number: {itemsShow?.phoneNumber}</p>
-          <p className="pb-1">Address: {itemsShow?.address}</p>
+          <p className="py-1">Gender: {itemsShow?.details?.gender}</p>
+          <p className="pb-1">Birthday: {new Date(itemsShow?.details?.birthday ?? "").toDateString()}</p>
+          <p className="pb-1">Phone number: {itemsShow?.details?.phoneNumber}</p>
+          <p className="pb-1">Address: {itemsShow?.details?.address}</p>
           <div className="modal-action">
             <form method="dialog">
               <button className="btn">Close</button>
@@ -305,12 +304,12 @@ const ClientBox = () => {
                 />
               </label>
             </div>
-            <button
-              onClick={async () => await handleSubmit(itemsShow?.role ?? ["USER"], itemsShow?.id ?? "")}
-              className="btn btn-success"
-            >
-              Submit
-            </button>
+            {/*<button*/}
+            {/*  onClick={async () => await handleSubmit(itemsShow?.role ?? ["USER"], itemsShow?.id ?? "")}*/}
+            {/*  className="btn btn-success"*/}
+            {/*>*/}
+            {/*  Submit*/}
+            {/*</button>*/}
           </div>
         </div>
       </dialog>
@@ -319,4 +318,4 @@ const ClientBox = () => {
   );
 };
 
-export default ClientBox;
+export default CustomerBox;
