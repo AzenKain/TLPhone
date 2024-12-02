@@ -157,7 +157,7 @@ export default function detailedproducts() {
                             <div className="space-y-6 mt-6">
                                 {specifications.map((section, index) => (
                                     <div key={index}>
-                                        <h3 className="font-bold mb-2 text-red-500">{section.category}</h3>
+                                        <h3 className="font-bold mb-2">{section.category}</h3>
                                         <div className="space-y-2">
                                             {section.details.map((detail, idx) => (
                                                 <div
