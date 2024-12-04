@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { SearchUserType, UserEntity, UserType } from 'src/types/user';
 import { HttpCode, UseGuards } from '@nestjs/common';
 import { CurrentUserGraphql } from 'src/decorators';
-import { CreateUserDto, SearchUserDto, UpdateProfileDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateRoleDto } from './dtos';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { ResponseType } from 'src/types/response.type';
 
@@ -60,5 +60,13 @@ export class UserResolver {
       @Args('UpdateProfile') dto: UpdateProfileDto
     ) {
         return await this.userService.UpdateProfileService(dto, user);
+    }
+
+    @Mutation(() => UserType)
+    async UpdateRoleUser(
+      @CurrentUserGraphql() user: UserEntity,
+      @Args('UpdateRole') dto: UpdateRoleDto
+    ) {
+        return await this.userService.UpdateRoleService(dto, user);
     }
 }

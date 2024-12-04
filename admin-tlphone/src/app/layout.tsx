@@ -10,6 +10,7 @@ import StoreProvider from "./StoreProvider";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeModeScript } from "flowbite-react";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 export default function RootLayout({
   children,
@@ -23,9 +24,9 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
+    <html data-theme="winter" lang="en">
       <head>
-        <title>BLACK CAT ADMIN</title>
+        <title>TLPhone ADMIN</title>
         <meta name='description' content='Description' />
         <ThemeModeScript />
       </head>
@@ -33,10 +34,17 @@ export default function RootLayout({
         <Providers>
           <StoreProvider>
             <div className="dark:bg-boxdark-2 dark:text-bodydark">
-              {loading ? <Loader /> : children}
+              {loading ?
+                <Loader /> :
+                (
+                  <DefaultLayout>
+                    {children}
+                  </DefaultLayout>
+                )
+              }
             </div>
+          <ToastContainer className="z-[1000]"/>
           </StoreProvider>
-          <ToastContainer />
         </Providers>
       </body>
     </html>

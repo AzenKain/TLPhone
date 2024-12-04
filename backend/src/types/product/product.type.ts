@@ -56,6 +56,9 @@ export class ProductDetailType {
     @Field(() => [ImageDetailType], { nullable: true })
     imgDisplay?: ImageDetailType[];
 
+    @Field(() => [ColorDetailType], { nullable: true })
+    color?: ColorDetailType[];
+
     @Field(() => [ProductVariantType], { nullable: true })
     variants?: ProductVariantType[];
 
@@ -83,6 +86,21 @@ export class ImageDetailType {
 
     @Field(() => [String], { nullable: true })
     link?: string[];
+
+    @Field(() => ProductDetailType, { nullable: true })
+    productDetail?: ProductDetailType;
+}
+
+@ObjectType("ColorDetail")
+export class ColorDetailType {
+    @Field(() => ID)
+    id: number;
+
+    @Field()
+    colorName: string;
+
+    @Field({nullable : true})
+    colorHex: string;
 
     @Field(() => ProductDetailType, { nullable: true })
     productDetail?: ProductDetailType;

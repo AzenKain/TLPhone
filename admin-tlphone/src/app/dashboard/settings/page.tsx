@@ -1,7 +1,5 @@
 "use client"
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Image from "next/image";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useEffect, useState } from "react"
 import { toast } from 'react-toastify';
 import { useSession } from "next-auth/react";
@@ -108,6 +106,7 @@ const customTheme : CustomFlowbiteTheme["datepicker"] =  {
     }
   }
 }
+
 const Settings = () => {
   const { data: session } = useSession()
   const userDetail = useAppSelector((state) => state.UserRedux.value)
@@ -183,7 +182,6 @@ const Settings = () => {
     }
   }
   return (
-    <DefaultLayout>
       <div className="mx-auto">
         <Breadcrumb pageName="Settings" />
 
@@ -363,7 +361,6 @@ const Settings = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
   );
 };
 

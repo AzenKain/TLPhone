@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDetailEntity, UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { CreateUserDto, SearchUserDto, UpdateProfileDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateRoleDto } from './dtos';
 import * as argon from 'argon2';
 import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +27,6 @@ export class UserService {
 
     }
     async GetReportUser(dto: SearchUserDto, userCurrent: UserEntity) {
-        console.log(userCurrent)
         const dataRequest: UserEntity[] = (await this.SearchUserWithOptionsServices(dto, userCurrent)).data;
 
         const requestBody = {
@@ -58,8 +57,6 @@ export class UserService {
         const query = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.details', 'details')
 
-
-
         if (dto.email) {
             query.andWhere('LOWER(user.email) LIKE :email', { email: `%${dto.email.toLowerCase()}%` });
         }
@@ -73,8 +70,11 @@ export class UserService {
         }
 
         if (dto.role && dto.role.length > 0) {
-            query.andWhere('user.role && ARRAY[:...roles]', { roles: dto.role });
+            const conditions = dto.role.map((role, index) => `FIND_IN_SET(:role${index}, user.role) > 0`).join(' OR ');
+            const parameters = dto.role.reduce((acc, role, index) => ({ ...acc, [`role${index}`]: role }), {});
+            query.andWhere(`(${conditions})`, parameters);
         }
+
 
         if (dto.phoneNumber) {
             query.andWhere('details.phoneNumber LIKE :phoneNumber', { phoneNumber: `%${dto.phoneNumber}%` });
@@ -106,7 +106,7 @@ export class UserService {
         }
 
 
-        if (dto.index !== undefined && dto.count !== undefined) {
+        if (dto.index !== null && dto.count !== null) {
             query.skip(dto.index).take(dto.count);
         }
 
@@ -120,6 +120,24 @@ export class UserService {
         }
 
         return { maxValue, data: users };
+    }
+    async UpdateRoleService(dto: UpdateRoleDto, userCurrent: UserEntity): Promise<UserEntity> {
+        this.CheckRoleUser(userCurrent)
+        const user = await this.userRepository.findOne({
+            where: { secretKey: dto.userId },
+            relations: ['details', 'cart', 'cart.cartProducts']
+        });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        user.role = dto.role
+
+        const dataReturn = await this.userRepository.save(user);
+        delete dataReturn.hash;
+        delete dataReturn.refreshToken;
+        return dataReturn;
     }
 
     async UpdateProfileService(dto: UpdateProfileDto, userCurrent: UserEntity): Promise<UserEntity> {
@@ -146,7 +164,10 @@ export class UserService {
         user.details.address = dto.address ? dto.address : user.details.address;
         user.details.gender = dto.gender ? dto.gender : user.details.gender;
         user.details.imgDisplay = dto.imgDisplay ? dto.imgDisplay : user.details.imgDisplay;
-        return await this.userRepository.save(user);
+        const dataReturn = await this.userRepository.save(user);
+        delete dataReturn.hash;
+        delete dataReturn.refreshToken;
+        return dataReturn;
     }
 
     async DeleteUserService(userId: string, userCurrent: UserEntity): Promise<ResponseType> {
@@ -209,8 +230,10 @@ export class UserService {
             heart:[],
             cart: newCart
         })
-
-        return await this.userRepository.save(UserCre);
+        const dataReturn = await this.userRepository.save(UserCre);
+        delete dataReturn.hash;
+        delete dataReturn.refreshToken;
+        return dataReturn;
     }
 
 

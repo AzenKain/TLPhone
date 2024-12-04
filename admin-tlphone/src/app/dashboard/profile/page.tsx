@@ -1,12 +1,9 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
-import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
 
 const Profile = () => {
   return (
-    <DefaultLayout>
       <div className="mx-auto max-w-242.5">
         <Breadcrumb pageName="Profile" />
 
@@ -303,7 +300,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
   );
 };
 

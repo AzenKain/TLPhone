@@ -1,4 +1,4 @@
-"use client";
+"use customer";
 import React, { useState } from "react";
 
 const SelectGroupTwo: React.FC = () => {

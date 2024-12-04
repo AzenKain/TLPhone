@@ -1,5 +1,5 @@
 import { Field, Float, ID, InputType, Int } from "@nestjs/graphql";
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 
 @InputType()
 export class TagsDetailInp {
@@ -16,6 +16,16 @@ export class TagsDetailInp {
 
 @InputType()
 export class ProductVariantInp {
+
+    @IsOptional()
+    @IsBoolean()
+    @Field({nullable: true,})
+    hasImei: boolean;
+
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    imeiList?: string[];
+
     @IsNotEmpty()
     @IsNumber()
     @Field(() => Float)
@@ -26,7 +36,7 @@ export class ProductVariantInp {
     @Field(() => Float)
     displayPrice: number;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Field(() => Int, { nullable: true })
     stockQuantity?: number;
@@ -43,8 +53,12 @@ export class ProductDetailInp {
     imgDisplay?: ImageDetailInp[];
 
     @IsOptional()
-    @Field(() => [ProductVariantInp])
-    variants: ProductVariantInp[];
+    @Field(() => [ColorDetailInp], { nullable: true })
+    color?: ColorDetailInp[];
+
+    @IsOptional()
+    @Field(() => [ProductVariantInp], { nullable: true })
+    variants?: ProductVariantInp[];
 
     @IsOptional()
     @Field(() => TagsDetailInp, { nullable: true })
@@ -55,10 +69,12 @@ export class ProductDetailInp {
     attributes?: TagsDetailInp[];
 
     @IsOptional()
+    @IsString()
     @Field({ nullable: true })
     description?: string;
 
     @IsOptional()
+    @IsString()
     @Field({ nullable: true })
     tutorial?: string;
 }
@@ -74,7 +90,18 @@ export class ImageDetailInp {
     @Field(() => [String], { nullable: true })
     link?: string[];
 }
+@InputType()
+export class ColorDetailInp {
+    @IsOptional()
+    @IsString()
+    @Field({ nullable: true })
+    colorName?: string;
 
+    @IsOptional()
+    @IsString()
+    @Field({ nullable: true })
+    colorHex?: string;
+}
 @InputType()
 export class CreateProductDto {
     @IsNotEmpty()

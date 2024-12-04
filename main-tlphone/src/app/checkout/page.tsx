@@ -8,6 +8,33 @@ export default function Checkout() {
             <div className='shadow rounded-lg bg-white'>
                 <div className='p-10'>
                     <p className='text-2xl text-center font-bold'>Checkout</p>
+                    <div className=' bg-white p-2 py-10 rounded-lg'>
+                        <div className='grid grid-cols-7 border-2 p-2 rounded-lg'>
+                            <div className='col-span-2'>
+                                <Image src={"/img/ip15.webp"} alt='//' height={200} width={200}></Image>
+                            </div>
+                            <div className='col-span-5'>
+                                <div>
+                                    <div style={{ width: 'max-content', height: 'max-content' }}>
+                                        <h1 className='text-xl'>IPhone 16 Pro Max Chính Hãng (VN/A)</h1>
+                                        <div className='flex justify-between'>
+                                            <div className='mt-10 grid gap-2'>
+                                                <p><span className='text-slate-500'>Ram: </span>16GB</p>
+                                                <p><span className='text-slate-500'>Rom: </span>256GB</p>
+                                                <p><span className='text-slate-500'>Màu sắc: </span>Titan</p>
+                                            </div>
+                                            <div className='ms-80 mt-20'>
+                                                <div>
+                                                    <p className="gach-ngang ">34.990.000 đ</p>
+                                                    <p className="mt-2">34.290.000 đ</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className='grid grid-cols-3 mt-8'>
                         <div className='col-span-1 grid'>
                             <div>
@@ -77,7 +104,7 @@ export default function Checkout() {
                             </div>
                             <div>
                                 <div className='mt-20'>
-                                    <input type="text" placeholder="AddressDetails" className="input input-bordered w-full" />
+                                    <input type="text" placeholder="Note" className="input input-bordered w-full" />
                                 </div>
                             </div>
                         </div>

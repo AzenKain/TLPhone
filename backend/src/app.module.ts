@@ -10,6 +10,7 @@ import { UserDetailEntity, UserEntity } from './types/user';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import {
+  ColorDetailEntity,
   FaultyProductEntity,
   ImageDetailEntity,
   ProductDetailEntity,
@@ -74,6 +75,7 @@ import { CartModule } from './cart/cart.module';
           ProductEntity, 
           ProductDetailEntity,
           ProductVariantEntity,
+          ColorDetailEntity,
           FaultyProductEntity,
           ImageDetailEntity,
           OrderEntity, 

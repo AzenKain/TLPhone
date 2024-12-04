@@ -10,7 +10,6 @@ import {
     Relation,
     ManyToMany, JoinTable, OneToOne,
 } from 'typeorm';
-import { ProductEntity } from '../product';
 
 @Entity({ name: 'ItemSchemaProductDetail' })
 export class ItemSchemaProductDetailEntity {

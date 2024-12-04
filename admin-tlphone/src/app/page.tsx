@@ -1,5 +1,4 @@
 'use client'
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
@@ -9,13 +8,12 @@ export default function Home() {
   const dispatch = useAppDispatch()
   return (
     <>
-      <DefaultLayout>
       <div className="mx-auto max-w-242.5">
         
         <Breadcrumb pageName="Profile" />
 
         <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="text-center my-3 text-black dark:text-white text-4xl font-semibold">Welcome {userData.username} to TLPhone Admin</div>
+        <div className="text-center my-3 text-black dark:text-white text-4xl font-semibold">Welcome {`${userData.details?.firstName} ${userData.details?.lastName}`} to TLPhone Admin</div>
 
           <div className="relative z-20 h-35 md:h-65">
             <Image
@@ -48,15 +46,13 @@ export default function Home() {
             </div>
             <div className="mt-4">
               <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-                {userData?.username}
+                {`${userData.details?.firstName} ${userData.details?.lastName}`}
               </h3>
               <p className="font-medium">{userData?.role?.join(", ")}</p>
             </div>
           </div>
         </div>
       </div>
-
-      </DefaultLayout>
     </>
   );
 }
