@@ -114,9 +114,11 @@ export default function Checkout() {
                             <button className='border rounded max-w-fit py-2 px-3'>
                                 <p>Pay later</p>
                             </button>
-                            <button className='border rounded max-w-fit py-2 px-3 bg-blue-500 text-white'>
-                                <p>Pay now</p>
-                            </button>
+                            <Link href={"/thankiu"}>
+                                <button className='border rounded max-w-fit py-2 px-3 bg-blue-500 text-white'>
+                                    <p>Pay now</p>
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
