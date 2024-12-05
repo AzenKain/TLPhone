@@ -46,22 +46,20 @@ export default function ProductSearch() {
             { id: 19, name: 'iPhone 11 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
             { id: 20, name: 'iPhone 11 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
         ]
-    const productsPerPage = 10; // Số sản phẩm trên mỗi trang
+    const productsPerPage = 10;
     const totalPages = Math.ceil(ListSearch.length / productsPerPage);
-    // State quản lý trang hiện tại
+
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Sản phẩm được hiển thị theo trang
     const displayedProducts = ListSearch.slice(
         (currentPage - 1) * productsPerPage,
         currentPage * productsPerPage
     );
 
-    // Hàm xử lý chuyển trang
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
-            window.scrollTo(0, 0); // Cuộn lên đầu trang khi đổi trang
+            window.scrollTo(0, 0);
         }
     };
     return (
@@ -77,7 +75,7 @@ export default function ProductSearch() {
                         ))}
                     </div>
                     <div className="flex justify-center items-center space-x-2 mt-6">
-                        {/* Nút "«" và "‹" */}
+
                         {currentPage > 1 && (
                             <>
                                 <button
@@ -95,9 +93,8 @@ export default function ProductSearch() {
                             </>
                         )}
 
-                        {/* Hiển thị các số trang */}
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                            // Hiển thị trang đầu nếu ở gần hoặc nếu cần thiết
+
                             if (page === 1 && currentPage <= 3) {
                                 return (
                                     <button
@@ -113,7 +110,6 @@ export default function ProductSearch() {
                                 );
                             }
 
-                            // Hiển thị trang cuối
                             if (page === totalPages && currentPage >= totalPages - 2) {
                                 return (
                                     <button
@@ -129,7 +125,6 @@ export default function ProductSearch() {
                                 );
                             }
 
-                            // Hiển thị các trang gần trang hiện tại (2 trang trước và sau)
                             if (Math.abs(page - currentPage) <= 1) {
                                 return (
                                     <button
@@ -145,10 +140,9 @@ export default function ProductSearch() {
                                 );
                             }
 
-                            // Hiển thị dấu "..." trước hoặc sau trang hiện tại
                             if (
-                                (page === currentPage - 2 && page > 1) || // Dấu "..." trước trang hiện tại
-                                (page === currentPage + 2 && page < totalPages) // Dấu "..." sau trang hiện tại
+                                (page === currentPage - 2 && page > 1) ||
+                                (page === currentPage + 2 && page < totalPages)
                             ) {
                                 return (
                                     <span key={page} className="px-3 py-1 border rounded hover:bg-gray-200">
@@ -157,10 +151,9 @@ export default function ProductSearch() {
                                 );
                             }
 
-                            return null; // Ẩn các trang không cần thiết
+                            return null;
                         })}
 
-                        {/* Nút "›" và "»" */}
                         {currentPage < totalPages && (
                             <>
                                 <button
