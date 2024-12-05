@@ -93,7 +93,9 @@ export default function Cart() {
                         </div>
                     </div>
                     <div className='justify-center flex'>
-                        <button type="submit" className="btn bg-rose-600 text-white px-32 mt-5 text-nowrap">Check out</button>
+                        <Link href={"/checkout"}>
+                            <button type="submit" className="btn bg-rose-600 text-white px-32 mt-5 text-nowrap">Check out</button>
+                        </Link>
                     </div>
                 </div>
             </div>
