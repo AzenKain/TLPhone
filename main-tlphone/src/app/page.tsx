@@ -4,12 +4,10 @@ import Image from 'next/image';
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
-import Products from "@/components/product";
 import BasicCard from "@/components/Card/BasicCard";
 import BasicSlider from "@/components/Siler/BasicSlider";
 import { Slider } from "@/types/slider";
 import { Card } from "@/types";
-import ProductPage from "./product/[productId]/page";
 
 export default function Home() {
 
@@ -78,8 +76,10 @@ export default function Home() {
                     <h1 className="mt-9 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
                     <div onMouseEnter={() => setClickMenu(true)} >
                       <div className="mt-10 flex gap-3">
-                        <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
-                        <h1 className="text-lg hover:text-red-500">Điện thoại</h1>
+                        <Link href={"#"} className="mt-10 flex gap-2">
+                          <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
+                          <h1 className="text-lg hover:text-red-500">Điện thoại</h1>
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-7 text-xl">
@@ -115,7 +115,7 @@ export default function Home() {
                         <h1 className="font-bold text-xl">Thương hiệu</h1>
                         <div className="mt-3 flex gap-16">
                           <ul className="grid gap-3 text-md">
-                            <li className="hover:text-red-500"><Link href={""}>IPhone</Link></li>
+                            <li className="hover:text-red-500"><Link href={"http://localhost:3000/search"}>IPhone</Link></li>
                             <li className="hover:text-red-500"><Link href={""}>Samsung</Link></li>
                             <li className="hover:text-red-500"><Link href={""}>OPPO</Link></li>
                             <li className="hover:text-red-500"><Link href={""}>Xiaomi</Link></li>
@@ -235,7 +235,7 @@ export default function Home() {
           {/* Slide 1 */}
           <div className=" relative w-full h-full block shadow p-4 mt-4">
             <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Chính Hãng (Apple Authorized Reseller)</h1>
-            <div className="grid grid-cols-5 gap-4 items-center">
+            <div className="grid grid-cols-5 gap-2 items-center">
               {ListPopular.slice(0, 5).map((item, index) => (
                 <BasicCard key={index} item={item} />
               ))}
@@ -246,7 +246,7 @@ export default function Home() {
           {/* Slide 2 */}
           <div className=" relative w-full block shadow p-4 mt-4">
             <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">Samsung Chính Hãng</h1>
-            <div className="grid grid-cols-5 gap-4 items-center ">
+            <div className="grid grid-cols-5 gap-2 items-center ">
               {ListPopular.slice(0, 5).map((item, index) => (
                 <BasicCard key={index} item={item} />
               ))}
@@ -257,7 +257,7 @@ export default function Home() {
           {/* Slide 3 */}
           <div className="relative w-full block shadow p-4 mt-4">
             <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">OPPO | Xiaomi | TECNO | realme | HONOR Chính Hãng</h1>
-            <div className="grid grid-cols-5 gap-4 items-center">
+            <div className="grid grid-cols-5 gap-2 items-center">
               {ListPopular.slice(0, 5).map((item, index) => (
                 <BasicCard key={index} item={item} />
               ))}
@@ -268,7 +268,7 @@ export default function Home() {
           {/* Slide 4 */}
           <div className="relative w-full block shadow p-4 mt-4">
             <h1 className="mt-3 ml-3 text-xl font-bold text-red mb-2">iPhone Cũ Giá Tốt</h1>
-            <div className="grid grid-cols-5 gap-4 items-center">
+            <div className="grid grid-cols-5 gap-2 items-center">
               {ListPopular.slice(0, 5).map((item, index) => (
                 <BasicCard key={index} item={item} />
               ))}

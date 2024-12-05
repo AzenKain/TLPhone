@@ -1,11 +1,10 @@
 "use client"
-import { Product } from '@/types/listproduct'
-import Link from 'next/link'
+import { Search } from '@/types/search'
 import { useRouter } from 'next/navigation'
-const BasicProduct: React.FC<{ item: Product }> = ({ item }) => {
+const BasicSearch: React.FC<{ item: Search }> = ({ item }) => {
   const router = useRouter()
-    return (
-      <div className='cursor-pointer' onClick={() => router.push("/product/[productid]")}>
+  return (
+    <div className='cursor-pointer' onClick={() => router.push("/product/[productid]")}>
       <div className="border rounded-lg shadow p-4 hover:shadow-md transition">
         <div className="pt-2">
           <p className="ms-2 rounded-full p-1 bg text-center mb-2" style={{ fontSize: "10px", width: "max-content", }}>Trả góp 0%</p>
@@ -28,7 +27,7 @@ const BasicProduct: React.FC<{ item: Product }> = ({ item }) => {
       </div>
     </div>
   )
-    
+
 }
 
-export default BasicProduct
+export default BasicSearch

@@ -11,9 +11,9 @@ const BasicCard: React.FC<{ item: Card }> = ({ item }) => {
           <p className="ms-2 rounded-full p-1 bg text-center mb-2" style={{ fontSize: "10px", width: "max-content", }}>Trả góp 0%</p>
           <div className="flex justify-center group"><img className=" rounded-md transform transition duration-300 group-hover:scale-105" src={item.imgdisplay} alt="" width={110} height={110} style={{ height: "238px", width: "240px" }} /></div>
           <div className="p-2 mt-3">
-            <p className="text-sm font-semibold">{item.name}</p>
+            <p className="text-sm w-full" >{item.name}</p>
             <div className="flex flex-row">
-              <p className="mt-2" style={{ color: "crimson" }}><strong>{((item.price) * 0.9).toLocaleString('vi-VN', {
+              <p className="mt-2" style={{ color: "crimson" }}><strong>{((item.price) * ((100 - item.discount) / 100)).toLocaleString('vi-VN', {
                 style: 'currency',
                 currency: 'VND',
               })}</strong></p>
