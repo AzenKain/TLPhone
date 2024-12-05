@@ -4,17 +4,11 @@ export type SignUpDto = {
 
   password: string;
 
-  username: string;
+  firstName: string;
 
-  otpId: string;
+  lastName: string;
 
-  firstName?: string;
+  phoneNumber: string;
 
-  lastName?: string;
-
-  phoneNumber?: string;
-
-  address?: string;
-
-  gender?: string;
+  gender: string;
 }

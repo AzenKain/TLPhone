@@ -1,3 +1,4 @@
+"use client"
 import { Card } from '@/types'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
