@@ -62,8 +62,100 @@ export default function ProductSearch() {
             window.scrollTo(0, 0);
         }
     };
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    const slides = [
+      "https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg",
+      "https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75",
+    ];
+  
+    const handleNextSlide = () => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length); // Chuyển đến slide kế tiếp
+    };
+  
+    const handlePrevSlide = () => {
+      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length); // Quay lại slide trước
+    };
     return (
+       <>
+       
         <div className="container mx-24 p-4">
+        <div className="container mx-auto flex justify-between items-center px-4">
+        {/* Dropdown Menu */}
+        <details  className="dropdown">
+          <summary 
+            tabIndex={10}
+            className="btn bg-red-700 border-none text-white m-2"
+          >
+            DANH MỤC SẢN PHẨM
+          </summary>
+          <ul
+            tabIndex={10}
+            className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow text-black"
+          >
+            <li>
+              <a href="#smartphones">Smartphones</a>
+            </li>
+            <li>
+              <a href="#accessories">Phụ kiện</a>
+            </li>
+            <li>
+              <a href="#laptops">Laptop</a>
+            </li>
+          </ul>
+        </details>
+
+        {/* Header Right Content */}
+        <div className="flex items-center gap-2"  tabIndex={0}>
+          <span className="bg-yellow-500 text-black px-2 py-1 rounded-md">
+            Tặng bảo hành cả nguồn
+          </span>
+          <span>0815.208.208</span>
+        </div>
+      </div>
+
+      {/* Main Banner */}
+      <div className="relative p-4 h-96" tabIndex={0}>
+      <div className="flex justify-between items-center h-full">
+        {/* Left Side - Carousel */}
+        <div className="w-1/2 h-full relative">
+          <div className="w-full h-full overflow-hidden">
+            <img
+              src={slides[currentSlide]}
+              alt={`Slide ${currentSlide + 1}`}
+              className="w-full h-full object-cover transition-transform duration-500"
+            />
+          </div>
+          {/* Navigation Buttons */}
+          <button
+            onClick={handlePrevSlide}
+            className="btn btn-circle absolute left-2 top-1/2 transform -translate-y-1/2"
+          >
+            ❮
+          </button>
+          <button
+            onClick={handleNextSlide}
+            className="btn btn-circle absolute right-2 top-1/2 transform -translate-y-1/2"
+          >
+            ❯
+          </button>
+        </div>
+
+        {/* Right Side */}
+        <div className="flex flex-col justify-between items-center w-1/2 h-full space-y-4">
+          <img
+            src="https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg"
+            alt="iPhone 16 Pro"
+            className="w-full h-1/2 object-contain"
+          />
+          <img
+            src="https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75"
+            alt="Banner Promotion"
+            className="w-full h-1/2 object-contain"
+          />
+        </div>
+      </div>
+    </div>
             <div className="w-full gap-8">
                 <div className="relative w-full h-full shadow-lg p-6 border rounded-lg bg-white">
                     <h1 className="text-xl font-bold text-red-500 mb-4">
@@ -174,6 +266,7 @@ export default function ProductSearch() {
                 </div>
             </div>
         </div>
+       </>
     );
 
 };       
