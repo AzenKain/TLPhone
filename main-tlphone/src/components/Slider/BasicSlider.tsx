@@ -1,6 +1,7 @@
 "use client"
 import { Slider } from '@/types/slider'
 import { useRouter } from 'next/navigation'
+import React from "react";
 const BasicSlider: React.FC<{ item: Slider }> = ({ item }) => {
   const router = useRouter()
   return (

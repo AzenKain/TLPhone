@@ -12,3 +12,13 @@ export type UpdateUserDto = {
     address?: string; 
     gender?: string; 
 };
+
+export type UpdateProfileDto = {
+    phoneNumber?: string | null;
+    lastName?: string | null;
+    gender?: string | null;
+    firstName?: string | null;
+    address?: string | null;
+    imgDisplay?: string | null;
+    birthday?: Date | null;
+};

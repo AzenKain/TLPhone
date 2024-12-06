@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
-import UserData from './features/userData'
+import UserRedux from './features/user/user.redux'
+import CategoryRedux from './features/category/category.redux'
 
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
-            UserData, 
+            UserRedux,
+            CategoryRedux
         }
     })
 }

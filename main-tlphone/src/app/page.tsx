@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
 import BasicCard from "@/components/Card/BasicCard";
-import BasicSlider from "@/components/Siler/BasicSlider";
+import BasicSlider from "@/components/Slider/BasicSlider";
 import { Slider } from "@/types/slider";
 import { Card } from "@/types";
 
