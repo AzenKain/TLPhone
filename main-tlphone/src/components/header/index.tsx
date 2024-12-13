@@ -1,15 +1,15 @@
 "use client"
 import Image from 'next/image';
 import Link from 'next/link';
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import "@/css/styles.css";
 import "@/app/cart/page"
-import {signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch } from "@/app/redux/hooks";
 import { UpdateUser } from "@/app/redux/features/user/user.redux";
 import { getUserByIdApi, makeRequestApi } from "@/lib/api";
-import {UserType} from "@/types";
-import {useRouter} from "next/navigation";
+import { UserType } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
     const { data: session } = useSession()
@@ -100,6 +100,11 @@ export default function Header() {
                     </div>
                 </div>
             </div>
+            <Link href={"/heart"}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 me-5 text-white">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+            </Link>
             {session != null && (
                 <div className="flex-none me-4 mt-1">
                     <div className="dropdown dropdown-end">
@@ -115,11 +120,12 @@ export default function Header() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
-                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                                 <span className="badge badge-sm indicator-item">8</span>
                             </div>
                         </div>
+
                         <div
                             tabIndex={0}
                             className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
@@ -136,14 +142,14 @@ export default function Header() {
             )}
             <div className="dropdown dropdown-end me-6">
                 {session == null ? (
-                        <Link className="" href="/auth/signin">
-                            <button className="btn btn-active bg-[#F6DED6] rounded-full">SignIn</button>
-                        </Link>) :
+                    <Link className="" href="/auth/signin">
+                        <button className="btn btn-active bg-[#F6DED6] rounded-full">SignIn</button>
+                    </Link>) :
                     (
                         <>
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
-                                    <Image src="/img/accout.png" alt="" width={70} height={70}/>
+                                    <Image src="/img/accout.png" alt="" width={70} height={70} />
                                 </div>
                             </div>
                             <ul tabIndex={0}
