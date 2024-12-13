@@ -91,7 +91,7 @@ const SignIn: React.FC<{ searchParams: { callbackUrl?: string } }> = ({ searchPa
                                                 Password
                                             </label>
                                             <a
-                                                href="#"
+                                                href="http://localhost:3000/auth/forgotpassword"
                                                 className="text-sm text-gray-400 focus:text-blue-500 hover:text-blue-500 hover:underline"
                                             >
                                                 Forgot password?

@@ -85,6 +85,8 @@ export default function ProductSearch() {
         }
     }
     return (
+       <>
+       
         <div className="container mx-24 p-4">
             <Navigation item={navigation}></Navigation>
             <div className="flex flex-col gap-3 md:flex-row mt-10">
@@ -317,6 +319,7 @@ export default function ProductSearch() {
                 </div>
             </div>
         </div>
+       </>
     );
 
 };       
