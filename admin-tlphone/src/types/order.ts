@@ -1,4 +1,4 @@
-import { ProductType } from './product';
+import {ProductType, ProductVariantType, TagsDetailType} from './product';
 import { RefundType } from './refund';
 import { UserType } from './user';
 
@@ -41,14 +41,10 @@ export type OrderType = {
     customerInfo: CustomerInfoType;
     statusHistory: OrderStatusHistoryType[];
     status: string;
+    orderUid: string;
     notes?: string;
     created_at: Date;
     updated_at: Date;
-};
-
-export type VariantAttributeType = {
-    type: string;
-    value: string;
 };
 
 export type OrderStatusHistoryType = {
@@ -62,14 +58,20 @@ export type OrderStatusHistoryType = {
 
 export type OrderProductType = {
     id: number;
-    imei?: string;
+    imei?: string[];
     hasImei: boolean;
     unitPrice: number;
     originPrice?: number;
     quantity: number;
     discount?: number;
     order: OrderType;
-    variantAttributes?: VariantAttributeType[];
+    variantAttributes?: TagsDetailType[];
     product: ProductType;
+    productVariant: ProductVariantType;
     refunds: RefundType[];
+};
+
+export type SearchOrderResponse = {
+    maxValue: number;
+    data: OrderType[];
 };

@@ -149,7 +149,7 @@ export class ProductType {
     @Field(() => Int, { nullable: true, defaultValue: 0 })
     buyCount?: number;
 
-    @Field(() => ProductDetailType)
+    @Field(() => ProductDetailType,  { nullable: true })
     details: ProductDetailType;
 
     @Field(() => [OrderProductType], { nullable: true })

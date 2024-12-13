@@ -36,6 +36,7 @@ import { CampaignEntity } from './types/campaign';
 import { RefundEntity } from './types/refund';
 import { CartEntity, CartItemEntity } from './types/cart';
 import { CartModule } from './cart/cart.module';
+import { PaymentModule } from './payment/payment.module';
 
 
 @Module({
@@ -106,6 +107,7 @@ import { CartModule } from './cart/cart.module';
     AnalyticModule,
     SchemaProductModule,
     CartModule,
+    PaymentModule
   ],
   controllers: [],
   providers: [],

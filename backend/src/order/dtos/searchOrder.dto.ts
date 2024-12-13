@@ -4,8 +4,14 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 @InputType()
 export class SearchOrderDto {
     @IsOptional()
-    @Field(() => ID, {nullable: true})
-    orderId?: number;
+    @IsString()
+    @Field({nullable: true})
+    orderId?: string;
+
+    @IsOptional()
+    @IsString()
+    @Field({nullable: true})
+    status?: string;
 
     @IsOptional()
     @IsString()

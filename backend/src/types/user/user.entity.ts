@@ -60,7 +60,7 @@ export class UserEntity {
     role: string[];
 
     @Column({ type: 'simple-array', nullable: false})
-    heart: string[];
+    heart: number[];
 
     @OneToOne(() => UserDetailEntity, { cascade: true })
     @JoinColumn()

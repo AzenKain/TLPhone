@@ -27,7 +27,8 @@ export class AuthService {
             where: {
                 email: email,
                 secretKey: id
-            }
+            },
+            relations: ['details', 'cart', 'cart.cartProducts']
         })
         if (user) {
             return user
@@ -42,7 +43,8 @@ export class AuthService {
             where: {
                 email: payload.email,
                 secretKey: payload.id
-            }
+            },
+            relations: ['details', 'cart', 'cart.cartProducts']
         })
         if (user) {
             return user

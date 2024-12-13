@@ -13,23 +13,22 @@ interface MultiselectProps {
 const InputColor: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, onAdd, onRemove }) => {
   const [colorName, setNewTag] = useState<string>('');
   const [colorHex, setColorHex] = useState("#aabbcc");
-  const [colorList, setColorList] = useState<ColorDetailType[]>(itemsList);
+
 
   const handleNewTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTag(e.target.value);
+    setNewTag(e.target.value.toLowerCase());
   };
 
-  const ref = useChatScroll(colorList);
+  const ref = useChatScroll(itemsList);
 
   const handleAddNewTag = () => {
     if (colorName && !itemsSelect.some((item) => item.colorName === colorName)) {
       const newItem: ColorDetailType = {
         id: `${Date.now()}`,
         colorHex: colorHex,
-        colorName: colorName,
+        colorName: colorName.toLowerCase(),
       };
       onAdd(newItem);
-      setColorList([...colorList, newItem])
       setNewTag('');
     }
   };
@@ -95,7 +94,7 @@ const InputColor: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, onAdd,
                     className="menu dropdown-content z-[20] w-[30vh] overflow-y-auto rounded-box bg-base-100 p-2 shadow md:w-[50vh] lg:w-[75vh]"
                   >
                     <div ref={ref} className="max-h-[30vh] overflow-y-auto">
-                      {colorList.map((item) => (
+                      {itemsList.map((item) => (
                         <li key={item.id} className="mb-2">
                           <a
                             className="text-2xl flex flex-row gap-2 items-center"
@@ -133,7 +132,7 @@ const InputColor: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, onAdd,
                       <input
                         type="text"
                         placeholder="Add new color..."
-                        value={colorName}
+                        value={colorName.toLowerCase()}
                         onChange={handleNewTagChange}
                         className="input input-bordered w-full"
                       />

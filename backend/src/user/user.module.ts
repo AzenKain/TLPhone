@@ -7,10 +7,32 @@ import { HttpModule } from '@nestjs/axios';
 import { UserController } from './user.controller';
 import { ReviewEntity } from '../types/review';
 import { CartModule } from '../cart/cart.module';
+import {
+  ImageDetailEntity,
+  ProductDetailEntity,
+  ProductEntity,
+  ProductVariantEntity,
+  TagsEntity,
+} from '../types/product';
+import { CartEntity, CartItemEntity } from '../types/cart';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserDetailEntity, ReviewEntity]), HttpModule, CartModule],
+  imports: [TypeOrmModule.forFeature([
+    UserEntity,
+    UserDetailEntity,
+    ReviewEntity,
+    CartEntity,
+    CartItemEntity,
+    ProductEntity,
+    ProductDetailEntity,
+    ImageDetailEntity,
+    TagsEntity,
+    ProductVariantEntity
+  ]),
+    HttpModule,
+    CartModule
+  ],
   providers: [UserService, UserResolver,],
   controllers: [UserController]
 })

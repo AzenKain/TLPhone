@@ -9,7 +9,7 @@ import {
     JoinColumn,
     Relation, OneToOne,
 } from 'typeorm';
-import { ProductEntity, TagsEntity } from '../product';
+import { ProductEntity, ProductVariantEntity, TagsEntity } from '../product';
 import { RefundEntity } from '../refund';
 import { UserEntity } from '../user';
 
@@ -19,7 +19,7 @@ export class CustomerInfoEntity {
     id: number;
 
     @Column({ nullable: true })
-    userId: number;
+    userId: string;
 
     @Column({ nullable: false })
     email: string;
@@ -87,6 +87,9 @@ export class OrderEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
+  @Column()
+  orderUid: string;
+
   @Column({ type: 'boolean' })
   isDisplay: boolean;
 
@@ -124,18 +127,14 @@ export class OrderEntity {
   updated_at: Date;
 }
 
-interface VariantAttribute {
-    type: string;
-    value: string;
-}
 
 @Entity({ name: 'OrderProduct' })
 export class OrderProductEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
-    @Column({ nullable: true })
-    imei?: string;
+    @Column({ type: 'simple-array', nullable: true })
+    imei?: string[];
 
     @Column({ type: 'boolean', default: false })
     hasImei: boolean;
@@ -153,7 +152,7 @@ export class OrderProductEntity {
     discount?: number;
 
     @Column({ type: 'json', nullable: true })
-    variantAttributes: VariantAttribute[];
+    variantAttributes: TagsEntity[];
 
     @ManyToOne(() => OrderEntity, (order) => order.orderProducts)
     @JoinColumn({ name: 'orderId' })
@@ -162,6 +161,10 @@ export class OrderProductEntity {
     @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
     @JoinColumn({ name: 'productId' })
     product: Relation<ProductEntity>;
+
+    @ManyToOne(() => ProductVariantEntity, (product) => product.orderItem)
+    @JoinColumn({ name: 'productVariantId' })
+    productVariant: Relation<ProductVariantEntity>;
 
     @OneToMany(() => RefundEntity, (refund) => refund.orderProduct)
     refunds: Relation<RefundEntity[]>;
@@ -178,9 +181,9 @@ export class OrderStatusHistoryEntity {
   @Column({ nullable: false })
   newStatus: string;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, { nullable: true })
   @JoinColumn({ name: 'userId' })
-  user: Relation<UserEntity>;
+  user?: Relation<UserEntity>;
 
   @ManyToOne(() => OrderEntity, (order) => order.statusHistory)
   @JoinColumn({ name: 'orderId' })

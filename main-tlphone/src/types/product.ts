@@ -51,8 +51,8 @@ export type FaultyProductType = {
   imei?: string[];
   reason?: string[];
   notes?: string[];
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 };
 
 export type ProductType = {
@@ -65,8 +65,8 @@ export type ProductType = {
   orderProducts?: OrderProductType[];
   campaigns?: CampaignType[];
   reviews?: ReviewType[];
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
   faultyProduct?: FaultyProductType;
 };
 

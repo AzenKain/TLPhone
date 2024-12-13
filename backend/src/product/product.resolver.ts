@@ -3,7 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ColorDetailInp,
     CreateProductDto,
-    DeleteProductDto,
+    DeleteProductDto, GetListProductDto,
     SearchProductDto,
     TagsProductDto,
     UpdateProductDto,
@@ -56,7 +56,13 @@ export class ProductResolver {
         return await this.productService.GetProductByIdService(productId);
 
     }
+    @Query(() => [ProductType])
+    async GetListProductById(
+      @Args('GetListProductById') dto: GetListProductDto
+    ): Promise<ProductType[]> {
+        return await this.productService.GetListProductByIdService(dto);
 
+    }
     @UseGuards(JwtGuardGraphql)
     @Mutation(() => ProductType)
     async CreateProduct(

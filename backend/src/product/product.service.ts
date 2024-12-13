@@ -1,18 +1,18 @@
-import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-    ColorDetailEntity, FaultyProductEntity,
+    ColorDetailEntity,
     ImageDetailEntity,
     ProductDetailEntity,
     ProductEntity, ProductVariantEntity,
     TagsEntity,
 } from 'src/types/product';
 import { UserEntity } from 'src/types/user';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
     ColorDetailInp,
     CreateProductDto,
-    DeleteProductDto,
+    DeleteProductDto, GetListProductDto,
     ProductDetailInp,
     SearchProductDto,
     TagsProductDto,
@@ -34,9 +34,6 @@ export class ProductService {
         @InjectRepository(TagsEntity) private tagsRepository: Repository<TagsEntity>,
         @InjectRepository(ColorDetailEntity) private colorRepository: Repository<ColorDetailEntity>,
         @InjectRepository(ProductVariantEntity) private productVariantRepository: Repository<ProductVariantEntity>,
-        @InjectRepository(FaultyProductEntity) private FaultyProductRepository: Repository<FaultyProductEntity>,
-        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
-
     ) { }
 
     private CheckRoleUser(user: UserEntity) {
@@ -151,7 +148,10 @@ export class ProductService {
                 }
             }
         }
-
+        if (dto.index < 0) {
+            dto.index = 0
+            dto.count = 0
+        }
         if (dto.index && dto.count) {
             const offset = (dto.index - 1) * dto.count;
             list_product = list_product.slice(offset, offset + dto.count);
@@ -201,7 +201,29 @@ export class ProductService {
 
         return product;
     }
+    async GetListProductByIdService(dto: GetListProductDto) {
+        const products = await this.productRepository.find({
+            where: {
+                id: In(dto.products),
+                isDisplay: true
+            },
+            relations: [
+                'details',
+                'details.imgDisplay',
+                'details.brand',
+                'details.color',
+                'details.attributes',
+                'details.variants',
+                'details.variants.attributes'
+            ],
+        });
 
+        if (!products || products.length === 0) {
+            throw new ForbiddenException('Products not found or not available');
+        }
+
+        return products;
+    }
     private async findOrCreateTag(tagValue: string, tagType: string): Promise<TagsEntity> {
         const tagLowerCase = tagValue.toLowerCase();
         let tag = await this.tagsRepository.findOne({ where: { value: tagLowerCase, type: tagType } });

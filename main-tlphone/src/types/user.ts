@@ -19,13 +19,13 @@ export type UserType = {
     secretKey: string;
     isDisplay: boolean;
     role: string[];
-    heart: string[];
-    details?: UserDetailType;
+    heart: number[];
+    details: UserDetailType;
     statusHistory?: OrderStatusHistoryType[];
     cart: CartType;
     hash?: string;
     refreshToken?: string;
     reviews?: ReviewType[];
-    created_at: Date;
-    updated_at: Date;
+    created_at?: Date;
+    updated_at?: Date;
 };

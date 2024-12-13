@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDetailEntity, UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { CreateUserDto, SearchUserDto, UpdateProfileDto, UpdateRoleDto } from './dtos';
+import { CreateUserDto, SearchUserDto, UpdateHeartDto, UpdateProfileDto, UpdateRoleDto } from './dtos';
 import * as argon from 'argon2';
 import { v5 as uuidv5 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
@@ -105,7 +105,10 @@ export class UserService {
             }
         }
 
-
+        if (dto.index < 0) {
+            dto.index = 0
+            dto.count = 0
+        }
         if (dto.index !== null && dto.count !== null) {
             query.skip(dto.index).take(dto.count);
         }
@@ -143,7 +146,18 @@ export class UserService {
     async UpdateProfileService(dto: UpdateProfileDto, userCurrent: UserEntity): Promise<UserEntity> {
         const user = await this.userRepository.findOne({
             where: { secretKey: userCurrent.secretKey },
-            relations: ['details', 'cart', 'cart.cartProducts']
+            relations: [
+              'details',
+                'cart',
+                'cart.cartProducts',
+                'cart.cartProducts',
+                'cart.cartProducts.product',
+                'cart.cartProducts.product.details',
+                'cart.cartProducts.product.details.imgDisplay',
+                'cart.cartProducts.product.details.brand',
+                'cart.cartProducts.productVariant',
+                'cart.cartProducts.productVariant.attributes',
+            ]
         });
 
         if (!user) {
@@ -247,7 +261,17 @@ export class UserService {
                 secretKey: userId,
                 isDisplay: true
             },
-            relations: ['details', 'cart', 'cart.cartProducts']
+            relations: [
+              'details',
+                'cart',
+                'cart.cartProducts',
+                'cart.cartProducts',
+                'cart.cartProducts.product',
+                'cart.cartProducts.product.details',
+                'cart.cartProducts.product.details.imgDisplay',
+                'cart.cartProducts.product.details.brand',
+                'cart.cartProducts.productVariant',
+                'cart.cartProducts.productVariant.attributes',]
         });
 
         if (!user) {
@@ -257,5 +281,37 @@ export class UserService {
         delete user.hash;
         delete user.refreshToken;
         return user;
+    }
+
+    async UpdateHeartService(dto: UpdateHeartDto, userCurrent: UserEntity): Promise<UserEntity> {
+
+        const user = await this.userRepository.findOne({
+            where: {
+                secretKey: userCurrent.secretKey,
+                isDisplay: true
+            },
+            relations: [
+                'details',
+                'cart',
+                'cart.cartProducts',
+                'cart.cartProducts',
+                'cart.cartProducts.product',
+                'cart.cartProducts.product.details',
+                'cart.cartProducts.product.details.imgDisplay',
+                'cart.cartProducts.product.details.brand',
+                'cart.cartProducts.productVariant',
+                'cart.cartProducts.productVariant.attributes',]
+        });
+
+        if (!user) {
+            throw new NotFoundException("The user does not exist!")
+        }
+
+        user.heart = dto.heart
+
+        const dataReturn = await this.userRepository.save(user);
+        delete dataReturn.hash;
+        delete dataReturn.refreshToken;
+        return dataReturn;
     }
 }
