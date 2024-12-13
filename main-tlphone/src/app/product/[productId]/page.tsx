@@ -1,305 +1,527 @@
 "use client"
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Product } from "@/types/listproduct";
-import BasicProduct from "@/components/Listproduct/BasicProduct";
+import Navigation from "@/components/Navigation";
+import {
+    CartType,
+    NavigationItem,
+    ProductType,
+    ProductVariantType,
+    SchemaProductType,
+    SearchProductType,
+    UserType
+} from "@/types";
+import {
+    getAllSchemaProductApi,
+    getSchemaProductByName,
+    getProductByIdApi,
+    makeRequestApi,
+    searchProductWithOptionsApi, getUserByIdApi, updateCartApi
+} from "@/lib/api";
+import {useSession} from "next-auth/react";
+import {useAppDispatch, useAppSelector} from "@/app/redux/hooks";
+import { UpdateCategoryDisplay} from "@/app/redux/features/category/category.redux";
+import {UpdateProductDisplay} from "@/app/redux/features/product/product.redux";
+import {SearchProductDto} from "@/lib/dtos/Product";
+import Link from "next/link";
+import {Backend_URL} from "@/lib/Constants";
+import BasicCard from "@/components/Card/BasicCard";
+import {CartItemInp, UpdateCartDto} from "@/lib/dtos/user";
+import {UpdateUser} from "@/app/redux/features/user/user.redux";
+import {toast} from "react-toastify";
+export default function Page({params,}: { params: { productId: string }; }) {
+    const [navigation, setNavigation] = useState<NavigationItem[]>([
+        {
+            title: "Home",
+            href: "/",
+            icon: (<>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                     stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                          d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+                </svg>
+            </>),
 
-const ProductPage = () => {
-    const images = [
-        "https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75",
-        "https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731430895942_main_3.png&w=1080&q=75",
-        "https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731463978930_ip16_pro_max.png&w=1080&q=75",
-        "https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731485578770_pova_6_824x400_copy.png&w=1080&q=75",
-    ];
-
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [selectedOption, setSelectedOption] = useState("256GB");
-    const Listproduct: Product[] =
-        [
-            { id: 1, name: 'iPhone 16 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://cdn-v2.didongviet.vn/files/products/2024/9/2/1/1727855468669_thumb_iphone_16_pro_didongviet.jpg' },
-            { id: 2, name: 'iPhone 15 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
-            { id: 3, name: 'iPhone 13 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
-            { id: 4, name: 'iPhone 12 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
-            { id: 5, name: 'iPhone 11 Pro Max', discount: 10, price: 29990000, imgdisplay: 'https://didongviet.vn/_next/image?url=https%3A%2F%2Fcdn-v2.didongviet.vn%2Ffiles%2Fbanners%2F2024%2F10%2F13%2F1%2F1731470153334_untitled_1_824x400.png&w=1080&q=75' },
-        ]
-    const specificationsoriginal = [
-        {
-            category: "Màn hình",
-            details: [
-                { label: "Độ phân giải", value: "2868x1320 pixel" },
-                { label: "Màn hình rộng", value: "OLED 6.9 inch" },
-                { label: "Công nghệ màn hình", value: "Super Retina XDR" },
-            ],
-        },
-        {
-            category: "Camera sau",
-            details: [
-                { label: "Độ phân giải", value: "Fusion 48MP, Ultra Wide 48MP, Telephoto 5x 12MP" },
-            ],
-        },
-        {
-            category: "Camera trước",
-            details: [
-                { label: "Độ phân giải", value: "12MP" },
-                { label: "Tính năng", value: "Camera TrueDepth hỗ trợ nhận diện khuôn mặt" },
-            ],
-        },
-        {
-            category: "Hệ điều hành & CPU",
-            details: [
-                { label: "Chip đồ họa (GPU)", value: "GPU 6 lõi mới" },
-                { label: "Hệ điều hành", value: "iOS 18" },
-                { label: "Chip xử lý (CPU)", value: "Chip A18 Pro" },
-                {
-                    label: "Tốc độ CPU",
-                    value: "CPU 6 lõi mới với 2 lõi hiệu năng và 4 lõi tiết kiệm điện",
-                },
-            ],
-        },
-        {
-            category: "Bộ nhớ & Lưu trữ",
-            details: [
-                { label: "RAM", value: "Đang cập nhật" },
-                { label: "Bộ nhớ trong", value: "256GB" },
-            ],
-        },
-    ];
-    const specifications = [
-        {
-            category: "Kết nối",
-            details: [
-                { label: "SIM", value: "SIM kép (nano-SIM và eSIM) - Hỗ trợ hai eSIM" },
-                { label: "Wifi", value: "Wi-Fi 7 (802.11be) với 2x2 MIMO" },
-                {
-                    label: "Định vị GPS",
-                    value: "GPS tần số kép chuẩn xác (GPS, GLONASS, Galileo, QZSS, BeiDou và NavIC)",
-                },
-                { label: "Cổng kết nối/sạc", value: "USB-C - USB 3 (lên đến 10Gb/s)11" },
-                { label: "Bluetooth", value: "Bluetooth 5.3" },
-                { label: "Kết nối mạng", value: "5G (sub-6 GHz) với 4x4 MIMO" },
-            ],
-        },
-        {
-            category: "Pin & Sạc",
-            details: [{ label: "Dung lượng pin", value: "Đang cập nhật" }],
-        },
-        {
-            category: "Tiện ích",
-            details: [
-                { label: "Kháng nước, bụi", value: "IP68" },
-                { label: "Tính năng đặc biệt", value: "SOS Khẩn, Cấp Phát Hiện Va Chạm" },
-            ],
-        },
-        {
-            category: "Thiết kế",
-            details: [
-                { label: "Kích thước", value: "Dài 163 mm - Ngang 77.6 mm - Dày 8.25 mm" },
-                { label: "Trọng lượng", value: "227 gram" },
-            ],
-        },
-    ];
-
+        } as NavigationItem
+    ])
+    const userDetail = useAppSelector((state) => state.UserRedux.value)
+    const product = useAppSelector((state) => state.ProductRedux.productDisplay);
+    const category = useAppSelector((state) => state.CategoryRedux.categoryDisplay);
+    const { data: session } = useSession()
+    const dispatch = useAppDispatch()
+    const [loading, setLoading] = useState<boolean>(true)
+    const [listCare, setListCare] = useState<ProductType[]>([])
+    const [listSame, setListSame] = useState<ProductType[]>([])
+    const [selectedOption, setSelectedOption] = useState<ProductVariantType | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
-
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
     };
-
-    const goToSlide = (index: any) => {
-        if (index < 0) index = images.length - 1;
-        if (index >= images.length) index = 0;
-        setCurrentSlide(index);
+    const [quantity, setQuantity] = useState(1);
+    const handleIncrease = () => {
+        if (!selectedOption?.stockQuantity) {
+            return;
+        }
+        if (quantity >= selectedOption.stockQuantity) {
+            return;
+        }
+        setQuantity(prev => prev + 1);
     };
+    const handleDecrease = () => {
+        if (!selectedOption?.stockQuantity) {
+            return;
+        }
+        if (quantity <= 1) {
+            return;
+        }
+        setQuantity(prev => prev - 1);
+    }
+    useEffect(() => {
+        const fetchData = async () => {
+            let dataProduct: ProductType = await getProductByIdApi(
+                Number(params.productId),
+                null
+            )
+            if (!dataProduct) {
+                return
+            }
+            // dispatch()
+            const responseCategory : SchemaProductType = await getSchemaProductByName(
+                dataProduct?.category || "",
+                null,
+            );
+            if (!responseCategory) {
+                return
+            }
+            let filter: SearchProductDto = {
+                index: 1,
+                count: 4,
+                sort: 'updated_at_desc',
+                brand: [
+                    {
+                        type: 'brand',
+                        value: typeof dataProduct?.details?.brand === 'string' ? dataProduct?.details?.brand : String(dataProduct?.details?.brand ?? ""),
+                    }
+                ]
+            };
+            let responseProduct: SearchProductType = await searchProductWithOptionsApi(filter, null)
+            setListCare(responseProduct.data)
+
+            filter.count = 5
+            responseProduct= await searchProductWithOptionsApi(filter, null)
+            setListSame(responseProduct.data)
+
+
+
+            setLoading(false)
+            setSelectedOption(dataProduct?.details?.variants ? dataProduct?.details?.variants[0] : null)
+            dispatch(UpdateProductDisplay(dataProduct));
+            dispatch(UpdateCategoryDisplay(responseCategory));
+            setNavigation(prevNavigation => {
+                if (!prevNavigation.some(item => item.href === `/product/${dataProduct.id}`)) {
+                    return [
+                        ...prevNavigation,
+                        {
+                            title: dataProduct.name,
+                            href: `/product/${dataProduct.id}`,
+                            icon: (
+                                <>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+                                         stroke="currentColor" className="size-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+                                    </svg>
+                                </>
+                            ),
+                        } as NavigationItem,
+                    ];
+                }
+                return prevNavigation;
+            });
+
+        }
+
+        fetchData();
+
+    }, [dispatch, session])
+
+    if (loading) {
+        return (
+            <div className="flex items-center text-7xl justify-center h-72 w-screen bg-gray-100">
+                Loading
+                <span className="loading loading-infinity w-40">
+
+                </span>
+            </div>
+        );
+    }
+
+    const handleUpdateCart = async () => {
+        if (selectedOption == null || quantity == 0) {
+            return;
+        }
+        const dto: UpdateCartDto = {
+            cartProducts: userDetail.cart.cartProducts.map(it => ({
+                quantity: it.quantity,
+                productId: Number(it.product.id),
+                productVariantId: Number(it.productVariant.id)
+            }))
+        };
+
+        const newIt = dto.cartProducts.findIndex(it => it.productId === Number(product.id)
+            && it.productVariantId === Number(selectedOption.id)
+        )
+        if (newIt !== -1) {
+            dto.cartProducts[newIt].quantity += quantity
+        }
+        else {
+            dto.cartProducts.push({quantity: quantity, productId: Number(product.id), productVariantId: Number(selectedOption.id)  } as CartItemInp)
+        }
+
+
+        let dataCard: CartType = await makeRequestApi(updateCartApi, dto, session?.refresh_token, session?.access_token)
+
+        if (dataCard) {
+            dispatch(UpdateUser({...userDetail, cart: dataCard}))
+            toast.success("Update cart successful!!");
+        }
+        else {
+            toast.error("Update cart failed!!");
+        }
+
+    }
+
 
     return (
-        <div className="container mx-24 p-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Carousel */}
-                <div className="border p-4 rounded-lg">
-                    <div className="carousel w-full relative">
-                        <img
-                            src={images[currentSlide]}
-                            alt={`Product ${currentSlide + 1}`}
-                            className="w-full h-auto rounded-lg"
-                        />
-                        <button
-                            className="btn btn-circle absolute left-2 top-1/2 transform -translate-y-1/2"
-                            onClick={() => goToSlide(currentSlide - 1)}
-                        >
-                            ❮
-                        </button>
-                        <button
-                            className="btn btn-circle absolute right-2 top-1/2 transform -translate-y-1/2"
-                            onClick={() => goToSlide(currentSlide + 1)}
-                        >
-                            ❯
-                        </button>
+        <div className="mx-2 lg:mx-4 xl:mx-16 ">
+            <Navigation item={navigation}></Navigation>
+            <div className="mt-12 w-full">
+                <h1 className="text-2xl font-bold">
+                    {product.name}
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-5  lg:grid-cols-8 gap-4">
+                    <div className="flex flex-wrap -mx-4 border p-4 rounded-lg md:col-span-3 lg:col-span-3">
+                        {/* Product Images */}
+                        <div className="w-full px-4 mb-8">
+                            <img
+                                src={
+                                    product.details?.imgDisplay?.find(i => {
+                                        const colorValue = selectedOption?.attributes?.find(
+                                            x => x?.type?.toLowerCase() === "color"
+                                        )?.value;
+                                        return i?.link?.find(e => e.toLowerCase() === colorValue?.toLowerCase());
+                                    })?.url || "/no-item-found.png"
+                                }
+                                alt="Product"
+                                className="w-full h-auto rounded-lg shadow-md mb-4"
+                                id="mainImage"
+                            />
+                            <div className="flex gap-4 py-4 justify-center overflow-x-auto">
+                                {product.details?.imgDisplay?.map(it => {
+                                    return (
+                                        <img
+                                            key={it.id}
+                                            src={it.url || "/no-item-found.png"}
+                                            alt="Thumbnail 1"
+                                            className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
+                                        />
+                                    )
+                                })}
+
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <div className="border p-4 rounded-lg space-y-4 md:col-span-2 lg:col-span-3 w-full">
 
+                        <div className="my-2">
+                            <p className="flex gap-2 flex-col lg:flex-row text-lg md:text-2xl text-red-600 font-bold">
+                                {selectedOption
+                                    ? selectedOption.displayPrice.toLocaleString('vi-VN', {
+                                        style: 'currency',
+                                        currency: 'VND',
+                                    })
+                                    : "0 đ"}{" "}
+                                <span className="line-through text-base text-gray-500">
+                                    {selectedOption
+                                        ? selectedOption.displayPrice.toLocaleString('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND',
+                                        })
+                                        : "0 đ"}
+                                </span>
+                            </p>
 
-                <div className="border p-4 rounded-lg space-y-4">
-                    <h1 className="text-2xl font-bold">
-                        iPhone 16 Pro Max 256GB Chính Hãng (VN/A)
-                    </h1>
-                    <div className="space-y-2">
-                        <p className="text-lg text-red-600 font-bold">
-                            33.690.000 đ{" "}
-                            <span className="line-through text-gray-500">34.990.000 đ</span>
-                        </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-lg font-semibold">Cấu hình:</h2>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                {product?.details?.variants?.map((it) => {
+                                    return (
+                                        <button
+                                            key={it.id}
+                                            className={` py-2 w-full border rounded-lg ${
+                                                selectedOption?.id === it.id
+                                                    ? "bg-cyan-500 text-white"
+                                                    : "hover:bg-gray-200"
+                                            }`}
+                                            onClick={() => setSelectedOption(it)}
+                                        >
+                                            <div className="flex flex-row justify-center gap-2 w-full">
 
-                    </div>
-                    <div className="space-y-2">
-                        <h2 className="text-lg font-semibold">Tùy chọn:</h2>
-                        <div className="flex space-x-2">
-                            {["128GB", "256GB", "512GB", "1TB"].map((option) => (
-                                <button
-                                    key={option}
-                                    className={`px-3 py-2 border rounded-lg ${selectedOption === option
-                                        ? "bg-red-500 text-white"
-                                        : "hover:bg-gray-200"
-                                        }`}
-                                    onClick={() => setSelectedOption(option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
+                                                <img
+                                                    className="w-10 h-10 object-fit-contain"
+                                                    src={
+                                                        product.details?.imgDisplay?.find(i => {
+                                                            const colorValue = it?.attributes?.find(
+                                                                x => x?.type?.toLowerCase() === "color"
+                                                            )?.value;
+                                                            return i?.link?.find(e => e.toLowerCase() === colorValue?.toLowerCase());
+                                                        })?.url || "/no-item-found.png"
+                                                    }
+                                                    alt=""
+                                                />
+                                                <div
+                                                    className="w-10 h-10 "
+                                                    style={{
+                                                        backgroundColor:
+                                                            product.details?.color?.find(i => {
+                                                                const colorValue = it?.attributes?.find(
+                                                                    x => x?.type?.toLowerCase() === "color"
+                                                                )?.value;
+                                                                return i?.colorName?.toLowerCase() === colorValue?.toLowerCase();
+                                                            })?.colorHex || "transparent",
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {it.attributes?.map((v) => v.value).join("|") || "N/A"}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                        </div>
+                        <div className="grid grid-cols-4 gap-4 w-full">
+                            <div className='col-span-2'>
+                                <div className="flex items-center space-x-3 border rounded-md ms-1"
+                                     style={{width: "max-content"}}>
+                                    <button
+                                        onClick={handleDecrease}
+                                        className="bg-stone-100 px-3 w-16 h-10 text-3xl rounded-s-md hover:bg-slate-200 border-e"
+                                    >
+                                        -
+                                    </button>
+                                    <input
+                                        value={quantity}
+                                        onChange={e => {
+                                            const newValue = e.target.value.replace(/[^0-9]/g, '');
+                                            if (newValue !== ''
+                                                && Number(newValue) >= 0
+                                                && Number(newValue)
+                                                && selectedOption?.stockQuantity
+                                                && Number(newValue) <= selectedOption?.stockQuantity
+                                            ) {
+                                                setQuantity(Number(newValue));
+                                            }
+                                        }}
+                                        className="text-2xl  text-center input input-bordered input-info w-16 h-10"
+                                        type="text"
+                                    />
+                                    <button
+                                        onClick={handleIncrease}
+                                        className="bg-stone-100 w-16 h-10 text-3xl px-3 rounded-e-md hover:bg-slate-200 border-s"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+
+                            </div>
+                            <div className='flex col-span-2 justify-start items-center h-full'>
+                                <div className="font-bold text-xl flex flex-row gap-2">
+                                    <span className="font-bold text-xl ">Số lượng:</span>
+                                    <span className="font-bold text-xl text-red-500">{`(${selectedOption?.stockQuantity})`}</span>
+                                </div>
+
+                            </div>
                         </div>
 
-                        <div className="flex space-x-2">
-                            {["Xanh", "Vàng", "Đen", "Trắng", "Titan"].map((option) => (
+                        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full">
+                            <div className="flex flex-row  md:col-span-4 btn bg-red-500 text-white">
+                                Mua hàng ngay
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+                                </svg>
+
+                            </div>
+                            <div onClick={async () => await handleUpdateCart()}
+                                 className="flex flex-row md:col-span-2 btn rounded-md border-2 border-cyan-300 gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     strokeWidth={1.5} stroke="currentColor" className="size-4 lg:size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
+                                </svg>
+                                <div className="md:text-[10px]">Thêm vào giỏ</div>
+                            </div>
+                            <div className="md:col-span-4">
                                 <button
-                                    key={option}
-                                    className={`px-3 py-2 border rounded-lg ${selectedOption === option
-                                        ? "bg-red-500 text-white"
-                                        : "hover:bg-gray-200"
-                                        }`}
-                                    onClick={() => setSelectedOption(option)}
-                                >
-                                    {option}
+                                    className="bg-gray-200 flex gap-2 items-center w-full justify-center text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+                                    </svg>
+                                    Wishlist
                                 </button>
-                            ))}
+                            </div>
+                            <div className="md:col-span-6 p-4 rounded-lg break-words">
+                                <h2 className="text-xl text-blue-500 font-bold">Thông tin sản phẩm</h2>
+                                <ul className="list-disc pl-6 space-y-2 mt-2">
+                                    <li>Máy mới nguyên seal 100%.</li>
+                                    <li>
+                                        Bộ sản phẩm: Thân máy, Hộp, Cáp, Cây lấy sim, Sách hướng dẫn.
+                                    </li>
+                                    <li>Bảo hành chính hãng 12 tháng, đổi mới trong vòng 33 ngày.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="border p-4 rounded-lg space-y-4 md:col-span-5 lg:col-span-2 w-full">
+                        <div className="w-full h-10 bg-red-600 rounded-md  flex items-center justify-center">
+                            <h1 className="text-xl md:text-lg font-bold text-white">
+                                Có thể bạn quan tâm
+                            </h1>
+                        </div>
+                        <div className="flex flex-col w-full">
+                            {listCare.map(it => {
+                                return (
+                                    <div key={it.id} className='flex flex-row w-full gap-6'>
+                                        <img
+                                            src={it.details?.imgDisplay?.[0]?.url ? Backend_URL + it.details?.imgDisplay?.[0]?.url : "./no-item-found.png"}
+                                            alt=""
+                                            className="w-32 h-32 object-fit-contain"
+                                        />
+                                        <div className="break-words">
+                                            <Link href={`/product/${it.id}`} className="font-bold break-words">{it.name}</Link>
+                                            <div className="text-red-600 break-words font-semibold">
+                                                {it.details?.variants?.[0]?.displayPrice
+                                                ? (it.details?.variants?.[0]?.displayPrice * (100 - 0) / 100).toLocaleString('vi-VN', {
+                                                    style: 'currency',
+                                                    currency: 'VND',
+                                                })
+                                                : 'N/A'}</div>
+                                            <Link href={`/product/${it.id}`} className="text-blue-500 break-words">Xem chi tiết</Link>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div className="mt-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {/* Phần thông tin sản phẩm */}
+                        <div className="lg:col-span-2 bg-white shadow-lg rounded-lg p-6"
+                             style={{height: "max-content"}}>
+                            <div className="mb-6">
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white">
+                                    Description
+                                </label>
+                                <div
+                                    className="text-base"
+                                    dangerouslySetInnerHTML={{__html: Buffer.from(product.details.description || "", "base64").toString("utf-8")}}
+                                />
+                            </div>
+                            <button className="text-center text-red-500 font-bold">Xem thêm</button>
                         </div>
 
-                    </div>
 
-                    <div className="flex space-x-2">
-                        {["Mua Ngay", "Thêm Vào Giỏ Hàng"].map((option) => (
-                            <button
-                                key={option}
-                                className={`px-3 py-2 border rounded-lg ${selectedOption === option
-                                    ? "bg-red-500 text-white"
-                                    : "hover:bg-gray-200"
-                                    }`}
-                                onClick={() => setSelectedOption(option)}
-                            >
-                                {option}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-
-            <div className="mt-8 border p-4 rounded-lg">
-                <h2 className="text-xl font-bold">Thông tin sản phẩm</h2>
-                <ul className="list-disc pl-6 space-y-2 mt-2">
-                    <li>Máy mới nguyên seal 100%, chính hãng Apple Việt Nam.</li>
-                    <li>Di Động Việt là đại lý ủy quyền chính thức của Apple Việt Nam.</li>
-                    <li>
-                        Bộ sản phẩm: Thân máy, Hộp, Cáp, Cây lấy sim, Sách hướng dẫn.
-                    </li>
-                    <li>Bảo hành chính hãng 12 tháng, đổi mới trong vòng 33 ngày.</li>
-                </ul>
-            </div>
-            <div className="w-full gap-8">
-                <div className="relative w-full h-full shadow-lg p-6 border rounded-lg bg-white">
-                    <h1 className="text-xl font-bold text-red-500 mb-4">
-                        Sản phẩm tương tự
-                    </h1>
-                    <div className="grid grid-cols-5 gap-4 items-center">
-                        {Listproduct.slice(0, 5).map((item, index) => (
-                            <BasicProduct key={index} item={item} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-            <div className="mt-4">
-                <div className="grid grid-cols-3 gap-4">
-                    {/* Phần thông tin sản phẩm */}
-                    <div className="col-span-2 bg-white shadow-lg rounded-lg p-6" style={{ height: "max-content" }}>
-                        <h1 className="text-2xl font-bold mb-4">
-
-                        </h1>
-                        <p className="text-red-500 font-bold text-lg mb-4">
-
-                        </p>
-                        <p className="text-gray-700 mb-4">
-
-                        </p>
-                        <img
-                            src="#"
-                            alt="Ảnh sản phẩm"
-                            className="w-full rounded-lg mb-4"
-                        />
-                        <button className="text-center text-red-500 font-bold">Xem thêm</button>
-                    </div>
-
-                    {/* Phần thông số kỹ thuật */}
-                    <div className="bg-white shadow-lg rounded-lg p-6">
-                        <h2 className="text-xl font-bold text-red-500 mb-4">Thông số kỹ thuật</h2>
-                        <div className="space-y-6">
-                            {specificationsoriginal.map((section, index) => (
-                                <div key={index}>
-                                    <h3 className="font-bold mb-2 ">{section.category}</h3>
-                                    <div className="space-y-2">
-                                        {section.details.map((detail, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="flex justify-between border-b pb-2"
-                                            >
-                                                <span className="font-semibold">{detail.label}</span>
-                                                <span className="text-gray-700">{detail.value}</span>
+                        <div className="bg-white shadow-lg rounded-lg p-6">
+                            <h2 className="text-xl font-bold text-red-500 mb-4">Thông số kỹ thuật</h2>
+                            <div className="space-y-6">
+                                {category && (
+                                    <div>
+                                        {category.detail.slice(0, Math.ceil(category.detail.length / 2)).map((detail, idx) => (
+                                            <div key={detail.id} className="mb-5">
+                                                <h3 className="font-bold mb-2">{`${idx + 1}, ${detail.title}`}</h3>
+                                                <div className="space-y-2">
+                                                    {detail.attributes.map((attr) => (
+                                                        <div key={attr.id} className="flex justify-between border-b pb-2">
+                                                            <span className="font-semibold">{attr.value}</span>
+                                                            <span className="text-gray-700">
+                                                              {product?.details?.attributes &&
+                                                                  product?.details?.attributes
+                                                                      .filter((it) => it.type === attr.value)
+                                                                      .map((v) => v.value)
+                                                                      .join(", ")}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                        {isExpanded && (
-                            <div className="space-y-6 mt-6">
-                                {specifications.map((section, index) => (
-                                    <div key={index}>
-                                        <h3 className="font-bold mb-2">{section.category}</h3>
-                                        <div className="space-y-2">
-                                            {section.details.map((detail, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="flex justify-between border-b pb-2"
-                                                >
-                                                    <span className="font-semibold">{detail.label}</span>
-                                                    <span className="text-gray-700">{detail.value}</span>
+                                )}
+                            </div>
+
+                            {isExpanded && (
+                                <div className="space-y-6 mt-6">
+                                    {category && (
+                                        <div>
+                                            {category.detail.slice(Math.ceil(category.detail.length / 2)).map((detail, idx) => (
+                                                <div key={detail.id} className="mb-5">
+                                                    <h3 className="font-bold mb-2">{`${idx + 1 + Math.ceil(category.detail.length / 2)}, ${detail.title}`}</h3>
+                                                    <div className="space-y-2">
+                                                        {detail.attributes.map((attr) => (
+                                                            <div key={attr.id} className="flex justify-between border-b pb-2">
+                                                                <span className="font-semibold">{attr.value}</span>
+                                                                <span className="text-gray-700">
+                                                                    {product?.details?.attributes &&
+                                                                        product?.details?.attributes
+                                                                            .filter((it) => it.type === attr.value)
+                                                                            .map((v) => v.value)
+                                                                            .join(", ")}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <button
-                            onClick={toggleExpand}
-                            className="text-red-500 font-bold mt-4 flex justify-center w-full"
-                        >
-                            {isExpanded ? "Thu gọn" : "Xem thêm"}
-                        </button>
-                    </div>
+                                    )}
+                                </div>
+                            )}
 
+                            <button
+                                onClick={toggleExpand}
+                                className="text-red-500 font-bold mt-4 flex justify-center w-full"
+                            >
+                                {isExpanded ? "Thu gọn" : "Xem thêm"}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div className="w-full my-4 gap-8">
+                    <div className="relative w-full h-full shadow-lg p-6 border rounded-lg bg-white">
+                        <h1 className="text-xl font-bold text-red-500 mb-4">
+                            Sản phẩm tương tự
+                        </h1>
+                        <div className="grid lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 grid-cols-2  gap-4 items-center">
+                            {listSame.slice(0, 5).map((item, index) => (
+                                <BasicCard key={index} item={item}/>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
         </div>
-
     );
 };
 
-export default ProductPage;

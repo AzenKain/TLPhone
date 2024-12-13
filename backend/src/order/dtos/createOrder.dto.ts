@@ -28,6 +28,11 @@ export class CustomerInfoInp {
 export class DeliveryInfoInp {
   @IsOptional()
   @IsString()
+  @Field({ nullable: false })
+  deliveryType: string;
+
+  @IsOptional()
+  @IsString()
   @Field({ nullable: true })
   city?: string;
 
@@ -46,10 +51,6 @@ export class DeliveryInfoInp {
 @InputType()
 export class createOrderDto {
   @IsNotEmpty()
-  @Field(() => [OrderProductInp])
-  orderProducts: OrderProductInp[];
-
-  @IsNotEmpty()
   @Field(() => DeliveryInfoInp)
   deliveryInfo: DeliveryInfoInp;
 
@@ -60,7 +61,7 @@ export class createOrderDto {
   @IsNotEmpty()
   @IsString()
   @Field()
-  status: string;
+  paymentType: string;
 
   @IsOptional()
   @IsString()
@@ -68,26 +69,3 @@ export class createOrderDto {
   notes?: string;
 }
 
-
-@InputType()
-export class OrderProductInp {
-  @IsNotEmpty()
-  @IsNumber()
-  @Field(() => ID)
-  productId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Field(() => ID)
-  productVariantId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Field()
-  quantity: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Field(() => Float, { nullable: true })
-  discount?: number;
-}

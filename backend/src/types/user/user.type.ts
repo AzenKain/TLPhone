@@ -47,8 +47,8 @@ export class UserType {
   @Field(() => [String])
   role: string[];
 
-  @Field(() => [String])
-  heart: string[];
+  @Field(() => [Number])
+  heart: number[];
 
   @Field(() => UserDetailType, { nullable: true })
   details: UserDetailType;

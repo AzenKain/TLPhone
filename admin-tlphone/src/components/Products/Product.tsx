@@ -8,8 +8,8 @@ import {
   SearchProductType,
   TagsDetailType,
 } from "@/types/product";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
-import PropTypes, { element } from "prop-types";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 
@@ -53,17 +53,17 @@ import {
   DeleteProductDto,
   ImageDetailInp,
   ProductVariantInp,
-  SearchProductDto,
   TagsDetailInp,
   TagsProductDto,
   UpdateProductDto,
 } from "@/lib/dtos/Product";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { Quill } from "react-quill";
 import ResizeModule from "@ssumo/quill-resize-module";
 import { Backend_URL } from "@/lib/Constants";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 Quill.register("modules/resize", ResizeModule);
 
 type FileDetail = {
@@ -90,7 +90,6 @@ const ProductBox = () => {
   const dispatch = useAppDispatch();
   const [productSelect, setProductSelect] = useState<ProductType | null>(null);
   const [typeForm, setTypeForm] = useState<string>("");
-  const [searchValue, setSearchValue] = useState<string>("");
   const [selectedImeiEdit, setSelectedImeiEdit] = useState<string[]>([]);
   const [productName, setProductName] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
@@ -102,50 +101,47 @@ const ProductBox = () => {
   );
   const [showCombinations, setShowCombinations] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
+  const [description, setDescription] = useState<string>("");
+  const handleChangeDescription = (html: any) => {
+    setDescription(html);
+  };
+
+  const [tutorial, setTutorial] = useState<string>("");
+  const handleChangeTutorial = (html: any) => {
+    setTutorial(html);
+  };
+  const [maxValue, setMaxValue] = useState<number>(0);
 
   const UpdateAllTag = async () => {
     const dtoTag: TagsProductDto = {
       tags: null,
     };
-    const responseTags: TagsDetailType[] = await makeRequestApi(
-      getTagsProductApi,
+    const responseTags: TagsDetailType[] = await getTagsProductApi(
       dtoTag,
-      session?.refresh_token,
-      session?.access_token,
+      null,
     );
     dispatch(AddAllAttributes(responseTags));
 
     const dtoColor: ColorDetailInp = {
       colorName: null,
     };
-    const responseColors: ColorDetailType[] = await makeRequestApi(
-      getColorProductApi,
+    const responseColors: ColorDetailType[] = await getColorProductApi(
       dtoColor,
-      session?.refresh_token,
-      session?.access_token,
+      null,
     );
     dispatch(AddAllColor(responseColors));
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseProduct: SearchProductType = await makeRequestApi(
-          searchProductWithOptionsApi,
-          filter,
-          session?.refresh_token,
-          session?.access_token,
-        );
-        const responseCategory = await makeRequestApi(
-          getAllSchemaProductApi,
-          null,
-          session?.refresh_token,
-          session?.access_token,
-        );
+        const responseProduct: SearchProductType =
+          await searchProductWithOptionsApi(filter, null);
+        const responseCategory = await getAllSchemaProductApi(null, null);
         await UpdateAllTag();
         dispatch(AddListCategory(responseCategory));
         dispatch(AddListProduct(responseProduct.data));
+        setMaxValue(responseProduct.maxValue);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -153,20 +149,18 @@ const ProductBox = () => {
     fetchData();
   }, [dispatch]);
 
+  const fetchData = async () => {
+    try {
+      const responseProduct: SearchProductType =
+        await searchProductWithOptionsApi(filter, null);
+      dispatch(AddListProduct(responseProduct.data));
+      setMaxValue(responseProduct.maxValue);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseProduct: SearchProductType = await makeRequestApi(
-          searchProductWithOptionsApi,
-          filter,
-          session?.refresh_token,
-          session?.access_token,
-        );
-        dispatch(AddListProduct(responseProduct.data));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
     fetchData();
   }, [filter, dispatch]);
 
@@ -175,7 +169,7 @@ const ProductBox = () => {
   };
 
   const handleBrandChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setBrand(event.target.value);
+    setBrand(event.target.value.toLowerCase());
   };
 
   const generateCombinations = (
@@ -195,7 +189,25 @@ const ProductBox = () => {
 
     const combinations = combine(values, 0);
 
-    const newVariants = combinations.map((combination, idx) => {
+    return combinations.map((combination, idx) => {
+      let item: ProductVariantType | null = null;
+
+      for (const iv of variantInput) {
+        const matches = combination.every((it) =>
+          iv.attributes?.some(
+            (x) => (x?.value ?? "").toLowerCase() === it.toLowerCase(),
+          ),
+        );
+        if (matches) {
+          item = iv;
+          break;
+        }
+      }
+
+      if (item) {
+        return item;
+      }
+
       const updatedAttributes = combination.map((value, i) => ({
         id: `${Date.now() + i * 10}`,
         type: keys[i],
@@ -212,25 +224,6 @@ const ProductBox = () => {
         imeiList: [],
       } as ProductVariantType;
     });
-
-    const allVariants = [...variantInput, ...newVariants];
-    console.log(allVariants);
-    const uniqueVariants = allVariants.filter((variant, index, self) => {
-      return (
-        self.findIndex((v) => {
-          if (!v.attributes || !variant.attributes) return false;
-          return v.attributes.every((att, i) => {
-            return (
-              variant.attributes &&
-              variant.attributes[i]?.value?.toLowerCase() ===
-                att?.value?.toLowerCase()
-            );
-          });
-        }) === index
-      );
-    });
-
-    return uniqueVariants;
   };
 
   const filterAttributesForSearch = (
@@ -248,16 +241,16 @@ const ProductBox = () => {
       filterAttributesForSearch(schemaProduct);
 
     const aggProcess: Record<string, string[]> = {
-      color: colorInput.map((it) => it.colorName),
+      color: colorInput.map((it) => it.colorName.toLowerCase()),
     };
     for (const item of aggList) {
-      const filteredAttributes = attributesList.filter(
+      const filteredAttributes = attributesInput.filter(
         (it) => it.type === item.value,
       );
-      const attributeValues = filteredAttributes
+
+      aggProcess[item.value] = filteredAttributes
         .map((attribute) => attribute.value)
         .filter((value): value is string => value !== undefined);
-      aggProcess[item.value] = attributeValues;
     }
     const aggProcessed = generateCombinations(aggProcess, variantInput);
 
@@ -269,8 +262,8 @@ const ProductBox = () => {
     const files = event.target.files;
     if (!files) return;
 
-    const newImages = Array.from(files).map((file) => {
-      const id = `${Date.now()}`;
+    const newImages = Array.from(files).map((file, index) => {
+      const id = `${Date.now()}-${index}`;
       const objectUrl = URL.createObjectURL(file);
 
       setFileDetails((prevFileDetails) => [...prevFileDetails, { id, file }]);
@@ -305,16 +298,6 @@ const ProductBox = () => {
 
     const updatedFileDetails = fileDetails.filter((_, i) => i !== index);
     setFileDetails(updatedFileDetails);
-  };
-
-  const [description, setDescription] = useState<string>("");
-  const handleChangeDescription = (html: any) => {
-    setDescription(html);
-  };
-
-  const [tutorial, setTutorial] = useState<string>("");
-  const handleChangeTutorial = (html: any) => {
-    setTutorial(html);
   };
 
   useEffect(() => {
@@ -405,6 +388,10 @@ const ProductBox = () => {
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
+  const escapeSpecialChars = (input: string): string => {
+    return input.replace(/(["\\])/g, "\\$1");
+  };
+
   const handleSubmitControl = async () => {
     if (typeForm === "CREATE") {
       handleModal("my_modal_status", true);
@@ -468,8 +455,8 @@ const ProductBox = () => {
           attributes: attributesInput.map(
             (value) =>
               ({
-                type: value.type,
-                value: value.value,
+                type: escapeSpecialChars(value.type),
+                value: escapeSpecialChars(value.value ?? ""),
               }) as TagsDetailInp,
           ),
           description: description,
@@ -569,8 +556,8 @@ const ProductBox = () => {
           attributes: attributesInput.map(
             (value) =>
               ({
-                type: value.type,
-                value: value.value,
+                type: escapeSpecialChars(value.type),
+                value: escapeSpecialChars(value.value ?? ""),
               }) as TagsDetailInp,
           ),
           description: Buffer.from(description).toString("base64"),
@@ -598,8 +585,16 @@ const ProductBox = () => {
       handleModal("my_modal_control", false);
     }
     await UpdateAllTag();
+    await fetchData()
   };
 
+  const handlePageChange = (page: number) => {
+    const count = filter.count ?? 0;
+
+    if (page >= 1 && page <= maxValue / count) {
+      dispatch(UpdateFilter({ ...filter, index: page }));
+    }
+  };
   return (
     <div className="mt-2 flex flex-col gap-10">
       <div className="flex flex-col gap-3 md:flex-row">
@@ -615,11 +610,12 @@ const ProductBox = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-4 md:flex-row">
+      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 md:flex-row lg:grid-cols-5">
         {/* Sort Filter */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm font-medium">Sort:</span>
           <select
+            defaultValue={filter.sort || ""}
             value={filter.sort || ""}
             onChange={(e) =>
               dispatch(UpdateFilter({ ...filter, sort: e.target.value }))
@@ -794,6 +790,7 @@ const ProductBox = () => {
         <div className="flex flex-col items-center gap-2">
           <span className="text-sm font-medium">Category:</span>
           <select
+            defaultValue={filter.category || ""}
             value={filter.category || ""}
             onChange={(e) =>
               dispatch(UpdateFilter({ ...filter, category: e.target.value }))
@@ -980,6 +977,23 @@ const ProductBox = () => {
             </div>
           </div>
         ))}
+      </div>
+      <div className="flex items-center justify-center space-x-2">
+        <div className="join">
+          <button
+            className="btn join-item"
+            onClick={() => handlePageChange(filter.index - 1)}
+          >
+            «
+          </button>
+          <button className="btn join-item">Page {filter.index}</button>
+          <button
+            className="btn join-item"
+            onClick={() => handlePageChange(filter.index + 1)}
+          >
+            »
+          </button>
+        </div>
       </div>
       <dialog id="my_modal_view" className="modal">
         <div className="modal-box h-[91%] max-h-[100rem] w-11/12 max-w-[100rem]">
@@ -1196,6 +1210,7 @@ const ProductBox = () => {
 
                   <div className="relative z-10 bg-transparent dark:bg-form-input">
                     <select
+                      defaultValue={productType}
                       value={productType}
                       onChange={(e) => {
                         setProductType(e.target.value);
@@ -1320,6 +1335,7 @@ const ProductBox = () => {
                                 height={200}
                               />
                               <select
+                                defaultValue={image?.link?.[0] || ""}
                                 value={image?.link?.[0] || ""}
                                 onChange={(e) =>
                                   handleImageInfoChange(

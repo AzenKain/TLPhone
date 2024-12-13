@@ -1,7 +1,8 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
-import { ProductType } from '../product';
+import { ProductType, ProductVariantType, TagsDetailType } from '../product';
 import { RefundType } from '../refund';
 import { UserType } from '../user';
+import { Column } from 'typeorm';
 
 @ObjectType('CustomerInfo')
 export class CustomerInfoType {
@@ -9,7 +10,7 @@ export class CustomerInfoType {
   id: number;
 
   @Field({ nullable: true })
-  userId: number;
+  userId: string;
 
   @Field()
   email: string;
@@ -78,6 +79,9 @@ export class OrderType {
   id: number;
 
   @Field()
+  orderUid: string
+
+  @Field()
   isDisplay: boolean;
 
   @Field(() => PaymentInfoType)
@@ -97,6 +101,7 @@ export class OrderType {
 
   @Field(() => [OrderStatusHistoryType])
   statusHistory: OrderStatusHistoryType[];
+
   @Field()
   status: string;
 
@@ -130,8 +135,8 @@ export class OrderStatusHistoryType {
   @Field()
   newStatus: string;
 
-  @Field(() => UserType)
-  user: UserType;
+  @Field(() => UserType, {nullable: true})
+  user?: UserType;
 
   @Field(() => OrderType)
   order: OrderType;
@@ -145,8 +150,8 @@ export class OrderProductType {
   @Field(() => ID)
   id: number;
 
-  @Field({ nullable: true })
-  imei?: string;
+  @Field(() => [String], { nullable: true })
+  imei?: string[];
 
   @Field({ nullable: true, defaultValue: false })
   hasImei: boolean;
@@ -166,11 +171,14 @@ export class OrderProductType {
   @Field(() => OrderType)
   order: OrderType;
 
-  @Field(() => [VariantAttributeType], { nullable: true })
-  variantAttributes?: VariantAttributeType[];
+  @Field(() => [TagsDetailType], { nullable: true })
+  variantAttributes?: TagsDetailType[];
 
   @Field(() => ProductType)
   product: ProductType;
+
+  @Field(() => ProductVariantType)
+  productVariant: ProductVariantType
 
   @Field(() => [RefundType])
   refunds: RefundType[]

@@ -21,11 +21,7 @@ const initialState: InitialState = {
     cart: {
       id: "-1",
       cartProducts: [],
-      created_at: new Date(),
-      updated_at: new Date(),
     },
-    created_at: new Date(),
-    updated_at: new Date(),
   },
 };
 
@@ -33,8 +29,11 @@ export const UserRedux = createSlice({
     name: 'UserRedux',
     initialState,
     reducers: {
-      UpdateUser: (state, action: PayloadAction<UserType>) => {
-        state.value = action.payload
+      UpdateUser: (state, action: PayloadAction<UserType | null>) => {
+          if (action.payload == null) {
+              return initialState
+          }
+          state.value = action.payload
       },
       AddHeart: (state, action: PayloadAction<string>) => {
           if (!state.value.heart.includes(action.payload)) state.value.heart.push(action.payload);

@@ -91,6 +91,9 @@ export class ProductVariantEntity {
     @OneToMany(() => CartItemEntity, (it) => it.productVariant)
     cartItem: Relation<CartItemEntity[]>;
 
+    @OneToMany(() => OrderProductEntity, (it) => it.productVariant)
+    orderItem: Relation<OrderProductEntity[]>;
+
     @ManyToMany(() => TagsEntity, (tag) => tag.productVariant, { nullable: true })
     @JoinTable()
     attributes: Relation<TagsEntity[]>;

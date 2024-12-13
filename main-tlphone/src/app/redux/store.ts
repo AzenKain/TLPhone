@@ -1,13 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit'
 import UserRedux from './features/user/user.redux'
 import CategoryRedux from './features/category/category.redux'
-
+import ProductRedux from './features/product/product.redux'
+import CartRedux from './features/cart/cart.redux'
+import OrderRedux from './features/order/order.redux'
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
             UserRedux,
-            CategoryRedux
+            CategoryRedux,
+            ProductRedux,
+            CartRedux,
+            OrderRedux
         }
     })
 }

@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TagsDetailInp } from "./createProduct.dto";
 
 
@@ -50,4 +50,11 @@ export class SearchProductDto {
     @IsString()
     @Field(() => String, { nullable: true })
     hotSales?: string
+}
+
+@InputType()
+export class GetListProductDto {
+    @IsNotEmpty()
+    @Field(() => [Number])
+    products: number[];
 }

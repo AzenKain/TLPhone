@@ -1,9 +1,20 @@
 import axios from 'axios';
 import { Backend_URL } from "./Constants";
 import { SignUpDto } from "./dtos/auth";
-import {SchemaProductType, SearchProductType, TagsDetailType, UserType} from "@/types";
-import {SearchUserDto, UpdateProfileDto } from "@/lib/dtos/user";
-import {SearchProductDto, TagsProductDto} from "@/lib/dtos/Product";
+import {
+    CartType,
+    ColorDetailType,
+    ImageDetailType, OrderType,
+    ProductType,
+    SchemaProductType,
+    SearchProductType,
+    TagsDetailType,
+    UserType
+} from "@/types";
+import {SearchUserDto, UpdateCartDto, UpdateProfileDto} from "@/lib/dtos/user";
+import {ColorDetailInp, SearchProductDto, TagsProductDto} from "@/lib/dtos/Product";
+import {CreateOrderDto, GenerateVnpayPaymentDto, GenerateVnpayPaymentResponse} from "@/lib/dtos/order";
+
 
 
 async function refreshTokenApi(refreshToken: string): Promise<string | null> {
@@ -96,56 +107,37 @@ export async function getUserByIdApi(id: string, token: string) {
                     id
                     updated_at
                     cartProducts {
+                      id
+                      quantity
+                      productVariant {
+                        displayPrice
                         id
-                        quantity
-                        product {
-                            buyCount
-                            category
-                            created_at
-                            id
-                            isDisplay
-                            name
-                            updated_at
-                            details {
-                                description
-                                id
-                                brand {
-                                    id
-                                    type
-                                    value
-                                }
-                                imgDisplay {
-                                    id
-                                    link
-                                    url
-                                }
-                                attributes {
-                                    id
-                                    type
-                                    value
-                                }
-                                variants {
-                                    displayPrice
-                                    id
-                                    stockQuantity
-                                    attributes {
-                                        id
-                                        type
-                                        value
-                                    }
-                                }
-                            }
+                        attributes {
+                          id
+                          type
+                          value
                         }
-                        productVariant {
-                            displayPrice
+                        stockQuantity
+                      }
+                      product {
+                        created_at
+                        id
+                        isDisplay
+                        name
+                        details {
+                          id
+                          brand {
                             id
-                            stockQuantity
-                            attributes {
-                                id
-                                type
-                                value
-                            }
+                            type
+                            value
+                          }
+                          imgDisplay {
+                            id
+                            link
+                            url
+                          }
                         }
+                      }
                     }
                 }
             }
@@ -169,7 +161,7 @@ export async function getUserByIdApi(id: string, token: string) {
             dataReturn.details.imgDisplay =
                 Backend_URL + dataReturn.details.imgDisplay;
         }
-        return dataReturn;
+        return dataReturn ;
     } catch (error) {
         console.error("Error fetching user: ", error);
         throw error;
@@ -201,35 +193,42 @@ export async function updateUserProfileApi(
                 secretKey
                 updated_at
                 cart {
+                    created_at
                     id
                     updated_at
                     cartProducts {
+                      id
+                      quantity
+                      productVariant {
+                        displayPrice
                         id
-                        quantity
-                        product {
-                            buyCount
-                            category
-                            created_at
-                            id
-                            isDisplay
-                            name
-                            updated_at
+                        attributes {
+                          id
+                          type
+                          value
                         }
-                        productVariant {
-                            displayPrice
-                            hasImei
+                        stockQuantity
+                      }
+                      product {
+                        created_at
+                        id
+                        isDisplay
+                        name
+                        details {
+                          id
+                          brand {
                             id
-                            imeiList
-                            originPrice
-                            stockQuantity
-                            attributes {
-                                id
-                                type
-                                value
-                            }
+                            type
+                            value
+                          }
+                          imgDisplay {
+                            id
+                            link
+                            url
+                          }
                         }
+                      }
                     }
-                    created_at
                 }
                 details {
                     address
@@ -333,7 +332,7 @@ export async function searchUserWithOptionApi(
     }
 }
 
-export async function getAllSchemaProductApi(dto: null, token: string) {
+export async function getAllSchemaProductApi(dto: null, token: null) {
     const query = `
     query GetAllSchemaProduct {
       GetAllSchemaProduct {
@@ -368,6 +367,47 @@ export async function getAllSchemaProductApi(dto: null, token: string) {
             },
         );
         return response.data.data.GetAllSchemaProduct as SchemaProductType[];
+    } catch (error) {
+        console.error("Error fetching schema products:", error);
+        throw error;
+    }
+}
+
+export async function getSchemaProductByName(dto: string, token: null) {
+    const query = `
+    query GetSchemaProductByName {
+        GetSchemaProductByName(schemaProductName: "${dto}") {
+        category
+        created_at
+        id
+        isDisplay
+        name
+        updated_at
+        detail {
+          id
+          title
+          attributes {
+            id
+            isUseForSearch
+            value
+          }
+        }
+      }
+    }
+  `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        return response.data.data.GetSchemaProductByName as SchemaProductType;
     } catch (error) {
         console.error("Error fetching schema products:", error);
         throw error;
@@ -549,6 +589,649 @@ export async function getTagsProductApi(dto: TagsProductDto, token: null) {
         return response.data.data.GetTagsProduct as TagsDetailType[];
     } catch (error) {
         console.error("Error fetching tags product: ", error);
+        throw error;
+    }
+}
+
+export async function getProductByIdApi(productId: number, token: null) {
+    const query = `
+        query GetProductById {
+            GetProductById(productId: ${productId ? `${productId}` : null}) {
+                buyCount
+                category
+                created_at
+                id
+                isDisplay
+                name
+                updated_at
+                details {
+                    description
+                    id
+                    tutorial
+                    attributes {
+                        id
+                        type
+                        value
+                    }
+                    brand {
+                        id
+                        type
+                        value
+                    }
+                    color {
+                        colorHex
+                        colorName
+                        id
+                    }
+                    imgDisplay {
+                        id
+                        link
+                        url
+                    }
+                    variants {
+                        displayPrice
+                        hasImei
+                        id
+                        imeiList
+                        originPrice
+                        stockQuantity
+                        attributes {
+                            id
+                            type
+                            value
+                        }
+                    }
+                }
+                reviews {
+                    content
+                    created_at
+                    id
+                    isDisplay
+                    star
+                    updated_at
+                    user {
+                        created_at
+                        email
+                        id
+                        isDisplay
+                        updated_at
+                        details {
+                            address
+                            birthday
+                            firstName
+                            gender
+                            id
+                            imgDisplay
+                            lastName
+                            phoneNumber
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        let dataReturn = response.data.data.GetProductById as ProductType;
+        if (dataReturn?.details?.imgDisplay) {
+            dataReturn.details.imgDisplay = dataReturn.details.imgDisplay.map(
+                (img: { url: string }) => ({
+                    ...img,
+                    url: Backend_URL + img.url,
+                } as ImageDetailType),
+            );
+        }
+        return dataReturn;
+    } catch (error) {
+        console.error("Error fetching product: ", error);
+        throw error;
+    }
+}
+export async function getColorProductApi(dto: ColorDetailInp, token: null) {
+    const query = `
+    query GetColorProduct($colorHex: String, $colorName: String) {
+      GetColorProduct(GetColorProduct: { colorHex: $colorHex, colorName: $colorName }) {
+        colorHex
+        colorName
+        id
+      }
+    }
+  `;
+
+    const variables = {
+        colorHex: dto.colorHex || null,
+        colorName: dto.colorName || null,
+    };
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query, variables },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+        return response.data.data.GetColorProduct as ColorDetailType[];
+    } catch (error) {
+        console.error("Error fetching color product: ", error);
+        throw error;
+    }
+}
+
+
+export async function updateCartApi(updateCartDto: UpdateCartDto, token: string) {
+    const cartProductsQuery = updateCartDto.cartProducts
+        .map(
+            (product) => `
+        {
+          quantity: ${product.quantity},
+          productId: ${product.productId},
+          productVariantId: ${product.productVariantId}
+        }`
+        )
+        .join(", ");
+
+    const mutation = `
+    mutation UpdateCart {
+      UpdateCart(
+        UpdateCart: {
+          cartProducts: [${cartProductsQuery}]
+        }
+      ) {
+        created_at
+        id
+        updated_at
+        cartProducts {
+          id
+          quantity
+          productVariant {
+            displayPrice
+            id
+            attributes {
+              id
+              type
+              value
+            }
+            stockQuantity
+          }
+          product {
+            created_at
+            id
+            isDisplay
+            name
+            details {
+              id
+              brand {
+                id
+                type
+                value
+              }
+              imgDisplay {
+                id
+                link
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query: mutation },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+
+        return response.data.data.UpdateCart as CartType;
+    } catch (error) {
+        console.error("Error updating cart: ", error);
+        throw error;
+    }
+}
+
+export async function createOrderApi(createOrderDto: CreateOrderDto, token: string) {
+    const customerInfoQuery = `
+        email: ${createOrderDto.customerInfo.email ? `"${createOrderDto.customerInfo.email}"` : null},
+        firstName: ${createOrderDto.customerInfo.firstName ? `"${createOrderDto.customerInfo.firstName}"` : null},
+        lastName: ${createOrderDto.customerInfo.lastName ? `"${createOrderDto.customerInfo.lastName}"` : null},
+        phoneNumber: ${createOrderDto.customerInfo.phoneNumber ? `"${createOrderDto.customerInfo.phoneNumber}"` : null}
+    `;
+
+    const deliveryInfoQuery = `
+        deliveryType: ${createOrderDto.deliveryInfo.deliveryType ? `"${createOrderDto.deliveryInfo.deliveryType}"` : null},
+        city: ${createOrderDto.deliveryInfo.city ? `"${createOrderDto.deliveryInfo.city}"` : null},
+        district: ${createOrderDto.deliveryInfo.district ? `"${createOrderDto.deliveryInfo.district}"` : null},
+        address: ${createOrderDto.deliveryInfo.address ? `"${createOrderDto.deliveryInfo.address}"` : null}
+    `;
+
+    const notesQuery = createOrderDto.notes ? `"${createOrderDto.notes}"` : null;
+
+    const mutation = `
+    mutation CreateOrder {
+      CreateOrder(
+        CreateOrder: {
+          customerInfo: {
+            ${customerInfoQuery}
+          }
+          deliveryInfo: {
+            ${deliveryInfoQuery}
+          }
+          paymentType: "${createOrderDto.paymentType}"
+          notes: ${notesQuery}
+        }
+      ) {
+        created_at
+        id
+        isDisplay
+        notes
+        status
+        totalAmount
+        updated_at
+        customerInfo {
+          email
+          firstName
+          id
+          lastName
+          phoneNumber
+          userId
+        }
+        deliveryInfo {
+          address
+          city
+          deliveryFee
+          deliveryType
+          discount
+          district
+          id
+        }
+        paymentInfo {
+          bank
+          createdAt
+          id
+          isPaid
+          paymentType
+          updateAt
+          trackId
+        }
+        orderProducts {
+          discount
+          id
+          originPrice
+          quantity
+          unitPrice
+          variantAttributes {
+            id
+            type
+            value
+          }
+          product {
+            isDisplay
+            name
+            updated_at
+            created_at
+            id
+            details {
+              id
+              imgDisplay {
+                id
+                link
+                url
+              }
+            }
+          }
+        }
+        orderUid
+      }
+    }
+  `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query: mutation },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        return response.data.data.CreateOrder;
+    } catch (error) {
+        console.error("Error creating order: ", error);
+        throw error;
+    }
+}
+
+export async function generateVnpayPaymentApi(
+    generateVnpayPaymentDto: GenerateVnpayPaymentDto,
+    token: string
+): Promise<GenerateVnpayPaymentResponse> {
+    const paymentQuery = `
+        method: ${generateVnpayPaymentDto.method ? `"${generateVnpayPaymentDto.method}"` : null},
+        orderUid: ${generateVnpayPaymentDto.orderUid ? `"${generateVnpayPaymentDto.orderUid}"` : null}
+    `;
+
+    const mutation = `
+    mutation GenerateVnpayPayment {
+        generateVnpayPayment(payment: { ${paymentQuery} }) {
+            status
+            url
+        }
+    }
+  `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query: mutation },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        return response.data.data.generateVnpayPayment as GenerateVnpayPaymentResponse;
+    } catch (error) {
+        console.error("Error generating VNPAY payment: ", error);
+        throw error;
+    }
+}
+
+export async function getOrderListByUserApi(dto: null, token: string): Promise<OrderType[]> {
+    const query = `
+    query GetOrderListByUser {
+        GetOrderListByUser {
+            created_at
+            id
+            isDisplay
+            notes
+            status
+            totalAmount
+            updated_at
+            customerInfo {
+              email
+              firstName
+              id
+              lastName
+              phoneNumber
+              userId
+            }
+            deliveryInfo {
+              address
+              city
+              deliveryFee
+              deliveryType
+              discount
+              district
+              id
+            }
+            paymentInfo {
+              bank
+              createdAt
+              id
+              isPaid
+              paymentType
+              updateAt
+              trackId
+            }
+            orderProducts {
+              discount
+              id
+              originPrice
+              quantity
+              unitPrice
+              variantAttributes {
+                id
+                type
+                value
+              }
+              product {
+                isDisplay
+                name
+                updated_at
+                created_at
+                id
+                details {
+                  id
+                  imgDisplay {
+                    id
+                    link
+                    url
+                  }
+                }
+              }
+            }
+            orderUid
+        }
+    }
+    `;
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        return response.data.data.GetOrderListByUser as OrderType[];
+    } catch (error) {
+        console.error("Error fetching order list by user: ", error);
+        throw error;
+    }
+}
+
+export async function updateHeartApi(heartArray: number[], token: string) {
+    const mutation = `
+    mutation UpdateHeart($heart: [Int!]!) {
+      UpdateHeart(UpdateHeart: { heart: $heart }) {
+        created_at
+        email
+        id
+        isDisplay
+        refreshToken
+        role
+        secretKey
+        updated_at
+        details {
+            address
+            birthday
+            firstName
+            gender
+            id
+            imgDisplay
+            lastName
+            phoneNumber
+        }
+        heart
+        cart {
+            created_at
+            id
+            updated_at
+            cartProducts {
+              id
+              quantity
+              productVariant {
+                displayPrice
+                id
+                attributes {
+                  id
+                  type
+                  value
+                }
+                stockQuantity
+              }
+              product {
+                created_at
+                id
+                isDisplay
+                name
+                details {
+                  id
+                  brand {
+                    id
+                    type
+                    value
+                  }
+                  imgDisplay {
+                    id
+                    link
+                    url
+                  }
+                }
+              }
+            }
+        }
+      }
+    }
+  `;
+
+    const variables = {
+        heart: heartArray,
+    };
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            {
+                query: mutation,
+                variables,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        return response.data.data.UpdateHeart as UserType;
+    } catch (error) {
+        console.error("Error updating heart: ", error);
+        throw error;
+    }
+}
+export async function getListProductByIdApi(productIds: number[], token: null) {
+    const query = `
+    query GetListProductById($products: [Int!]!) {
+      GetListProductById(GetListProductById: { products: $products }) {
+        buyCount
+        category
+        created_at
+        id
+        isDisplay
+        name
+        updated_at
+        details {
+            description
+            id
+            tutorial
+            attributes {
+                id
+                type
+                value
+            }
+            brand {
+                id
+                type
+                value
+            }
+            color {
+                colorHex
+                colorName
+                id
+            }
+            imgDisplay {
+                id
+                link
+                url
+            }
+            variants {
+                displayPrice
+                hasImei
+                id
+                imeiList
+                originPrice
+                stockQuantity
+                attributes {
+                    id
+                    type
+                    value
+                }
+            }
+        }
+        faultyProduct {
+            created_at
+            id
+            imei
+            notes
+            quantity
+            reason
+            updated_at
+        }
+        reviews {
+            content
+            created_at
+            id
+            isDisplay
+            star
+            updated_at
+        }
+      }
+    }
+  `;
+
+    const variables = {
+        products: productIds,
+    };
+
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            {
+                query,
+                variables,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+
+        return response.data.data.GetListProductById as ProductType[];
+    } catch (error) {
+        console.error("Error fetching product list: ", error);
         throw error;
     }
 }

@@ -7,8 +7,8 @@ export type SearchProductDto = {
   brand?: TagsDetailInp[];
   color?: TagsDetailInp[];
   attributes?: TagsDetailInp[];
-  index?: number;
-  count?: number;
+  index: number;
+  count: number;
   sort?: string;
   hotSales?: string;
 };

@@ -3,7 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { OrderType, SearchOrderType } from 'src/types/order';
 import { UserEntity } from 'src/types/user';
-import { createOrderDto, SearchOrderDto, updateOrderDto } from './dtos';
+import { confirmOrderDto, createOrderDto, SearchOrderDto, updateOrderDto } from './dtos';
 import { OrderService } from './order.service';
 import { CurrentUserGraphql } from 'src/decorators';
 
@@ -29,7 +29,12 @@ export class OrderResolver {
     ): Promise<OrderType> { 
         return await this.orderService.GetOrderById(orderId, user)
     }
-    
+    @Query(() => [OrderType])
+    async GetOrderListByUser(
+      @CurrentUserGraphql() user: UserEntity,
+    ): Promise<OrderType[]> {
+        return await this.orderService.GetListOrderByUser(user)
+    }
 
     @Mutation(() => OrderType)
     async CreateOrder(
@@ -53,5 +58,13 @@ export class OrderResolver {
         @Args('UpdateOrder') dto: updateOrderDto
     ): Promise<OrderType> {
         return await this.orderService.UpdateOrderService(dto, user)
+    }
+
+    @Mutation(() => OrderType)
+    async ConfirmOrder(
+      @CurrentUserGraphql() user: UserEntity,
+      @Args('ConfirmOrder') dto: confirmOrderDto
+    ): Promise<OrderType> {
+        return await this.orderService.ConfirmOrderService(dto, user)
     }
 }

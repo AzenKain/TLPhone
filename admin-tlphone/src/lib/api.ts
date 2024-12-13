@@ -1,5 +1,13 @@
 import axios from "axios";
-import { ColorDetailType, ProductType, SchemaProductType, SearchProductType, TagsDetailType, UserType } from "@/types";
+import {
+  ColorDetailType, OrderType,
+  ProductType,
+  SchemaProductType,
+  SearchOrderResponse,
+  SearchProductType,
+  TagsDetailType,
+  UserType
+} from "@/types";
 import { Backend_URL } from "./Constants";
 import { SignUpDto } from "./dtos/auth";
 import { SearchUserDto, UpdateProfileDto, UpdateRoleDto } from "./dtos/user";
@@ -16,6 +24,7 @@ import {
   TagsProductDto,
   UpdateProductDto
 } from "@/lib/dtos/Product";
+import { ConfirmOrderDto, SearchOrderDto, UpdateOrderDto } from "@/lib/dtos/order";
 
 async function refreshTokenApi(refreshToken: string): Promise<string | null> {
   try {
@@ -578,7 +587,7 @@ export async function deleteSchemaProductApi(
   }
 }
 
-export async function getAllSchemaProductApi(dto: null, token: string) {
+export async function getAllSchemaProductApi(dto: null, token: null) {
   const query = `
     query GetAllSchemaProduct {
       GetAllSchemaProduct {
@@ -608,7 +617,6 @@ export async function getAllSchemaProductApi(dto: null, token: string) {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       },
     );
@@ -621,7 +629,7 @@ export async function getAllSchemaProductApi(dto: null, token: string) {
 
 export async function getSchemaProductByIdApi(
   schemaProductId: number,
-  token: string,
+  token: null,
 ) {
   const query = `
     query GetSchemaProductById {
@@ -652,7 +660,6 @@ export async function getSchemaProductByIdApi(
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       },
     );
@@ -1104,6 +1111,419 @@ export async function uploadFile(data: File, token: string) {
 
   } catch (error: any) {
     console.error('Upload failed:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+}
+
+
+export async function searchOrderWithOptionApi(
+  searchOrderDto: SearchOrderDto,
+  token: string
+): Promise<SearchOrderResponse> {
+
+  const query = `
+    query SearchOrderWithOption {
+      SearchOrderWithOption(
+        SearchOrder: {
+            index: ${searchOrderDto.index ?? null}
+            count: ${searchOrderDto.count ?? null}
+            orderId: ${searchOrderDto.orderId ? `"${searchOrderDto.orderId}"` : null}
+            lastName: ${searchOrderDto.lastName ? `"${searchOrderDto.lastName}"` : null}
+            phoneNumber: ${searchOrderDto.phoneNumber ? `"${searchOrderDto.phoneNumber}"` : null}
+            rangeMoney: ${searchOrderDto.rangeMoney ? `[${searchOrderDto.rangeMoney.join(", ")}]` : null}
+            sort: ${searchOrderDto.sort ? `"${searchOrderDto.sort}"` : null}
+            status: ${searchOrderDto.status ? `"${searchOrderDto.status}"` : null}
+            firstName: ${searchOrderDto.firstName ? `"${searchOrderDto.firstName}"` : null}
+            email: ${searchOrderDto.email ? `"${searchOrderDto.email}"` : null}
+        }
+      ) {
+        maxValue
+        data {
+            created_at
+            id
+            isDisplay
+            notes
+            orderUid
+            status
+            totalAmount
+            updated_at
+            customerInfo {
+                email
+                firstName
+                id
+                lastName
+                phoneNumber
+                userId
+            }
+            deliveryInfo {
+                address
+                city
+                deliveryFee
+                deliveryType
+                discount
+                district
+                id
+            }
+            statusHistory {
+                createdAt
+                id
+                newStatus
+                previousStatus
+                user {
+                    created_at
+                    refreshToken
+                    role
+                    updated_at
+                    id
+                    isDisplay
+                    details {
+                        address
+                        birthday
+                        firstName
+                        gender
+                        id
+                        imgDisplay
+                        lastName
+                        phoneNumber
+                    }
+                }
+            }
+            paymentInfo {
+                bank
+                createdAt
+                id
+                isPaid
+                paymentType
+                trackId
+                updateAt
+            }
+            orderProducts {
+                discount
+                hasImei
+                id
+                imei
+                originPrice
+                quantity
+                unitPrice
+                variantAttributes {
+                    id
+                    type
+                    value
+                }
+                productVariant {
+                    displayPrice
+                    hasImei
+                    id
+                    imeiList
+                    originPrice
+                    stockQuantity
+                }
+                product {
+                    buyCount
+                    category
+                    created_at
+                    id
+                    isDisplay
+                    name
+                    updated_at
+
+                    details {
+                        id
+                        brand {
+                          id
+                          type
+                          value
+                        }
+                        imgDisplay {
+                            id
+                            link
+                            url
+                        }
+                    }
+                }
+            }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(
+      `${Backend_URL}/graphql`,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data.SearchOrderWithOption as SearchOrderResponse;
+  } catch (error) {
+    console.error("Error searching order with option: ", error);
+    throw error;
+  }
+}
+
+export async function confirmOrderApi(
+  confirmOrderDto: ConfirmOrderDto,
+  token: string
+): Promise<OrderType> {
+  const orderListQuery = confirmOrderDto.orderList
+    .map(
+      (order) => `
+        {
+          imei: ${order.imei ? `[${order.imei.map((i) => `"${i}"`).join(", ")}]` : null},
+          orderProductId: ${order.orderProductId ?? null}
+        }`
+    )
+    .join(", ");
+
+  const query = `
+    mutation ConfirmOrder {
+      ConfirmOrder(
+        ConfirmOrder: {
+          orderList: [${orderListQuery}],
+          orderId: ${confirmOrderDto.orderId ?? null}
+        }
+      ) {
+            created_at
+            id
+            isDisplay
+            notes
+            status
+            totalAmount
+            updated_at
+            customerInfo {
+              email
+              firstName
+              id
+              lastName
+              phoneNumber
+              userId
+            }
+            deliveryInfo {
+              address
+              city
+              deliveryFee
+              deliveryType
+              discount
+              district
+              id
+            }
+            paymentInfo {
+              bank
+              createdAt
+              id
+              isPaid
+              paymentType
+              updateAt
+              trackId
+            }
+            statusHistory {
+                createdAt
+                id
+                newStatus
+                previousStatus
+                user {
+                    created_at
+                    refreshToken
+                    role
+                    updated_at
+                    id
+                    isDisplay
+                    details {
+                        address
+                        birthday
+                        firstName
+                        gender
+                        id
+                        imgDisplay
+                        lastName
+                        phoneNumber
+                    }
+                }
+            }
+            orderProducts {
+              discount
+              id
+              originPrice
+              quantity
+              unitPrice
+              variantAttributes {
+                id
+                type
+                value
+              }
+              product {
+                isDisplay
+                name
+                updated_at
+                created_at
+                id
+                details {
+                  id
+                  brand {
+                    id
+                    type
+                    value
+                  } 
+                  imgDisplay {
+                    id
+                    link
+                    url
+                  }
+                }
+              }
+            }
+            orderUid
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(
+      `${Backend_URL}/graphql`,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data.ConfirmOrder as OrderType;
+  } catch (error) {
+    console.error("Error confirming order: ", error);
+    throw error;
+  }
+}
+
+export async function updateOrderApi(
+  updateOrderDto: UpdateOrderDto,
+  token: string
+): Promise<OrderType> {
+  const query = `
+    mutation UpdateOrder {
+      UpdateOrder(
+        UpdateOrder: {
+          isPaid: ${updateOrderDto.isPaid ?? null},
+          orderId: ${updateOrderDto.orderId ?? null}
+          status: ${updateOrderDto.status ? `"${updateOrderDto.status}"` : null}
+        }
+      ) {
+            created_at
+            id
+            isDisplay
+            notes
+            status
+            totalAmount
+            updated_at
+            customerInfo {
+              email
+              firstName
+              id
+              lastName
+              phoneNumber
+              userId
+            }
+            deliveryInfo {
+              address
+              city
+              deliveryFee
+              deliveryType
+              discount
+              district
+              id
+            }
+            paymentInfo {
+              bank
+              createdAt
+              id
+              isPaid
+              paymentType
+              updateAt
+              trackId
+            }
+            statusHistory {
+                createdAt
+                id
+                newStatus
+                previousStatus
+                user {
+                    created_at
+                    refreshToken
+                    role
+                    updated_at
+                    id
+                    isDisplay
+                    details {
+                        address
+                        birthday
+                        firstName
+                        gender
+                        id
+                        imgDisplay
+                        lastName
+                        phoneNumber
+                    }
+                }
+            }
+            orderProducts {
+              discount
+              id
+              originPrice
+              quantity
+              unitPrice
+              variantAttributes {
+                id
+                type
+                value
+              }
+              product {
+                isDisplay
+                name
+                updated_at
+                created_at
+                id
+               
+                details {
+                  id
+                  brand {
+                    id
+                    type
+                    value
+                  } 
+                  imgDisplay {
+                    id
+                    link
+                    url
+                  }
+                }
+              }
+            }
+            orderUid
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(
+      `${Backend_URL}/graphql`,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data.UpdateOrder as OrderType;
+  } catch (error) {
+    console.error("Error updating order: ", error);
     throw error;
   }
 }

@@ -30,7 +30,6 @@ async function refreshToken(token: JWT): Promise<JWT> {
     });
 
     if (res.status != 201) {
-        console.log(res.status)
         throw new Error("Failed to refresh token");
     }
 

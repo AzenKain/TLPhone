@@ -41,7 +41,16 @@ export class SchemaProductService {
     }
     return schemaProduct;
   }
-
+  async GetSchemaProductByNameService(name: string): Promise<SchemaProductType> {
+    const schemaProduct = await this.schemaProductRepository.findOne({
+      where: { name: name, isDisplay: true },
+      relations: ['detail', 'detail.attributes'],
+    });
+    if (!schemaProduct) {
+      throw new NotFoundException(`Schema product with ID ${name} not found.`);
+    }
+    return schemaProduct;
+  }
   async GetAllSchemaProductService(): Promise<SchemaProductType[]> {
     return await this.schemaProductRepository.find({
       where: {isDisplay: true},

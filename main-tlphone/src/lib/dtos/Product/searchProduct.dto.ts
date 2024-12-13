@@ -1,4 +1,4 @@
-import { TagsDetailInp } from "@/lib/dtos/Product/createProduct.dto";
+import {TagsDetailInp} from "@/lib/dtos/Product/tagsProduct.dto";
 
 export type SearchProductDto = {
   name?: string;
@@ -7,8 +7,8 @@ export type SearchProductDto = {
   brand?: TagsDetailInp[];
   color?: TagsDetailInp[];
   attributes?: TagsDetailInp[];
-  index?: number;
-  count?: number;
+  index: number;
+  count: number;
   sort?: string;
   hotSales?: string;
 };

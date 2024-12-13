@@ -8,7 +8,6 @@ import { UserEntity } from '../types/user';
 import { ResponseType } from '../types/response.type';
 import { CreateSchemaProductDto, DeleteSchemaProductDto, UpdateSchemaProductDto } from './dtos';
 
-@UseGuards(JwtGuardGraphql)
 @Resolver(() => SchemaProductType)
 export class SchemaProductResolver {
   constructor(
@@ -20,13 +19,19 @@ export class SchemaProductResolver {
   ): Promise<SchemaProductType> {
     return await this.schemaProductService.GetSchemaProductByIdService(id);
   }
-
+  @Query(() => SchemaProductType)
+  async GetSchemaProductByName(
+    @Args('schemaProductName') name: string
+  ): Promise<SchemaProductType> {
+    return await this.schemaProductService.GetSchemaProductByNameService(name);
+  }
   @Query(() => [SchemaProductType])
   async GetAllSchemaProduct(
   ): Promise<SchemaProductType[]> {
     return await this.schemaProductService.GetAllSchemaProductService();
   }
 
+  @UseGuards(JwtGuardGraphql)
   @Mutation(() => SchemaProductType)
   async CreateSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,
@@ -34,7 +39,7 @@ export class SchemaProductResolver {
   ): Promise<SchemaProductType> {
     return await this.schemaProductService.CreateSchemaProductService(dto, user);
   }
-
+  @UseGuards(JwtGuardGraphql)
   @Mutation(() => SchemaProductType)
   async UpdateSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,
@@ -42,7 +47,7 @@ export class SchemaProductResolver {
   ): Promise<SchemaProductType> {
     return await this.schemaProductService.UpdateSchemaProductService(dto, user);
   }
-
+  @UseGuards(JwtGuardGraphql)
   @Mutation(() => ResponseType)
   async DeleteSchemaProduct(
     @CurrentUserGraphql() user: UserEntity,

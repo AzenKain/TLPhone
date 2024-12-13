@@ -43,6 +43,12 @@ type CartItem {
   quantity: Float!
 }
 
+input CartItemInp {
+  productId: Float!
+  productVariantId: Float!
+  quantity: Float!
+}
+
 type ColorDetail {
   colorHex: String
   colorName: String!
@@ -91,7 +97,7 @@ type CustomerInfo {
   id: ID!
   lastName: String!
   phoneNumber: String!
-  userId: Float
+  userId: String
 }
 
 input CustomerInfoInp {
@@ -131,6 +137,7 @@ type DeliveryInfo {
 input DeliveryInfoInp {
   address: String!
   city: String
+  deliveryType: String!
   district: String
 }
 
@@ -142,6 +149,10 @@ type FaultyProduct {
   quantity: Int!
   reason: [String!]
   updated_at: DateTime!
+}
+
+input GetListProductDto {
+  products: [Float!]!
 }
 
 type ImageDetail {
@@ -169,6 +180,7 @@ input ItemSchemaProductDto {
 }
 
 type Mutation {
+  ConfirmOrder(ConfirmOrder: confirmOrderDto!): Order!
   CreateBlog(CreateBlog: CreateBlogDto!): Blog!
   CreateListOrder(CreateOrder: [createOrderDto!]!): [Order!]!
   CreateOrder(CreateOrder: createOrderDto!): Order!
@@ -182,11 +194,14 @@ type Mutation {
   DeleteSchemaProduct(DeleteSchemaProduct: DeleteSchemaProductDto!): ResponseType!
   DeleteUser(id: String!): ResponseType!
   UpdateBlog(UpdateBlog: UpdateBlogDto!): Blog!
+  UpdateCart(UpdateCart: UpdateCartDto!): Cart!
+  UpdateHeart(UpdateHeart: UpdateHeartDto!): UserType!
   UpdateOrder(UpdateOrder: updateOrderDto!): Order!
   UpdateProduct(UpdateProduct: UpdateProductDto!): Product!
   UpdateProfileUser(UpdateProfile: UpdateProfileDto!): UserType!
   UpdateRoleUser(UpdateRole: UpdateRoleDto!): UserType!
   UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
+  generateVnpayPayment(payment: PaymentDto!): Payment!
 }
 
 type Order {
@@ -197,6 +212,7 @@ type Order {
   isDisplay: Boolean!
   notes: String
   orderProducts: [OrderProduct!]!
+  orderUid: String!
   paymentInfo: PaymentInfo!
   status: String!
   statusHistory: [OrderStatusHistory!]!
@@ -208,21 +224,15 @@ type OrderProduct {
   discount: Float!
   hasImei: Boolean
   id: ID!
-  imei: String
+  imei: [String!]
   order: Order!
   originPrice: Float
   product: Product!
+  productVariant: ProductVariant!
   quantity: Float!
   refunds: [Refund!]!
   unitPrice: Float!
-  variantAttributes: [VariantAttribute!]
-}
-
-input OrderProductInp {
-  discount: Float
-  productId: ID!
-  productVariantId: ID!
-  quantity: Float!
+  variantAttributes: [TagsDetail!]
 }
 
 type OrderStatusHistory {
@@ -231,7 +241,17 @@ type OrderStatusHistory {
   newStatus: String!
   order: Order!
   previousStatus: String!
-  user: UserType!
+  user: UserType
+}
+
+type Payment {
+  status: String!
+  url: String!
+}
+
+input PaymentDto {
+  method: String!
+  orderUid: String!
 }
 
 type PaymentInfo {
@@ -249,7 +269,7 @@ type Product {
   campaigns: [Campaign!]
   category: String
   created_at: DateTime!
-  details: ProductDetail!
+  details: ProductDetail
   faultyProduct: FaultyProduct
   id: ID!
   isDisplay: Boolean!
@@ -303,10 +323,13 @@ type Query {
   GetAllSchemaProduct: [SchemaProduct!]!
   GetBlogById(blogId: Float!): Blog!
   GetColorProduct(GetColorProduct: ColorDetailInp!): [ColorDetail!]!
+  GetListProductById(GetListProductById: GetListProductDto!): [Product!]!
   GetOrderById(orderId: Float!): Order!
+  GetOrderListByUser: [Order!]!
   GetProductById(productId: Float!): Product!
   GetReportProduct(ReportProduct: SearchProductDto!): SearchProduct!
   GetSchemaProductById(schemaProductId: Float!): SchemaProduct!
+  GetSchemaProductByName(schemaProductName: String!): SchemaProduct!
   GetTagsProduct(GetTagsProduct: TagsProductDto!): [TagsDetail!]!
   GetUserById(id: String!): UserType!
   SearchBlogWithOptions(SearchBlog: SearchBlogDto!): [Blog!]!
@@ -379,10 +402,11 @@ input SearchOrderDto {
   firstName: String
   index: Float
   lastName: String
-  orderId: ID
+  orderId: String
   phoneNumber: String
   rangeMoney: [Float!]
   sort: String
+  status: String
 }
 
 type SearchProduct {
@@ -446,6 +470,14 @@ input UpdateBlogDto {
   typeBlog: String
 }
 
+input UpdateCartDto {
+  cartProducts: [CartItemInp!]!
+}
+
+input UpdateHeartDto {
+  heart: [Float!]!
+}
+
 input UpdateItemSchemaProductDto {
   isUseForSearch: Boolean
   value: String
@@ -503,7 +535,7 @@ type UserType {
   details: UserDetail
   email: String!
   hash: String
-  heart: [String!]!
+  heart: [Float!]!
   id: ID!
   isDisplay: Boolean!
   refreshToken: String
@@ -514,17 +546,21 @@ type UserType {
   updated_at: DateTime!
 }
 
-type VariantAttribute {
-  type: String!
-  value: String!
+input confirmOrderDto {
+  orderId: Float!
+  orderList: [confirmOrderInp!]!
+}
+
+input confirmOrderInp {
+  imei: [String!]!
+  orderProductId: Float!
 }
 
 input createOrderDto {
   customerInfo: CustomerInfoInp!
   deliveryInfo: DeliveryInfoInp!
   notes: String
-  orderProducts: [OrderProductInp!]!
-  status: String!
+  paymentType: String!
 }
 
 input updateOrderDto {

@@ -22,7 +22,7 @@ const initialState: InitialState = {
     filter: {
         name: "",
         rangeMoney: [0, 100000000],
-        index: 1,
+        index: 0,
         count: 15,
         sort: 'updated_at_desc'
     }

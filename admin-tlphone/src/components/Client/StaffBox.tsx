@@ -362,11 +362,11 @@ const StaffBox = () => {
                   />
                 </svg>
               </button>
-              <div className="dropdown">
+              <div className="dropdown dropdown-bottom dropdown-end">
                 <div
                   tabIndex={0}
                   role="button"
-                  className="btn btn btn-success m-1"
+                  className="btn  btn-success m-1"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
