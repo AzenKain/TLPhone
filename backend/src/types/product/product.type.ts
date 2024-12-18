@@ -102,8 +102,8 @@ export class ColorDetailType {
     @Field({nullable : true})
     colorHex: string;
 
-    @Field(() => ProductDetailType, { nullable: true })
-    productDetail?: ProductDetailType;
+    @Field(() => [ProductDetailType], { nullable: true })
+    productDetail?: ProductDetailType[];
 }
 
 // FaultyProductType

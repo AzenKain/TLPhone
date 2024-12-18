@@ -58,7 +58,7 @@ type ColorDetail {
   colorHex: String
   colorName: String!
   id: ID!
-  productDetail: ProductDetail
+  productDetail: [ProductDetail!]
 }
 
 input ColorDetailInp {
