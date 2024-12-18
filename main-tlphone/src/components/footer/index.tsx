@@ -27,7 +27,7 @@ export default function Footer() {
                         <Link href={""} className="hover:text-red">Góp ý: <span className="color ms-17">1800.6306</span></Link>
                     </nav>
                     <form className="gap-2" style={{ height: "max-content" }}>
-                        <h6 className="font-bold">Kết nối với Di Động Việt</h6>
+                        <h6 className="font-bold">Kết nối với TLPhone</h6>
                         <div className="flex gap-5 mt-3">
                             <Link href={"https://www.facebook.com/AzenKain"} className="hover:text-red"><img src="https://didongviet.vn/images/footer/fb.svg" alt="" className="w-7" /></Link>
                             <Link href={"https://www.youtube.com/user/didongvietnam"} className="hover:text-red"><img src="https://didongviet.vn/images/footer/yt.svg" alt="" className="w-7" /></Link>

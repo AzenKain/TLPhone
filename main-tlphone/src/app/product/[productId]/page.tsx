@@ -1,6 +1,5 @@
 "use client"
 import React, {useEffect, useState} from 'react';
-import { Product } from "@/types/listproduct";
 import Navigation from "@/components/Navigation";
 import {
     CartType,
@@ -8,15 +7,15 @@ import {
     ProductType,
     ProductVariantType,
     SchemaProductType,
-    SearchProductType,
-    UserType
+    SearchProductType, UserType,
+
 } from "@/types";
 import {
     getAllSchemaProductApi,
     getSchemaProductByName,
     getProductByIdApi,
     makeRequestApi,
-    searchProductWithOptionsApi, getUserByIdApi, updateCartApi
+    searchProductWithOptionsApi, updateCartApi, updateHeartApi
 } from "@/lib/api";
 import {useSession} from "next-auth/react";
 import {useAppDispatch, useAppSelector} from "@/app/redux/hooks";
@@ -29,6 +28,8 @@ import BasicCard from "@/components/Card/BasicCard";
 import {CartItemInp, UpdateCartDto} from "@/lib/dtos/user";
 import {UpdateUser} from "@/app/redux/features/user/user.redux";
 import {toast} from "react-toastify";
+import {useRouter} from "next/navigation";
+
 export default function Page({params,}: { params: { productId: string }; }) {
     const [navigation, setNavigation] = useState<NavigationItem[]>([
         {
@@ -44,6 +45,7 @@ export default function Page({params,}: { params: { productId: string }; }) {
 
         } as NavigationItem
     ])
+    const router = useRouter()
     const userDetail = useAppSelector((state) => state.UserRedux.value)
     const product = useAppSelector((state) => state.ProductRedux.productDisplay);
     const category = useAppSelector((state) => state.CategoryRedux.categoryDisplay);
@@ -53,9 +55,13 @@ export default function Page({params,}: { params: { productId: string }; }) {
     const [listCare, setListCare] = useState<ProductType[]>([])
     const [listSame, setListSame] = useState<ProductType[]>([])
     const [selectedOption, setSelectedOption] = useState<ProductVariantType | null>(null);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggleExpand = () => {
-        setIsExpanded(!isExpanded);
+    const [isExpandedD, setIsExpandedD] = useState(false);
+    const toggleExpandD = () => {
+        setIsExpandedD(!isExpandedD);
+    };
+    const [isExpandedT, setIsExpandedT] = useState(false);
+    const toggleExpandT = () => {
+        setIsExpandedT(!isExpandedT);
     };
     const [quantity, setQuantity] = useState(1);
     const handleIncrease = () => {
@@ -76,6 +82,7 @@ export default function Page({params,}: { params: { productId: string }; }) {
         }
         setQuantity(prev => prev - 1);
     }
+
     useEffect(() => {
         const fetchData = async () => {
             let dataProduct: ProductType = await getProductByIdApi(
@@ -100,7 +107,7 @@ export default function Page({params,}: { params: { productId: string }; }) {
                 brand: [
                     {
                         type: 'brand',
-                        value: typeof dataProduct?.details?.brand === 'string' ? dataProduct?.details?.brand : String(dataProduct?.details?.brand ?? ""),
+                        value: 'iphone',
                     }
                 ]
             };
@@ -108,6 +115,11 @@ export default function Page({params,}: { params: { productId: string }; }) {
             setListCare(responseProduct.data)
 
             filter.count = 5
+            filter.brand= [    {
+                type: 'brand',
+                value: dataProduct?.details?.brand?.value,
+            }]
+
             responseProduct= await searchProductWithOptionsApi(filter, null)
             setListSame(responseProduct.data)
 
@@ -156,9 +168,31 @@ export default function Page({params,}: { params: { productId: string }; }) {
         );
     }
 
-    const handleUpdateCart = async () => {
+    const handlerUpdateHeart = async (item : ProductType) => {
+        let dto : number[] = [...userDetail.heart]
+        if (userDetail.heart.includes(Number(item.id))) {
+            dto = dto.filter(it => it !== Number(item.id))
+        }
+        else {
+            dto.push(Number(item.id))
+        }
+
+        let dataUser: UserType = await makeRequestApi(updateHeartApi, dto, session?.expires, session?.access_token)
+        if (dataUser) {
+            dispatch(UpdateUser(dataUser))
+            toast.success("Update heart successful!!");
+        }
+        else {
+            toast.error("Update heart failed!!");
+        }
+    }
+
+
+
+
+    const handleUpdateCart = async () : Promise<boolean> => {
         if (selectedOption == null || quantity == 0) {
-            return;
+            return false
         }
         const dto: UpdateCartDto = {
             cartProducts: userDetail.cart.cartProducts.map(it => ({
@@ -181,14 +215,14 @@ export default function Page({params,}: { params: { productId: string }; }) {
 
         let dataCard: CartType = await makeRequestApi(updateCartApi, dto, session?.refresh_token, session?.access_token)
 
-        if (dataCard) {
-            dispatch(UpdateUser({...userDetail, cart: dataCard}))
-            toast.success("Update cart successful!!");
-        }
-        else {
+        if (!dataCard) {
             toast.error("Update cart failed!!");
+            return false
         }
 
+        dispatch(UpdateUser({...userDetail, cart: dataCard}))
+        toast.success("Update cart successful!!");
+        return true
     }
 
 
@@ -346,7 +380,14 @@ export default function Page({params,}: { params: { productId: string }; }) {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full">
-                            <div className="flex flex-row  md:col-span-4 btn bg-red-500 text-white">
+                            <div
+                                onClick={async () => {
+                                    if(await handleUpdateCart()){
+                                        router.push('/cart');
+                                    }
+                                }}
+                                className="flex flex-row  md:col-span-4 btn bg-red-500 text-white"
+                            >
                                 Mua hàng ngay
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -364,17 +405,39 @@ export default function Page({params,}: { params: { productId: string }; }) {
                                 </svg>
                                 <div className="md:text-[10px]">Thêm vào giỏ</div>
                             </div>
-                            <div className="md:col-span-4">
-                                <button
-                                    className="bg-gray-200 flex gap-2 items-center w-full justify-center text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-                                    </svg>
-                                    Wishlist
-                                </button>
-                            </div>
+                            {userDetail.id != "-1" && (
+                                <div className="md:col-span-4" onClick={async () => await handlerUpdateHeart(product)}>
+                                    <button
+                                        className="bg-gray-200 flex gap-2 items-center w-full justify-center text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                                    >
+                                        {userDetail.heart.includes(Number(product.id)) ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                                 className="w-6 h-6 text-red-500">
+                                                <path
+                                                    d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/>
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="1.5"
+                                                stroke="currentColor"
+                                                className="w-6 h-6 text-red-500"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                                                />
+                                            </svg>
+                                        )}
+                                        Wishlist
+                                    </button>
+                                </div>
+
+                            )}
+
                             <div className="md:col-span-6 p-4 rounded-lg break-words">
                                 <h2 className="text-xl text-blue-500 font-bold">Thông tin sản phẩm</h2>
                                 <ul className="list-disc pl-6 space-y-2 mt-2">
@@ -433,75 +496,60 @@ export default function Page({params,}: { params: { productId: string }; }) {
                                     Description
                                 </label>
                                 <div
-                                    className="text-base"
-                                    dangerouslySetInnerHTML={{__html: Buffer.from(product.details.description || "", "base64").toString("utf-8")}}
+                                    className={`text-base overflow-hidden transition-all duration-300 ${
+                                        isExpandedD ? "max-h-none" : "max-h-[400px]"
+                                    }`}
+                                    dangerouslySetInnerHTML={{
+                                        __html: Buffer.from(product.details.description || "", "base64").toString("utf-8"),
+                                    }}
                                 />
                             </div>
-                            <button className="text-center text-red-500 font-bold">Xem thêm</button>
+                            <button
+                                onClick={toggleExpandD}
+                                className="text-center text-red-500 font-bold"
+                            >
+                                {isExpandedD ? "Thu gọn" : "Xem thêm"}
+                            </button>
                         </div>
 
 
                         <div className="bg-white shadow-lg rounded-lg p-6">
                             <h2 className="text-xl font-bold text-red-500 mb-4">Thông số kỹ thuật</h2>
-                            <div className="space-y-6">
-                                {category && (
-                                    <div>
-                                        {category.detail.slice(0, Math.ceil(category.detail.length / 2)).map((detail, idx) => (
-                                            <div key={detail.id} className="mb-5">
-                                                <h3 className="font-bold mb-2">{`${idx + 1}, ${detail.title}`}</h3>
-                                                <div className="space-y-2">
-                                                    {detail.attributes.map((attr) => (
-                                                        <div key={attr.id} className="flex justify-between border-b pb-2">
-                                                            <span className="font-semibold">{attr.value}</span>
-                                                            <span className="text-gray-700">
-                                                              {product?.details?.attributes &&
-                                                                  product?.details?.attributes
-                                                                      .filter((it) => it.type === attr.value)
-                                                                      .map((v) => v.value)
-                                                                      .join(", ")}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                            <div
+                                className={`space-y-6 overflow-hidden transition-all duration-300 ${
+                                    isExpandedT ? "max-h-none" : "max-h-[400px]"
+                                }`}
+                            >
+                                {category &&
+                                    category.detail.map((detail, idx) => (
+                                        <div key={detail.id} className="mb-5">
+                                            <h3 className="font-bold mb-2">{`${idx + 1}. ${detail.title}`}</h3>
+                                            <div className="space-y-2">
+                                                {detail.attributes.map((attr) => (
+                                                    <div
+                                                        key={attr.id}
+                                                        className="flex justify-between border-b pb-2"
+                                                    >
+                                                        <span className="font-semibold">{attr.value}</span>
+                                                        <span className="text-gray-700">
+                                            {product?.details?.attributes &&
+                                                product?.details?.attributes
+                                                    .filter((it) => it.type === attr.value)
+                                                    .map((v) => v.value)
+                                                    .join(", ")}
+                                        </span>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        </div>
+                                    ))}
                             </div>
 
-                            {isExpanded && (
-                                <div className="space-y-6 mt-6">
-                                    {category && (
-                                        <div>
-                                            {category.detail.slice(Math.ceil(category.detail.length / 2)).map((detail, idx) => (
-                                                <div key={detail.id} className="mb-5">
-                                                    <h3 className="font-bold mb-2">{`${idx + 1 + Math.ceil(category.detail.length / 2)}, ${detail.title}`}</h3>
-                                                    <div className="space-y-2">
-                                                        {detail.attributes.map((attr) => (
-                                                            <div key={attr.id} className="flex justify-between border-b pb-2">
-                                                                <span className="font-semibold">{attr.value}</span>
-                                                                <span className="text-gray-700">
-                                                                    {product?.details?.attributes &&
-                                                                        product?.details?.attributes
-                                                                            .filter((it) => it.type === attr.value)
-                                                                            .map((v) => v.value)
-                                                                            .join(", ")}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
                             <button
-                                onClick={toggleExpand}
+                                onClick={toggleExpandT}
                                 className="text-red-500 font-bold mt-4 flex justify-center w-full"
                             >
-                                {isExpanded ? "Thu gọn" : "Xem thêm"}
+                                {isExpandedT ? "Thu gọn" : "Xem thêm"}
                             </button>
                         </div>
 
@@ -513,7 +561,8 @@ export default function Page({params,}: { params: { productId: string }; }) {
                         <h1 className="text-xl font-bold text-red-500 mb-4">
                             Sản phẩm tương tự
                         </h1>
-                        <div className="grid lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 grid-cols-2  gap-4 items-center">
+                        <div
+                            className="grid lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 grid-cols-2  gap-4 items-center">
                             {listSame.slice(0, 5).map((item, index) => (
                                 <BasicCard key={index} item={item}/>
                             ))}

@@ -6,10 +6,12 @@ export class LoginDto {
     @IsString()
     @IsNotEmpty()
     @IsEmail()
+    @Field()
     email: string;
 
     @IsString()
     @IsNotEmpty()
+    @Field()
     password: string;
 
 }

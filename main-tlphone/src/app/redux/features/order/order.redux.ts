@@ -4,13 +4,15 @@ import {OrderType} from "@/types";
 type InitialState = {
     value: OrderType[];
     tmpValue: OrderType[];
+    displayOrder: OrderType | null;
     filter : string;
 }
 
 const initialState: InitialState = {
     value: [],
     tmpValue: [],
-    filter: "All single"
+    filter: "All single",
+    displayOrder: null
 }
 
 const compareByNewest = (a: OrderType, b: OrderType) => {
@@ -66,10 +68,13 @@ export const OrderRedux = createSlice({
                     action.payload.replace(/ /g, '').toUpperCase()
                 )
             );
-        }
+        },
+        UpdateDisplayOrder: (state, action: PayloadAction<OrderType>) => {
+            state.displayOrder = action.payload
+        },
     }
 })
 
-export const { AddListOrder, AddFilterOrder, FindById, UpdateOrder } = OrderRedux.actions;
+export const { AddListOrder, AddFilterOrder, FindById, UpdateOrder, UpdateDisplayOrder } = OrderRedux.actions;
 
 export default OrderRedux.reducer;

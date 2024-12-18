@@ -4,6 +4,11 @@ export type GenerateVnpayPaymentDto = {
 };
 
 export type GenerateVnpayPaymentResponse = {
-    status: string;
     url: string;
 };
+
+
+export type GetOrderDto = {
+    orderId: string;
+    authId: string;
+}

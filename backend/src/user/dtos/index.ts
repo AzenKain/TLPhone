@@ -3,4 +3,4 @@ export * from './searchUser.dto'
 export * from './updateProfile.dto'
 export * from './updateRole.dto'
 export * from './updateHeart.dto'
-
+export * from './changePassword.dto'

@@ -37,6 +37,9 @@ import { RefundEntity } from './types/refund';
 import { CartEntity, CartItemEntity } from './types/cart';
 import { CartModule } from './cart/cart.module';
 import { PaymentModule } from './payment/payment.module';
+import { OtpEntity } from './types/otp';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 
 @Module({
@@ -94,7 +97,8 @@ import { PaymentModule } from './payment/payment.module';
           RefundEntity,
           CartEntity,
           CartItemEntity,
-          OrderStatusHistoryEntity
+          OrderStatusHistoryEntity,
+          OtpEntity
         ],
         synchronize: true,
       }),
@@ -107,6 +111,32 @@ import { PaymentModule } from './payment/payment.module';
     AnalyticModule,
     SchemaProductModule,
     CartModule,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        // transport: config.get('MAIL_TRANSPORT'),
+        transport: {
+          host: config.get('MAIL_HOST'),
+          secure: false,
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+          port: 587,
+        },
+        defaults: {
+          from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+        },
+        template: {
+          dir: process.cwd() + '/templates/',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
     PaymentModule
   ],
   controllers: [],

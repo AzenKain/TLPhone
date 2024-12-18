@@ -255,7 +255,7 @@ export class ProductService {
             throw new ForbiddenException('Product already exists with the same name and category.');
         }
         let savedImgDetails : ImageDetailEntity[] = []
-        let savedColorDetails : ColorDetailEntity[] = []
+        const savedColorDetails : ColorDetailEntity[] = []
         const savedVariantDetails : ProductVariantEntity[] = []
 
         if (dto.details.imgDisplay) {
@@ -265,10 +265,17 @@ export class ProductService {
             savedImgDetails = await this.imageDetailRepository.save(imgDetails);
         }
         if (dto.details.color) {
-            const colorDetails = dto.details.color.map((it) =>
-              this.colorRepository.create({ colorName: it.colorName, colorHex: it.colorHex })
-            );
-            savedColorDetails = await this.colorRepository.save(colorDetails);
+            for (const it of dto.details.color) {
+                let color = await this.colorRepository.findOne(
+                    { where: { colorName:
+                        it.colorName, colorHex: it.colorHex }
+                    });
+                if (!color) {
+                    const tmpColor = this.colorRepository.create({ colorName: it.colorName, colorHex: it.colorHex })
+                    color = await this.colorRepository.save(tmpColor);
+                }
+                savedColorDetails.push(color)
+            }
         }
         
         if (dto.details.variants) {

@@ -1,6 +1,6 @@
 "use client"
 import React, { ChangeEvent, useRef, useState } from "react";
-import { signUpApi } from "@/lib/api";
+import {createOtpApi, signUpApi, validateOtpApi} from "@/lib/api";
 import { CreateOtpDto, SignUpDto, VerifyOtpDto } from "@/lib/dtos/auth";
 import { signIn } from "next-auth/react";
 import { useRouter } from 'next/navigation'
@@ -17,13 +17,39 @@ const SignUp: React.FC<{ searchParams: { callbackUrl?: string } }> = ({ searchPa
     const [rePasswordUser, setRePasswordUser] = useState("");
     const [gender, setGender] = useState<boolean[]>([false, false, true]);
     const callbackUrl = React.useMemo(() => searchParams?.callbackUrl, [searchParams])
+    const [otpId, setOtpId] = useState<number>(-1);
+    const [otp, setOTP] = useState<string[]>(['', '', '', '', '', '']);
+    const inputs = useRef<HTMLInputElement[]>([]);
+
+    const handleChange = (index: number, value: string) => {
+        const newOTP = [...otp];
+        newOTP[index] = value;
+        setOTP(newOTP);
+
+        if (value.length === 1 && index < otp.length - 1 && inputs.current[index + 1]) {
+            inputs.current[index + 1].focus();
+        }
+        if (value.length === 0 && index > 0 && inputs.current[index - 1]) {
+            inputs.current[index - 1].focus();
+        }
+    };
 
     const handleGenderBox = (index: number) => {
         setGender(prevState =>
             prevState.map((checked, i) => (i === index))
         );
     };
-
+    const handleShow = () => {
+        const modal = document.getElementById('my_modal_view') as HTMLDialogElement | null;
+        if (modal) {
+            modal.showModal();
+        }
+    }
+    function maskEmail(email: string): string {
+        const [username, domain] = email.split('@');
+        const maskedUsername = username.slice(0, 2) + '***';
+        return `${maskedUsername}@${domain}`;
+    }
     const handleSignIn = async () => {
         if (firstName == "") {
             toast.error("You must enter your first name!")
@@ -53,14 +79,40 @@ const SignUp: React.FC<{ searchParams: { callbackUrl?: string } }> = ({ searchPa
             toast.error("Your password is not the same your re-type password!")
             return
         }
+        let dto: CreateOtpDto = {
+            email: emailUser,
+            type: "SignUp",
+        }
+        const newOtp = await createOtpApi(dto, null);
+        if (newOtp == null) return;
+        handleShow();
+    }
+    const handleSubmit = async () => {
         let tmpGender = gender[0] ? "MALE" : gender[1] ? "FEMALE" : "OTHER";
+        let tmpOtpId = otpId;
+        if (otpId == -1) {
+            const dto: VerifyOtpDto = {
+                email: emailUser,
+                type: "SignUp",
+                otpCode: otp.join("")
+            }
+            const rq = await validateOtpApi(dto, null)
+            if (!rq || !rq.otpId || !rq.isRequest ) {
+                toast.error("Failed to create otp!");
+                return
+            }
+            setOtpId(Number(rq.otpId));
+            tmpOtpId = Number(rq.otpId);
+        }
+
         const loginDto: SignUpDto = {
             email: emailUser,
             password: passwordUser,
             firstName: firstName,
             lastName: lastName,
             phoneNumber: phoneNumber,
-            gender: tmpGender
+            gender: tmpGender,
+            otpId: Number(tmpOtpId)
         }
 
 
@@ -83,7 +135,19 @@ const SignUp: React.FC<{ searchParams: { callbackUrl?: string } }> = ({ searchPa
             }
         }
     }
-
+    const handleReSend = async () => {
+        let dto: CreateOtpDto = {
+            email: emailUser,
+            type: "SignUp",
+        }
+        const newOtp = await createOtpApi(dto, null);
+        if (!newOtp) {
+            toast.error("Create Otp failed!")
+        }
+        else {
+            toast.success("Create Otp successful!")
+        }
+    }
     return (
         <div>
             <div className="bg-white dark:bg-gray-900 mx-10 my-2">
@@ -314,6 +378,78 @@ const SignUp: React.FC<{ searchParams: { callbackUrl?: string } }> = ({ searchPa
                     </div>
                 </div>
             </div>
+            <dialog id="my_modal_view" data-theme="light" className="modal modal-bottom sm:modal-middle">
+                <div className="modal-box">
+
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn">Close</button>
+                        </form>
+                    </div>
+
+                    <div className="relative flex flex-col justify-center overflow-hidden bg-gray-50">
+                        <div
+                            className="relative bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
+                            <div className="mx-auto flex w-full flex-col space-y-16">
+                                <div className="flex flex-col items-center justify-center text-center space-y-2">
+                                    <div className="font-semibold text-3xl">
+                                        <p>Email Verification</p>
+                                    </div>
+                                    <div className="flex flex-row text-sm font-medium text-gray-400">
+                                        <p>We have sent a code to your email: {maskEmail(emailUser)}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <div className="flex flex-col space-y-16">
+                                            <div
+                                                className="flex flex-row items-center justify-between mx-auto w-full gap-1">
+                                                {otp.map((value, index) => (
+                                                    <div key={index} className="w-16 h-16">
+                                                        <input
+                                                            ref={(el) => {
+                                                                if (el) inputs.current[index] = el;
+                                                            }}
+                                                            className="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700"
+                                                            type="text"
+                                                            pattern="[0-9]*"
+                                                            inputMode="numeric"
+                                                            maxLength={1}
+                                                            value={value}
+                                                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="flex flex-col space-y-5">
+                                                <div>
+                                                    <button
+                                                        onClick={async () => await handleSubmit()}
+                                                        className="flex flex-row items-center justify-center text-center w-full border rounded-xl outline-none py-5 bg-blue-700 border-none text-white text-sm shadow-sm">
+                                                        Verify Account
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className="mt-2 flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
+                                        <p>Didn&apos;t recieve code?</p>{" "}
+                                        <button
+                                            onClick={async () => await handleReSend()}
+                                            className="flex flex-row items-center text-blue-600"
+                                        >
+                                            Resend
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </dialog>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
 import { JwtGuardRestApiRefresh } from './guard';
 import { AuthService } from './auth.service';
-import { LoginDto, SignUpDto } from './dto';
+import { ForgetPasswordDto, LoginDto, SignUpDto, ValidateOtpDto } from './dto';
 import { CurrentUserRest } from 'src/decorators';
 import { UserEntity } from 'src/types/user';
 import { JwtPayload } from './interfaces';
@@ -33,5 +33,26 @@ export class AuthController {
         @CurrentUserRest() user: JwtPayload
     ) {
         return await this.authService.RefreshService(user)
+    }
+
+    @Post('create-otp')
+    async CreateOtpController(
+      @Body() dto : ValidateOtpDto,
+    ) {
+        return await this.authService.createOtpService(dto)
+    }
+
+    @Post('validate-otp')
+    async ValidateOtpController(
+      @Body() dto : ValidateOtpDto,
+    ) {
+        return await this.authService.validateOtpService(dto)
+    }
+
+    @Post('forget-password')
+    async forgetPasswordController(
+      @Body() dto : ForgetPasswordDto,
+    ) {
+        return await this.authService.forgotPasswordService(dto)
     }
 }

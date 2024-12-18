@@ -35,15 +35,10 @@ export const UserRedux = createSlice({
           }
           state.value = action.payload
       },
-      AddHeart: (state, action: PayloadAction<string>) => {
-          if (!state.value.heart.includes(action.payload)) state.value.heart.push(action.payload);
-      },
-      RemoveHeart: (state, action: PayloadAction<string>) => {
-          state.value.heart = state.value.heart.filter(it => it !== action.payload)
-      }
+
     }
 })
 
-export const { UpdateUser, AddHeart, RemoveHeart } = UserRedux.actions;
+export const { UpdateUser } = UserRedux.actions;
 
 export default UserRedux.reducer;

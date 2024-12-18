@@ -10,7 +10,7 @@ import {
 } from "@/types";
 import { Backend_URL } from "./Constants";
 import { SignUpDto } from "./dtos/auth";
-import { SearchUserDto, UpdateProfileDto, UpdateRoleDto } from "./dtos/user";
+import { ChangePasswordDto, SearchUserDto, UpdateProfileDto, UpdateRoleDto } from "./dtos/user";
 import {
   CreateSchemaProductDto,
   DeleteSchemaProductDto,
@@ -1524,6 +1524,99 @@ export async function updateOrderApi(
     return response.data.data.UpdateOrder as OrderType;
   } catch (error) {
     console.error("Error updating order: ", error);
+    throw error;
+  }
+}
+
+export async function changePasswordApi(dto: ChangePasswordDto, token: string) {
+  const query = `
+        mutation ChangePassword {
+            ChangePassword(ChangePassword: { 
+                currentPassword: "${dto.currentPassword}", 
+                newPassword: "${dto.newPassword}" 
+                }
+            ) {
+                created_at
+                email
+                id
+                isDisplay
+                refreshToken
+                role
+                secretKey
+                updated_at
+                details {
+                    address
+                    birthday
+                    firstName
+                    gender
+                    id
+                    imgDisplay
+                    lastName
+                    phoneNumber
+                }
+                heart
+                cart {
+                    created_at
+                    id
+                    updated_at
+                    cartProducts {
+                      id
+                      quantity
+                      productVariant {
+                        displayPrice
+                        id
+                        attributes {
+                          id
+                          type
+                          value
+                        }
+                        stockQuantity
+                      }
+                      product {
+                        created_at
+                        id
+                        isDisplay
+                        name
+                        details {
+                          id
+                          brand {
+                            id
+                            type
+                            value
+                          }
+                          imgDisplay {
+                            id
+                            link
+                            url
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    `;
+
+  try {
+    const response = await axios.post(
+      `${Backend_URL}/graphql`,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    let dataReturn = response.data.data.ChangePassword as UserType;
+    if (dataReturn?.details?.imgDisplay) {
+      dataReturn.details.imgDisplay =
+        Backend_URL + dataReturn.details.imgDisplay;
+    }
+    return dataReturn ;
+  } catch (error) {
+    console.error("Error fetching user: ", error);
     throw error;
   }
 }

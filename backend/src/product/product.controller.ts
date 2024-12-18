@@ -14,7 +14,7 @@ export class ProductController {
     @Post('export-file')
     async ExportFileController(
         @Body() dto : SearchProductDto,
-        @Request() req,
+        @Request() req : Request,
         @Res({ passthrough: true }) res: Response
     )  {
 

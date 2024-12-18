@@ -1,45 +1,103 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import {createOtpApi, forgetPasswordApi, validateOtpApi} from "@/lib/api";
+import {CreateOtpDto, ForgetPasswordDto, VerifyOtpDto} from "@/lib/dtos/auth";
+import {signIn} from "next-auth/react";
 
 export default function ResetPassword() {
+  const router = useRouter();
   const [isOtpPage, setIsOtpPage] = useState(false);
   const [isNewPasswordPage, setIsNewPasswordPage] = useState(false);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpId, setOtpId] = useState<number>(-1);
   const [newPassword, setNewPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  const router = useRouter();
-
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email === "") {
+      toast.error("You must enter your email!");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email format!");
+      return;
+    }
+    const dto : CreateOtpDto = {
+      email: email,
+      type: "ForgotPassword",
+    }
+    const rq = await createOtpApi(dto, null)
+    if (!rq || !rq.isRequest) {
+      toast.error("Failed to create otp!");
+      return
+    }
+    toast.success("Create otp successfully")
     setIsOtpPage(true);
-    setEmail("");
   };
 
-  const handleSubmitOtp = (e: React.FormEvent) => {
+  const handleSubmitOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOtp("");
+    if (otp === "") {
+      toast.error("You must enter your otp!");
+      return
+    }
+    const dto : VerifyOtpDto = {
+      email: email,
+      type: "ForgotPassword",
+      otpCode: otp
+    }
+    const rq = await validateOtpApi(dto, null)
+    if (!rq || !rq.otpId || !rq.isRequest ) {
+      toast.error("Failed to create otp!");
+      return
+    }
+    toast.success("Verify otp successfully")
+    setOtpId(Number(rq.otpId))
     setIsOtpPage(false);
     setIsNewPasswordPage(true);
   };
 
-  const handleSubmitNewPassword = (e: React.FormEvent) => {
+  const handleSubmitNewPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword === retypePassword) {
-      setIsNewPasswordPage(false);
-      setIsSuccessModalOpen(true);
+    if (otpId === -1) {
+      toast.error("OtpId is not exist!");
     }
-    else {
-      alert("Passwords do not match!");
+    if (newPassword !== retypePassword) {
+      toast.error("Passwords do not match!");
+      return;
     }
-  };
+    const dto : ForgetPasswordDto = {
+      email: email,
+      otpId: otpId,
+      password: newPassword
+    }
+    const rq = await forgetPasswordApi(dto, null)
+    if (!rq || !rq.isRequest) {
+      toast.error("Failed to create otp!");
+      return
+    }
+    toast.success("Create new password successfully")
+    const res = await signIn("credentials", {
+      email: email,
+      password: newPassword,
+      redirect: false,
+    });
 
-  const handleCloseModal = () => {
-    setIsSuccessModalOpen(false);
-    router.push('/auth/signin');
+    if (!res?.error) {
+      router.push("/");
+      toast.success("Welcome back!!");
+    } else {
+      toast.error("Check your email or password!");
+    }
+    setIsNewPasswordPage(false);
   };
 
   return (
@@ -132,7 +190,7 @@ export default function ResetPassword() {
             Forgot your password?
           </h1>
           <p className="text-sm text-gray-500 mb-6">
-            Don't fret! Just type in your email and we will send you a code to reset your password!
+            Don&#39;t fret! Just type in your email and we will send you a code to reset your password!
           </p>
           <form className="space-y-4" onSubmit={handleResetPassword}>
             <div>
@@ -148,21 +206,8 @@ export default function ResetPassword() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="name@company.com"
+                placeholder="name@gmail.com"
               />
-            </div>
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                id="terms"
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
-                I accept the{" "}
-                <a href="#" className="text-blue-600 hover:underline">
-                  Terms and Conditions
-                </a>
-              </label>
             </div>
             <button
               type="submit"
@@ -174,22 +219,6 @@ export default function ResetPassword() {
         </div>
       )}
 
-      {/* Modal thông báo đổi mật khẩu thành công */}
-      {isSuccessModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <p className="text-sm text-gray-500 mb-4">
-              Your password has been successfully reset.
-            </p>
-            <button
-              onClick={handleCloseModal}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

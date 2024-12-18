@@ -1,12 +1,11 @@
 "use client"
-import { maxHeaderSize } from "http";
 import Image from 'next/image';
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import "@/css/styles.css";
 import { ProductType, SearchProductType, TagsDetailType} from "@/types";
 import {useSession} from "next-auth/react";
-import {getTagsProductApi, makeRequestApi, searchProductWithOptionsApi} from "@/lib/api";
+import {getTagsProductApi, searchProductWithOptionsApi} from "@/lib/api";
 import {AddAllAttributes, } from "@/app/redux/features/product/product.redux";
 import { SearchProductDto, TagsDetailInp, TagsProductDto} from "@/lib/dtos/Product";
 import BasicCard from "@/components/Card/BasicCard";
@@ -118,36 +117,36 @@ export default function Home() {
     //  menu
     <div>
       <div onMouseLeave={() => setClickMenu(false)} className="mx-24 my-8">
-        <div className=" grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div className="col-span-1 lg:col-span-1">
             <div className="">
-              <div className="shadow-2 rounded-lg" style={{ width: "205px" }}>
-                <div className='bg-white p-2 rounded-lg'>
-                  <div className="px-2 py-2">
+              <div className="shadow-2 rounded-lg">
+                <div className='bg-white rounded-lg p-2'>
                     <h1 className="mt-9 font-bold" style={{ fontSize: "30px" }}>Danh mục</h1>
-                    <div onMouseEnter={() => setClickMenu(true)} >
+                  <div className="w-full h-full grid grid-cols-2 md:grid-cols-1 lg:grid-cols-1">
+                    <div onMouseEnter={() => setClickMenu(true)}>
                       <div className=" flex gap-3">
                         <Link href={"#"} className="mt-10 flex gap-2">
-                          <Image src="/img/tlphone.avif" alt="" width={30} height={30} />
+                          <Image src="/img/tlphone.avif" alt="" width={30} height={30}/>
                           <h1 className="text-lg hover:text-red-500">Điện thoại</h1>
                         </Link>
                       </div>
                     </div>
-                    <div className="mt-7 text-xl">
+                    <div className="text-xl">
                       <Link href={"https://didongviet.vn/dchannel/khuyen-mai/"} className="mt-10 flex gap-2">
-                        <Image src="/img/voucher.avif" alt="" width={30} height={35} />
+                        <Image src="/img/voucher.avif" alt="" width={30} height={35}/>
                         <h1 className="text-lg mt-1 hover:text-red-500">Khuyến mãi</h1>
                       </Link>
                     </div>
-                    <div className="mt-7 text-xl">
+                    <div className="text-xl">
                       <Link href={"https://didongviet.vn/dchannel/"} className="mt-10 flex gap-2">
-                        <Image src="/img/newspaper.avif" alt="" width={30} height={35} />
+                        <Image src="/img/newspaper.avif" alt="" width={30} height={35}/>
                         <h1 className="text-lg mt-1 hover:text-red-500">Công nghệ</h1>
                       </Link>
                     </div>
-                    <div className="mt-7 text-xl pb-8">
+                    <div className="text-xl pb-8">
                       <Link href={""} className="mt-10 flex gap-2 ms-1">
-                        <Image src="/img/lienhe.png" alt="" width={25} height={25} />
+                        <Image src="/img/lienhe.png" alt="" width={25} height={25}/>
                         <h1 className="text-lg mt-1 ms-1 hover:text-red-500">Liên hệ</h1>
                       </Link>
                     </div>
@@ -158,61 +157,63 @@ export default function Home() {
           </div>
           <div className="col-span-2 lg:col-span-5">
             {clickMenu ?
-              (
-                <div className="w-full h-full rounded-sm" style={{ height: "388px", width: "1000px" }}>
-                  <div className="grid grid-cols-7 gap-4" style={{ height: "388px" }}>
-                    <div className="col-span-2 border-e">
-                      <div className="p-3">
-                        <h1 className="font-bold text-xl">Thương hiệu</h1>
-                        <div className="mt-3 flex gap-16">
-                          <ul className="grid grid-cols-2 gap-2 text-md">
-                            {attributesList.filter(it => it.type == 'brand').map((it) => {
-                              return (
-                                  <li key={it.id} className="hover:text-red-500"><Link href={"/search"}>{it.value}</Link></li>
-                              )
-                            })}
-                          </ul>
+                (
+                    <div className="w-full h-full rounded-sm" style={{height: "388px", width: "1000px"}}>
+                      <div className="grid grid-cols-1 md:grid-cols-7 gap-4" style={{height: "388px"}}>
+                        <div className="col-span-1 md:col-span-2 border-e">
+                          <div className="p-3">
+                            <h1 className="font-bold text-xl">Thương hiệu</h1>
+                            <div className="mt-3 flex gap-16">
+                              <ul className="grid grid-cols-2 gap-2 text-md">
+                                {attributesList.filter(it => it.type == 'brand').map((it) => {
+                                  return (
+                                      <li key={it.id} className="hover:text-red-500"><Link
+                                          href={"/search"}>{it.value}</Link></li>
+                                  )
+                                })}
+                              </ul>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="col-span-2 border-e">
-                      <div className="p-3">
-                        <h1 className="font-bold text-xl">Dòng sản phẩm HOT</h1>
-                        <ul className="mt-3 grid gap-3 text-md">
-                          {listHot.map((item, index) => (
-                            <li key={item.id} className="hover:text-red-500"><Link href={`/product/${item.id}`}>{item?.name || ""}</Link></li>
-                          ))}
+                        <div className="col-span-1 md:col-span-2 border-e">
+                          <div className="p-3">
+                            <h1 className="font-bold text-xl">Dòng sản phẩm HOT</h1>
+                            <ul className="mt-3 grid gap-3 text-md">
+                              {listHot.map((item, index) => (
+                                  <li key={item.id} className="hover:text-red-500"><Link
+                                      href={`/product/${item.id}`}>{item?.name || ""}</Link></li>
+                              ))}
                         </ul>
                       </div>
                     </div>
-                    <div className="col-span-3">
-                      <div className="p-3">
-                        <h1 className="font-bold text-xl">Sản phẩm giá gốc</h1>
-                        <div className="flex flex-wrap gap-2 mt-4">
-                          {listOrigin.map((item, index) => (
-                            <div key={item.id} style={{ alignItems: "center" }} className="flex gap-3">
-                              <Link href={`/product/${item.id}`}>
-                                <Image src={item.details?.imgDisplay?.[0]?.url ? Backend_URL + item.details?.imgDisplay?.[0]?.url : "./no-item-found.png"} alt={`Image ${index + 1}`} width={60} height={60} />
-                              </Link>
-                                <div>
-                                <Link href={`/product/${item.id}`} className="hover:text-red-500 text-sm">{item?.name || ""}</Link>
-                                <p className="text-rose-700 text-sm">
-                                  {item.details?.variants?.[0]?.displayPrice
-                                    ? (item.details?.variants?.[0]?.displayPrice * (100 - 0) / 100).toLocaleString('vi-VN', {
-                                      style: 'currency',
-                                      currency: 'VND',
-                                    })
-                                    : 'N/A'}
-                                </p>
-                              </div>
+                        <div className="col-span-1 md:col-span-3">
+                          <div className="p-3">
+                            <h1 className="font-bold text-xl">Sản phẩm giá gốc</h1>
+                            <div className="grid grid-cols-1gap-2 mt-4">
+                              {listOrigin.map((item, index) => (
+                                <div key={item.id} style={{ alignItems: "center" }} className="flex gap-3">
+                                  <Link href={`/product/${item.id}`}>
+                                    <Image src={item.details?.imgDisplay?.[0]?.url ? Backend_URL + item.details?.imgDisplay?.[0]?.url : "./no-item-found.png"} alt={`Image ${index + 1}`} width={60} height={60} />
+                                  </Link>
+                                    <div>
+                                    <Link href={`/product/${item.id}`} className="hover:text-red-500 text-sm">{item?.name || ""}</Link>
+                                    <p className="text-rose-700 text-sm">
+                                      {item.details?.variants?.[0]?.displayPrice
+                                        ? (item.details?.variants?.[0]?.displayPrice * (100 - 0) / 100).toLocaleString('vi-VN', {
+                                          style: 'currency',
+                                          currency: 'VND',
+                                        })
+                                        : 'N/A'}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ) :
+                ) :
                 (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                       <div

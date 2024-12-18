@@ -40,12 +40,11 @@ export default function Order() {
             orderUid: orderId
         }
         let dataReturn2 : GenerateVnpayPaymentResponse = await makeRequestApi(generateVnpayPaymentApi, dtoVnpay, session?.refresh_token, session?.access_token)
-        if (!dataReturn2) {
+        if (!dataReturn2 || !dataReturn2.url) {
             toast.error("Create your Vnpay bill failed!")
             return;
         }
-        router.push(`${dataReturn2.url}`)
-        return;
+        router.push(dataReturn2.url)
     }
 
     useEffect(() => {
@@ -120,7 +119,7 @@ export default function Order() {
                                     className="text-gray-400 font-medium">{new Date(it?.created_at ?? "").toUTCString()}</span>
                                 </p>
                             </div>
-                            {it.paymentInfo.isPaid == false && it.status !== "Cancelled" && it.paymentInfo.paymentType == "VNPAY" && (
+                            {!it.paymentInfo.isPaid && it.status !== "Cancelled" && it.paymentInfo.paymentType == "VNPAY" && (
                                 <div
                                     onClick={async () => await handlePaynow(it.orderUid ?? "")}
                                     className="cursor-pointer text-center text-3xl font-bold border-4 bg-green-300 px-4 py-2 rounded-full"
@@ -136,8 +135,8 @@ export default function Order() {
                         </div>
                         {it.orderProducts.map(e => {
                             return (
-                                <div key={e.id} className='border-b p-8 gap-2 grid grid-cols-12'>
-                                    <div className='col-span-2'>
+                                <div key={e.id} className='border-b p-8 gap-2 grid grid-cols-8 lg:grid-cols-12'>
+                                    <div className='col-span-2 lg:col-span-2'>
                                         <Image src={
                                             (() => {
                                                 if (!e?.variantAttributes) return "/no-item-found.png"
@@ -153,18 +152,20 @@ export default function Order() {
                                             })()
                                         } alt="" width={150} height={150}/>
                                     </div>
-                                    <div className='col-span-5' style={{width: 'max-content', height: 'max-content'}}>
+                                    <div className='col-span-6 lg:col-span-5' style={{width: 'max-content', height: 'max-content'}}>
                                         <h1 className='text-xl font-bold'>{e.product.name}</h1>
                                         <div className='mt-10 grid gap-1'>
-                                            {e.productVariant?.attributes && e.productVariant?.attributes.map(e => {
+                                            {e.variantAttributes && e.variantAttributes.map(e => {
                                                 return (
-                                                    <p key={e.id}><span className='text-slate-500'>{e.type}: </span>{e.value}</p>
+                                                    <p key={e.id}>
+                                                        <span className='text-slate-500'>{e.type}: </span>{e.value}
+                                                    </p>
                                                 )
                                             })}
                                         </div>
 
                                     </div>
-                                    <div className='col-span-2 flex gap-6'>
+                                    <div className='col-span-4 lg:col-span-2 flex gap-6'>
                                         <div>
                                             <p>Price</p>
                                             <p className='text-indigo-500 mt-6'>{e.unitPrice.toLocaleString('vi-VN', {
@@ -178,7 +179,7 @@ export default function Order() {
                                               >{it.status}</p>
                                         </div>
                                     </div>
-                                    <div className='col-span-3 ms-24'>
+                                    <div className='col-span-4 lg:col-span-3 ms-24'>
                                         <div>
                                             <p>Expected Delivery Time</p>
                                             <p className='text-green-500 mt-6'>
@@ -189,7 +190,7 @@ export default function Order() {
                             )
                         })}
 
-                        <div className='p-8 flex justify-between'>
+                        <div className='p-8 grid grid-cols-2 lg:grid-cols-4'>
                             <p className='font-semibold'>Payment method: <span
                                 className='text-slate-400'>{it.paymentInfo.paymentType}</span></p>
                             <p className='font-semibold'>Shipping Type: <span className='text-blue-500'>

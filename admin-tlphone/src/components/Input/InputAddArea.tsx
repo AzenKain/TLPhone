@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { TagsDetailType } from "@/types";
 import useChatScroll from "@/hooks/useScrollChat";
+import { useAppSelector } from "@/app/redux/hooks";
 
 interface MultiselectProps {
   itemsSelect: TagsDetailType[];
@@ -12,9 +13,9 @@ interface MultiselectProps {
 }
 
 const InputAddArea: React.FC<MultiselectProps> = ({ itemsSelect, itemsList, typeTag, onAdd, onRemove }) => {
+
   const [newTag, setNewTag] = useState<string>('');
   const [tagsList, setTagsList] = useState<TagsDetailType[]>(itemsList);
-
   const ref = useChatScroll(tagsList);
 
   const handleAddNewTag = () => {

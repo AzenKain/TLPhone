@@ -4,7 +4,7 @@ import { UserType } from './user';
 
 export type CustomerInfoType = {
     id: number;
-    userId?: number;
+    userId?: string;
     email: string;
     firstName: string;
     lastName: string;

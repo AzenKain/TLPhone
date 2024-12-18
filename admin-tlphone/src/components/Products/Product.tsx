@@ -195,7 +195,7 @@ const ProductBox = () => {
       for (const iv of variantInput) {
         const matches = combination.every((it) =>
           iv.attributes?.some(
-            (x) => (x?.value ?? "").toLowerCase() === it.toLowerCase(),
+            (x) => it.toLowerCase().includes((x?.value ?? "").toLowerCase()),
           ),
         );
         if (matches) {
@@ -245,7 +245,7 @@ const ProductBox = () => {
     };
     for (const item of aggList) {
       const filteredAttributes = attributesInput.filter(
-        (it) => it.type === item.value,
+        (it) => it.type.toLowerCase().includes(item.value.toLowerCase()),
       );
 
       aggProcess[item.value] = filteredAttributes
@@ -389,7 +389,9 @@ const ProductBox = () => {
     new Promise((resolve) => setTimeout(resolve, ms));
 
   const escapeSpecialChars = (input: string): string => {
-    return input.replace(/(["\\])/g, "\\$1");
+    let data = input.replace(/(["\\])/g, "\\$1");
+    data = data.replace('.', '\\u002e')
+    return " " + data
   };
 
   const handleSubmitControl = async () => {
@@ -591,7 +593,7 @@ const ProductBox = () => {
   const handlePageChange = (page: number) => {
     const count = filter.count ?? 0;
 
-    if (page >= 1 && page <= maxValue / count) {
+    if (page >= 0 && page <= maxValue / count) {
       dispatch(UpdateFilter({ ...filter, index: page }));
     }
   };
@@ -1014,14 +1016,14 @@ const ProductBox = () => {
                   <label className="mb-3 block text-base font-medium text-black dark:text-white">
                     Product name
                   </label>
-                  <div className="text-base">{productName}</div>
+                  <div className="text-base">{productSelect?.name}</div>
                 </div>
 
                 <div className="mb-5">
                   <label className="mb-3 block text-base font-medium text-black dark:text-white">
                     Brand
                   </label>
-                  <div className="text-base">{brand}</div>
+                  <div className="text-base">{productSelect?.details.brand?.value}</div>
                 </div>
 
                 <div className="mb-5">
@@ -1029,7 +1031,7 @@ const ProductBox = () => {
                     Color
                   </label>
                   <div className="text-base">
-                    {colorInput.map((item) => item.colorName).join(", ")}
+                    {productSelect?.details?.color && productSelect?.details.color.map((item) => item.colorName).join(", ")}
                   </div>
                 </div>
 
@@ -1037,7 +1039,7 @@ const ProductBox = () => {
                   <label className="mb-3 block text-base font-medium text-black dark:text-white">
                     Product Type
                   </label>
-                  <div className="text-base">{productType}</div>
+                  <div className="text-base">{productSelect?.category}</div>
                 </div>
 
                 {schemaProduct && (
@@ -1051,8 +1053,8 @@ const ProductBox = () => {
                           <div key={attr.id} className="mb-3">
                             <div className="text-base">
                               {attr.value}:{" "}
-                              {attributesList
-                                .filter((it) => it.type === attr.value)
+                              {productSelect?.details?.attributes &&
+                                productSelect?.details?.attributes.filter((it) => it.type.toLowerCase().includes(attr.value.toLowerCase()))
                                 .map((v) => v.value)
                                 .join(", ")}
                             </div>
@@ -1069,7 +1071,9 @@ const ProductBox = () => {
                   </label>
                   <div
                     className="text-base"
-                    dangerouslySetInnerHTML={{ __html: description }}
+                    dangerouslySetInnerHTML={{
+                      __html: Buffer.from(productSelect?.details?.description || "", "base64").toString("utf-8"),
+                    }}
                   />
                 </div>
 
@@ -1079,7 +1083,9 @@ const ProductBox = () => {
                   </label>
                   <div
                     className="text-base"
-                    dangerouslySetInnerHTML={{ __html: tutorial }}
+                    dangerouslySetInnerHTML={{
+                      __html: Buffer.from(productSelect?.details?.description || "", "base64").toString("utf-8"),
+                    }}
                   />
                 </div>
 
@@ -1089,7 +1095,7 @@ const ProductBox = () => {
                   </label>
                   <div className="flex flex-col text-center">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {images.map((image, index) => (
+                      {productSelect?.details?.imgDisplay && productSelect?.details?.imgDisplay.map((image, index) => (
                         <div key={index} className="mt-4 flex flex-col gap-4">
                           <Image
                             src={
@@ -1118,9 +1124,8 @@ const ProductBox = () => {
                     <div className="text-base font-bold">Quantity</div>
                     <div className="text-base font-bold">Imei Count</div>
 
-                    {variantInput &&
-                      variantInput.length > 0 &&
-                      variantInput.map((variant, idx) => (
+                    {productSelect?.details?.variants &&
+                      productSelect?.details?.variants.map((variant, idx) => (
                         <React.Fragment key={variant.id}>
                           <div className="text-base">{idx}</div>
                           <div className="text-base">
@@ -1250,11 +1255,13 @@ const ProductBox = () => {
                           <div key={attr.id} className="mb-3">
                             <div className="text-sm">{attr.value}</div>
                             <InputAddArea
-                              itemsSelect={attributesInput.filter(
-                                (it) => it.type === attr.value,
-                              )}
+                              itemsSelect={
+                                attributesInput.filter(
+                                (it) => it.type.toLowerCase().includes(attr.value.toLowerCase()),
+                                )
+                              }
                               itemsList={attributesList.filter(
-                                (it) => it.type === attr.value,
+                                (it) => it.type.toLowerCase().includes(attr.value.toLowerCase()),
                               )}
                               typeTag={attr.value}
                               onAdd={(newAttribute: TagsDetailType) => {

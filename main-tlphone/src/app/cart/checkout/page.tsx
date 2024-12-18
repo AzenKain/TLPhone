@@ -44,7 +44,8 @@ export default function Checkout() {
         }
     }, [dispatch, session])
 
-    const handleCreateOrder = async () => {
+    const handleShow = (check : boolean) => {
+        const modal = document.getElementById('my_modal_5') as HTMLDialogElement | null;
         if (session == null) {
             toast.error("You must be logged in!")
             return;
@@ -65,6 +66,18 @@ export default function Checkout() {
             toast.error("You must enter your last name!")
             return;
         }
+        if (!modal) {
+            return
+        }
+        if (check) {
+            modal.showModal();
+        }
+        else {
+            modal.close()
+        }
+    }
+
+    const handleSubmit = async () => {
         const dto: CreateOrderDto = {
             deliveryInfo : {
                 city: city,
@@ -105,10 +118,10 @@ export default function Checkout() {
             router.push(`${dataReturn2.url}`)
             return;
         }
-
-        router.push(`/user/order/${dataReturn.id}`)
+        const params = new URLSearchParams();
+        params.append('auth', userDetail.secretKey);
+        router.push(`/order/${dataReturn.id}?${params.toString()}`)
     }
-
     return (
         <div className='mx-4 my-10 md:mx-8 md:my-10 lg:mx-60 lg:my-16'>
             <div className='shadow rounded-lg bg-white'>
@@ -147,7 +160,9 @@ export default function Checkout() {
                                                     <div className='mt-6 grid gap-2'>
                                                         {it.productVariant?.attributes && it.productVariant?.attributes.map(e => {
                                                             return (
-                                                                <p key={e.id}><span className='text-slate-500'>{e.type}: </span>{e.value}</p>
+                                                                <p key={e.id}><span
+                                                                    className='text-slate-500'>{e.type}: </span>{e.value}
+                                                                </p>
                                                             )
                                                         })}
                                                     </div>
@@ -157,7 +172,7 @@ export default function Checkout() {
                                                     <div className=''>
                                                         <div
                                                             className="flex items-center"
-                                                            >
+                                                        >
                                                             <div className="font-bold text-lg flex flex-row gap-2">
                                                                 <span className="font-bold text-lg ">Số lượng:</span>
                                                                 <span
@@ -230,7 +245,8 @@ export default function Checkout() {
                                 </div>
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-2'>
                                     <div className='col-span-1'>
-                                        <input type="text" value={userDetail.email || ""} placeholder="Email" disabled className="input input-bordered w-full max-w-xs" />
+                                        <input type="text" value={userDetail.email || ""} placeholder="Email" disabled
+                                               className="input input-bordered w-full max-w-xs"/>
                                     </div>
                                     <div className='col-span-1'>
                                         <input
@@ -265,7 +281,7 @@ export default function Checkout() {
                                             onChange={e => setCity(e.target.value)}
                                             type="text"
                                             placeholder="City"
-                                            className="input input-bordered w-full max-w-xs" />
+                                            className="input input-bordered w-full max-w-xs"/>
                                     </div>
                                 </div>
                                 <div className='mt-2'>
@@ -312,7 +328,7 @@ export default function Checkout() {
                                                         onChange={e => setPayment(e.target.value)}
                                                         className="radio checked:bg-red-500"
                                                         checked={payment == "COD"}
-                                                        />
+                                                    />
                                                 </label>
                                             </div>
                                             <Image src="/img/cod.png" alt='' height={50} width={90}
@@ -340,10 +356,11 @@ export default function Checkout() {
                                 onClick={() => router.back()}
                                 className='border rounded max-w-fit py-2 px-3'
                             >
-                            <p>Pay later</p>
+                                <p>Pay later</p>
                             </button>
-                            <div >
-                                <button onClick={async () => await handleCreateOrder()} className='border rounded max-w-fit py-2 px-3 bg-blue-500 text-white'>
+                            <div>
+                                <button onClick={() => handleShow(true)}
+                                        className='border rounded max-w-fit py-2 px-3 bg-blue-500 text-white'>
                                     <p>Pay now</p>
                                 </button>
                             </div>
@@ -351,6 +368,27 @@ export default function Checkout() {
                     </div>
                 </div>
             </div>
+            <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg text-rose-500">
+                        Are you sure you want to create a order?
+                    </h3>
+                    <div className="modal-action">
+                        <button
+                            onClick={async () => handleSubmit()}
+                            className="btn btn-warning"
+                        >
+                            Yes
+                        </button>
+                        <button
+                            onClick={() => handleShow(false)}
+                            className="btn btn-success"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </dialog>
         </div>
     )
 }

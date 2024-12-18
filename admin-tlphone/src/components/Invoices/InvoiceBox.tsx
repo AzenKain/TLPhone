@@ -1,12 +1,10 @@
 "use client"
 import Link from "next/link";
 import Image from "next/image";
-import { Chat } from "@/types/chat";
+import { QRCodeCanvas } from 'qrcode.react';
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { ProductType } from "@/types/product";
 import { OrderType } from "@/types/order";
-import { UserType } from "@/types/user";
 import { Backend_URL } from "@/lib/Constants";
 
 interface InvoiceCardProps {
@@ -21,7 +19,11 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
         onAfterPrint: () => console.log("after printing..."),
         removeAfterPrint: true,
     });
-
+    const generateQRCodeUrl = () => {
+      const params = new URLSearchParams();
+      params.append('auth', itemsShow?.customerInfo?.userId ?? "");
+      return `http://localhost:3000/order/${itemsShow?.orderUid}?${params.toString()}`;
+    };
     return (
       <div className="flex flex-col gap-10">
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -101,6 +103,9 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
               </div>
               <div ref={contentToPrint} className="p-4 sm:p-6 xl:p-9">
                 <div className="flex flex-col-reverse gap-5 xl:flex-row xl:justify-between">
+                  <div id="mountNode">
+                    <QRCodeCanvas value={generateQRCodeUrl()} />
+                  </div>
                   <div className="flex flex-col gap-4 sm:flex-row xl:gap-9">
                     <div>
                       <p className="mb-1.5 font-medium text-black dark:text-white">
@@ -123,7 +128,8 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                         To
                       </p>
                       <h4 className="mb-4 text-title-sm2 font-medium leading-[30px] text-black dark:text-white">
-                        {itemsShow?.customerInfo.firstName} {" "} {itemsShow?.customerInfo.lastName}
+                        {itemsShow?.customerInfo.firstName}{" "}
+                        {itemsShow?.customerInfo.lastName}
                       </h4>
                       <a className="block" href="#">
                         <span className="font-medium">Email: </span>
@@ -174,15 +180,17 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                       Due Amount :
                     </h5>
                     <span className="text-sm font-medium">
-                        {itemsShow && itemsShow.totalAmount
-                          ? (
-                            ((itemsShow.totalAmount - itemsShow.deliveryInfo.deliveryFee) / 1.1) *
+                      {itemsShow && itemsShow.totalAmount
+                        ? (
+                            ((itemsShow.totalAmount -
+                              itemsShow.deliveryInfo.deliveryFee) /
+                              1.1) *
                             1
                           ).toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })
-                          : "0 VND"}
+                        : "0 VND"}
                     </span>
                   </div>
                 </div>
@@ -193,33 +201,40 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                       className="items-center gap-0 sm:flex"
                     >
                       <div className="mb-3 mr-6 h-20 w-20 sm:mb-0">
-                          <Image
-                            src={(() : string => {
-                                if (!product?.variantAttributes || !product?.product?.details?.imgDisplay) {
-                                    return "/no-item-found.png";
-                                }
+                        <Image
+                          src={((): string => {
+                            if (
+                              !product?.variantAttributes ||
+                              !product?.product?.details?.imgDisplay
+                            ) {
+                              return "/no-item-found.png";
+                            }
 
-                                const colorValue = product.variantAttributes.find(
-                                  (x) => x?.type?.toLowerCase() === "color"
-                                )?.value;
+                            const colorValue = product.variantAttributes.find(
+                              (x) => x?.type?.toLowerCase() === "color",
+                            )?.value;
 
-                                const url = product.product.details.imgDisplay.find((i) =>
-                                  i?.link?.some(
-                                    (x) => x?.toLowerCase() === colorValue?.toLowerCase()
-                                  )
-                                )?.url;
+                            const url = product.product.details.imgDisplay.find(
+                              (i) =>
+                                i?.link?.some(
+                                  (x) =>
+                                    x?.toLowerCase() ===
+                                    colorValue?.toLowerCase(),
+                                ),
+                            )?.url;
 
-                                return url ? `${Backend_URL}${url}` : "/no-item-found.png";
-                            })()}
-                            width={100}
-                            height={100}
-                            alt=""
-                            style={{
-                                width: "auto",
-                                height: "auto",
-                            }}
-                          />
-
+                            return url
+                              ? `${Backend_URL}${url}`
+                              : "/no-item-found.png";
+                          })()}
+                          width={100}
+                          height={100}
+                          alt=""
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
                       </div>
                       <div className="w-full items-center justify-between md:flex">
                         <div className="mb-3 md:mb-0">
@@ -230,23 +245,27 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                             {product.product.name}
                           </a>
                           <p className="flex text-sm font-medium">
-                              {product.variantAttributes && product.variantAttributes.map((x) => {
-                                  return (
-                                    <span key={x.id} className="mr-5"> {x.type}: {x.value}</span>
-                                  );
+                            {product.variantAttributes &&
+                              product.variantAttributes.map((x) => {
+                                return (
+                                  <span key={x.id} className="mr-5">
+                                    {" "}
+                                    {x.type}: {x.value}
+                                  </span>
+                                );
                               })}
                           </p>
-
                         </div>
                         <div className="flex items-center md:justify-end">
                           <p className="mr-20 font-medium text-black dark:text-white">
                             Qty: {product.quantity}
                           </p>
                           <p className="mr-5 font-medium text-black dark:text-white">
-                            {product.unitPrice.toLocaleString('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND',
-                            })}đ
+                            {product.unitPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                            đ
                           </p>
                         </div>
                       </div>
@@ -284,14 +303,15 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                           <span> Subtotal </span>
                           <span>
                             {itemsShow && itemsShow.totalAmount
-                            ? (
-                              (itemsShow.totalAmount / 1.1) *
-                              1
-                            ).toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
-                            : "0 VND"} </span>
+                              ? (
+                                  (itemsShow.totalAmount / 1.1) *
+                                  1
+                                ).toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })
+                              : "0 VND"}{" "}
+                          </span>
                         </p>
                         <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
                           <span> Shipping Cost (+) </span>
@@ -327,11 +347,10 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ itemsShow }) => {
                           <span> Total Payable </span>
                           <span>
                             {" "}
-                            {itemsShow?.totalAmount.toLocaleString('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND',
-                            })}
-                            {" "}
+                            {itemsShow?.totalAmount.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}{" "}
                           </span>
                         </p>
                       </div>

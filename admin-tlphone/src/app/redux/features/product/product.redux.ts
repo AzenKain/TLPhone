@@ -23,7 +23,7 @@ const initialState: InitialState = {
         name: "",
         rangeMoney: [0, 100000000],
         index: 0,
-        count: 15,
+        count: 10,
         sort: 'updated_at_desc'
     }
 }

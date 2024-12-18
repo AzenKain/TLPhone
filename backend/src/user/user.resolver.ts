@@ -1,12 +1,18 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { SearchUserType, UserEntity, UserType } from 'src/types/user';
-import { HttpCode, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { CurrentUserGraphql } from 'src/decorators';
-import { CreateUserDto, SearchUserDto, UpdateHeartDto, UpdateProfileDto, UpdateRoleDto } from './dtos';
+import {
+    ChangePasswordDto,
+    CreateUserDto,
+    SearchUserDto,
+    UpdateHeartDto,
+    UpdateProfileDto,
+    UpdateRoleDto,
+} from './dtos';
 import { JwtGuardGraphql } from 'src/auth/guard';
 import { ResponseType } from 'src/types/response.type';
-
 @UseGuards(JwtGuardGraphql)
 @Resolver()
 export class UserResolver {
@@ -75,5 +81,12 @@ export class UserResolver {
       @Args('UpdateRole') dto: UpdateRoleDto
     ) {
         return await this.userService.UpdateRoleService(dto, user);
+    }
+    @Mutation(() => UserType)
+    async ChangePassword(
+      @CurrentUserGraphql() user: UserEntity,
+      @Args('ChangePassword') dto: ChangePasswordDto
+    ) {
+        return await this.userService.changePasswordService(dto, user);
     }
 }

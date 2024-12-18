@@ -49,6 +49,11 @@ input CartItemInp {
   quantity: Float!
 }
 
+input ChangePasswordDto {
+  currentPassword: String!
+  newPassword: String!
+}
+
 type ColorDetail {
   colorHex: String
   colorName: String!
@@ -155,6 +160,11 @@ input GetListProductDto {
   products: [Float!]!
 }
 
+input GetOrderDto {
+  authId: String!
+  orderId: String!
+}
+
 type ImageDetail {
   id: ID!
   link: [String!]
@@ -180,6 +190,7 @@ input ItemSchemaProductDto {
 }
 
 type Mutation {
+  ChangePassword(ChangePassword: ChangePasswordDto!): UserType!
   ConfirmOrder(ConfirmOrder: confirmOrderDto!): Order!
   CreateBlog(CreateBlog: CreateBlogDto!): Blog!
   CreateListOrder(CreateOrder: [createOrderDto!]!): [Order!]!
@@ -201,7 +212,6 @@ type Mutation {
   UpdateProfileUser(UpdateProfile: UpdateProfileDto!): UserType!
   UpdateRoleUser(UpdateRole: UpdateRoleDto!): UserType!
   UpdateSchemaProduct(UpdateSchemaProduct: UpdateSchemaProductDto!): SchemaProduct!
-  generateVnpayPayment(payment: PaymentDto!): Payment!
 }
 
 type Order {
@@ -242,16 +252,6 @@ type OrderStatusHistory {
   order: Order!
   previousStatus: String!
   user: UserType
-}
-
-type Payment {
-  status: String!
-  url: String!
-}
-
-input PaymentDto {
-  method: String!
-  orderUid: String!
 }
 
 type PaymentInfo {
@@ -324,7 +324,7 @@ type Query {
   GetBlogById(blogId: Float!): Blog!
   GetColorProduct(GetColorProduct: ColorDetailInp!): [ColorDetail!]!
   GetListProductById(GetListProductById: GetListProductDto!): [Product!]!
-  GetOrderById(orderId: Float!): Order!
+  GetOrderById(GetOrderById: GetOrderDto!): Order!
   GetOrderListByUser: [Order!]!
   GetProductById(productId: Float!): Product!
   GetReportProduct(ReportProduct: SearchProductDto!): SearchProduct!

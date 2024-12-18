@@ -28,8 +28,8 @@ export class TagsEntity {
     @Column({ nullable: true })
     value?: string;
 
-    @ManyToMany(() => ProductDetailEntity, (productDetail) => productDetail.attributes,  { nullable: true })
-    productDetail?: Relation<ProductDetailEntity[]>;
+    @ManyToMany(() => ProductDetailEntity, (productDetail) => productDetail.attributes)
+    productDetail: Relation<ProductDetailEntity[]>;
 
     @ManyToMany(() => ProductVariantEntity, (productDetail) => productDetail.attributes,  { nullable: true })
     productVariant?: Relation<ProductVariantEntity[]>;
@@ -61,8 +61,8 @@ export class ColorDetailEntity {
     @Column({nullable : true})
     colorHex: string;
 
-    @ManyToOne(() => ProductDetailEntity, (pd) => pd.color, { nullable: true })
-    productDetail: Relation<ProductDetailEntity>;
+    @ManyToMany(() => ProductDetailEntity, (pd) => pd.color, { nullable: true })
+    productDetail?: Relation<ProductDetailEntity[]>;
 }
 
 @Entity({ name: 'ProductVariant' })
@@ -107,7 +107,8 @@ export class ProductDetailEntity {
     @OneToMany(() => ImageDetailEntity, (img) => img.productDetail)
     imgDisplay: Relation<ImageDetailEntity[]>;
 
-    @OneToMany(() => ColorDetailEntity, (img) => img.productDetail)
+    @ManyToMany(() => ColorDetailEntity, (it) => it.productDetail)
+    @JoinTable()
     color: Relation<ColorDetailEntity[]>;
 
     @ManyToMany(() => TagsEntity, (tag) => tag.productDetail)

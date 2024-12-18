@@ -1,19 +1,19 @@
 import axios from 'axios';
 import { Backend_URL } from "./Constants";
-import { SignUpDto } from "./dtos/auth";
+import {CreateOtpDto, ForgetPasswordDto, SignUpDto, VerifyOtpDto} from "./dtos/auth";
 import {
     CartType,
     ColorDetailType,
     ImageDetailType, OrderType,
-    ProductType,
+    ProductType, RequestType,
     SchemaProductType,
     SearchProductType,
     TagsDetailType,
     UserType
 } from "@/types";
-import {SearchUserDto, UpdateCartDto, UpdateProfileDto} from "@/lib/dtos/user";
+import {ChangePasswordDto, SearchUserDto, UpdateCartDto, UpdateProfileDto} from "@/lib/dtos/user";
 import {ColorDetailInp, SearchProductDto, TagsProductDto} from "@/lib/dtos/Product";
-import {CreateOrderDto, GenerateVnpayPaymentDto, GenerateVnpayPaymentResponse} from "@/lib/dtos/order";
+import {CreateOrderDto, GenerateVnpayPaymentDto, GenerateVnpayPaymentResponse, GetOrderDto} from "@/lib/dtos/order";
 
 
 
@@ -167,7 +167,98 @@ export async function getUserByIdApi(id: string, token: string) {
         throw error;
     }
 }
+export async function changePasswordApi(dto: ChangePasswordDto, token: string) {
+    const query = `
+        mutation ChangePassword {
+            ChangePassword(ChangePassword: { 
+                currentPassword: "${dto.currentPassword}", 
+                newPassword: "${dto.newPassword}" 
+                }
+            ) {
+                created_at
+                email
+                id
+                isDisplay
+                refreshToken
+                role
+                secretKey
+                updated_at
+                details {
+                    address
+                    birthday
+                    firstName
+                    gender
+                    id
+                    imgDisplay
+                    lastName
+                    phoneNumber
+                }
+                heart
+                cart {
+                    created_at
+                    id
+                    updated_at
+                    cartProducts {
+                      id
+                      quantity
+                      productVariant {
+                        displayPrice
+                        id
+                        attributes {
+                          id
+                          type
+                          value
+                        }
+                        stockQuantity
+                      }
+                      product {
+                        created_at
+                        id
+                        isDisplay
+                        name
+                        details {
+                          id
+                          brand {
+                            id
+                            type
+                            value
+                          }
+                          imgDisplay {
+                            id
+                            link
+                            url
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    `;
 
+    try {
+        const response = await axios.post(
+            `${Backend_URL}/graphql`,
+            { query },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        let dataReturn = response.data.data.ChangePassword as UserType;
+        if (dataReturn?.details?.imgDisplay) {
+            dataReturn.details.imgDisplay =
+                Backend_URL + dataReturn.details.imgDisplay;
+        }
+        return dataReturn ;
+    } catch (error) {
+        console.error("Error fetching user: ", error);
+        throw error;
+    }
+}
 export async function updateUserProfileApi(
     dto: UpdateProfileDto,
     token: string,
@@ -927,27 +1018,155 @@ export async function createOrderApi(createOrderDto: CreateOrderDto, token: stri
 }
 
 export async function generateVnpayPaymentApi(
-    generateVnpayPaymentDto: GenerateVnpayPaymentDto,
+    dto: GenerateVnpayPaymentDto,
     token: string
-): Promise<GenerateVnpayPaymentResponse> {
-    const paymentQuery = `
-        method: ${generateVnpayPaymentDto.method ? `"${generateVnpayPaymentDto.method}"` : null},
-        orderUid: ${generateVnpayPaymentDto.orderUid ? `"${generateVnpayPaymentDto.orderUid}"` : null}
-    `;
+) {
 
-    const mutation = `
-    mutation GenerateVnpayPayment {
-        generateVnpayPayment(payment: { ${paymentQuery} }) {
+    const res = await fetch(Backend_URL + "/payment/create", {
+        method: "POST",
+        body: JSON.stringify({
+            ...dto,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (res.status == 401) {
+        return;
+    }
+    return await res.json() as GenerateVnpayPaymentResponse;
+}
+export async function createOtpApi(
+    dto: CreateOtpDto,
+    token: null
+) {
+
+    const res = await fetch(Backend_URL + "/auth/create-otp", {
+        method: "POST",
+        body: JSON.stringify({
+            ...dto,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (res.status == 401) {
+        return;
+    }
+    return await res.json() as RequestType;
+}
+export async function validateOtpApi(
+    dto: VerifyOtpDto,
+    token: null
+) {
+
+    const res = await fetch(Backend_URL + "/auth/validate-otp", {
+        method: "POST",
+        body: JSON.stringify({
+            ...dto,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (res.status == 401) {
+        return;
+    }
+    return await res.json() as RequestType;
+}
+export async function forgetPasswordApi(
+    dto: ForgetPasswordDto,
+    token: null
+) {
+
+    const res = await fetch(Backend_URL + "/auth/forget-password", {
+        method: "POST",
+        body: JSON.stringify({
+            ...dto,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (res.status == 401) {
+        return;
+    }
+    return await res.json() as RequestType;
+}
+export async function getOrderApi(dto: GetOrderDto, token: null): Promise<OrderType> {
+    const query = `
+    query GetOrderById {
+        GetOrderById(GetOrderById: { authId: "${dto.authId}", orderId: "${dto.orderId}" }) {
+            created_at
+            id
+            isDisplay
+            notes
             status
-            url
+            totalAmount
+            updated_at
+            customerInfo {
+              email
+              firstName
+              id
+              lastName
+              phoneNumber
+              userId
+            }
+            deliveryInfo {
+              address
+              city
+              deliveryFee
+              deliveryType
+              discount
+              district
+              id
+            }
+            paymentInfo {
+              bank
+              createdAt
+              id
+              isPaid
+              paymentType
+              updateAt
+              trackId
+            }
+            orderProducts {
+              discount
+              id
+              originPrice
+              quantity
+              unitPrice
+              variantAttributes {
+                id
+                type
+                value
+              }
+              product {
+                isDisplay
+                name
+                updated_at
+                created_at
+                id
+                details {
+                  id
+                  imgDisplay {
+                    id
+                    link
+                    url
+                  }
+                }
+              }
+            }
+            orderUid
         }
     }
-  `;
+    `;
 
     try {
         const response = await axios.post(
             `${Backend_URL}/graphql`,
-            { query: mutation },
+            { query },
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -956,9 +1175,9 @@ export async function generateVnpayPaymentApi(
             },
         );
 
-        return response.data.data.generateVnpayPayment as GenerateVnpayPaymentResponse;
+        return response.data.data.GetOrderById as OrderType;
     } catch (error) {
-        console.error("Error generating VNPAY payment: ", error);
+        console.error("Error fetching order list by user: ", error);
         throw error;
     }
 }
@@ -1053,7 +1272,7 @@ export async function getOrderListByUserApi(dto: null, token: string): Promise<O
 
 export async function updateHeartApi(heartArray: number[], token: string) {
     const mutation = `
-    mutation UpdateHeart($heart: [Int!]!) {
+    mutation UpdateHeart($heart: [Float!]!) {
       UpdateHeart(UpdateHeart: { heart: $heart }) {
         created_at
         email
@@ -1143,7 +1362,7 @@ export async function updateHeartApi(heartArray: number[], token: string) {
 }
 export async function getListProductByIdApi(productIds: number[], token: null) {
     const query = `
-    query GetListProductById($products: [Int!]!) {
+    query GetListProductById($products: [Float!]!) {
       GetListProductById(GetListProductById: { products: $products }) {
         buyCount
         category

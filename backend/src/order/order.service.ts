@@ -9,7 +9,7 @@ import {
 } from 'src/types/order';
 import { UserEntity } from 'src/types/user';
 import { Repository } from 'typeorm';
-import { confirmOrderDto, createOrderDto, SearchOrderDto, updateOrderDto } from './dtos';
+import { confirmOrderDto, createOrderDto, GetOrderDto, SearchOrderDto, updateOrderDto } from './dtos';
 import {
     ImageDetailEntity,
     ProductDetailEntity,
@@ -340,6 +340,7 @@ export class OrderService {
                 it.product.buyCount += it.quantity;
                 await this.productRepository.save(it.product);
             }
+            order.paymentInfo.isPaid = true;
         }
         if (dto.isPaid !== undefined) {
             order.paymentInfo.isPaid = dto.isPaid
@@ -408,13 +409,13 @@ export class OrderService {
         order.status = OrderStatus.Confirmed;
         return await this.orderRepository.save(order);
     }
-    async GetOrderById(orderId: number, user: UserEntity) {
+    async GetOrderById(dto: GetOrderDto) {
 
         const order = await this.orderRepository.findOne({
             where: {
-                id: orderId,
+                orderUid: dto.orderId,
                 customerInfo: {
-                    userId: user.secretKey
+                    userId: dto.authId
                     }
                 },
             relations: [
@@ -429,7 +430,7 @@ export class OrderService {
             ]
         });
 
-        if (!order) throw new ForbiddenException(`Order with ID ${orderId} not found`);
+        if (!order) throw new ForbiddenException(`Order with ID not found`);
 
         return order;
     }

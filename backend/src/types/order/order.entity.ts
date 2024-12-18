@@ -70,10 +70,22 @@ export class PaymentInfoEntity {
     paymentType: string;
 
     @Column({ nullable: true })
-    bank?: string;
+    bankCode?: string;
 
     @Column({ nullable: true })
-    trackId?: string;
+    tranId?: string;
+
+    @Column({ nullable: true })
+    bankTranId?: string;
+
+    @Column({ nullable: true })
+    invoiceId?: string;
+
+    @Column({ nullable: true })
+    cardType?: string;
+
+    @Column({ nullable: true })
+    payDate?: string;
 
     @CreateDateColumn()
     createdAt?: Date;

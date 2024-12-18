@@ -52,3 +52,17 @@ export class SearchOrderDto {
     @Field(() => String, { nullable: true })
     sort?: string
 }
+
+
+@InputType()
+export class GetOrderDto {
+    @IsNotEmpty()
+    @IsString()
+    @Field()
+    orderId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @Field()
+    authId: string;
+}

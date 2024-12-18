@@ -39,3 +39,5 @@ export class UpdateProfileDto {
   @Field({ nullable: true })
   imgDisplay?: string
 }
+
+
