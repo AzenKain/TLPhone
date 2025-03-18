@@ -32,6 +32,7 @@ async function bootstrap() {
       optionsSuccessStatus: 200,
     })
   )
+  
   app.useWebSocketAdapter(new SocketAdapter(app));
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
